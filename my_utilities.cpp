@@ -69,18 +69,39 @@ int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 //===============================================================================
 int my::copyString(char *sourceAdress, char *destinationAdress, int numberOfSymbols)
 {
-    // #### Copy all symbols
-    if (numberOfSymbols == 0) {
-        while (*destinationAdress++ = *sourceAdress++) {
-            ; // Nothing to do
+    char* src   {sourceAdress};
+    char* dest  {destinationAdress};
+
+    // #### Copy given number of symbols
+    if (numberOfSymbols > 0) {
+        for (int ii {0}; ii < numberOfSymbols; ++ii) {
+            *dest = *src;
+            ++dest;
+            ++src;
         }
     }
-    // #### Copy @numberOfSymbols symbols
+    // #### Copy all symbols till '\0'
     else {
-        while ((*destinationAdress++ = *sourceAdress++) && numberOfSymbols-- > 0 ) {
-            ;
+        *dest = *src;
+        while (*dest != '\0') {
+            ++dest;
+            ++src;
+            *dest = *src;
         }
     }
+
+    // #### Old version
+//    if (numberOfSymbols == 0) {
+//        while (*destinationAdress++ = *sourceAdress++) {
+//            ; // Nothing to do
+//        }
+//    }
+//    // #### Copy @numberOfSymbols symbols
+//    else {
+//        while ((*destinationAdress++ = *sourceAdress++) && numberOfSymbols-- > 0 ) {
+//            ;
+//        }
+//    }
 
     return 0;
 }

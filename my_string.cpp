@@ -19,23 +19,23 @@ my::String::String(const char* str)
     mb_length = inputStrlength;
 
     // #### Allocate memory in the heap (with a margin)
-    int mb_capacity {mb_length / mb_defaultAllocationDataChunk + 1};
+    mb_capacity = ((mb_length / mb_allocationDataChunk) + 1) * mb_allocationDataChunk;
     mb_ptr = new char[mb_capacity];
+    mb_lastElementPtr = mb_ptr;                 // At the start (mb_ptr == mb_lastElementPtr)
 
     // #### Copy source string @str into @this object
+    // #1 Initialize dynamic pointers
     thisStrPtr = mb_ptr;
     inputStrPtr = str;
-    for (int ii {0}; ii < mb_capacity; ++ii) {
-        if (--inputStrlength > 0) {
-            *thisStrPtr = *inputStrPtr;
-            mb_lastElementPtr = thisStrPtr;         // Save adress of last not-null element
-        }
-        else {
-            *thisStrPtr = '\0';
-        }
-
-        ++thisStrPtr;
-        ++inputStrPtr;
+    // #2 Fill @this string with NOT NULL data
+    for (int ii {0}; ii < mb_length; ++ii) {
+        *thisStrPtr++ = *inputStrPtr++;
+    }
+    // #3 Set pointer to the first NULL element (last element of C-String)
+    mb_lastElementPtr = thisStrPtr;
+    // #4 Fill the remaining space with '\0'
+    for (int ii {mb_length}; ii < mb_capacity; ++ii)
+        *thisStrPtr++ = '\0';
     }
 }
 
@@ -75,7 +75,7 @@ my::String::~String()
 // NAME: Overloaded operator<< for <int> type.
 // GOAL: Writing integer @intNumber as char data into the my::String object.
 //===============================================================================
-my::String& operator<<(my::String& string, const int& intNumber)
+my::String& my::operator<<(my::String& string, int intNumber)
 {
     constexpr int bufSize_128 {128};
     char tempBuffer[bufSize_128] = {'\0'};
@@ -95,19 +95,21 @@ my::String& operator<<(my::String& string, const int& intNumber)
     }
 
     // #### If my::String object has enough space for the new data
+
+    // #1 Set new length
     string.setLength(string.getLength() + numberOfDigits);
-    if (string.getLength() <= string.getCapacity()) {
-        // ## Copy digits in string
-        my::copyString(tempBuffer, string.getLastElementPtr(), numberOfDigits);
-        string.setLastElementPtr(string.getLastElementPtr() + numberOfDigits);
-        *(string.getLastElementPtr() + 1) = '\0';
+
+    // #2 Allocate new memory if need
+    if (string.getLength() > string.getCapacity()) {
+        int newCapacity {((string.getLength() / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+        string.setCapacity(newCapacity);
     }
-    // #### Else if we need to allocate more memory
-    else {
-        string.setCapacity(string.getLength() / string.get);
-        // Allocate memory
-        // Copy existing string to it
-    }
+    else {} // Nothing to do
+
+    // #3 Copy digits in string
+    my::copyString(tempBuffer, string.getLastElementPtr(), numberOfDigits);
+    string.setLastElementPtr(string.getLastElementPtr() + numberOfDigits);
+    *(string.getLastElementPtr() + 1) = '\0';
 
     return string;
 
@@ -230,7 +232,7 @@ int my::String::getLength() const
 //===============================================================================
 void my::String::setLength(int length)
 {
-    mb_length += length;
+    mb_length = length;
     return;
 }
 
@@ -248,13 +250,19 @@ int my::String::getCapacity() const
 //==============================================================================
 void my::String::setCapacity(int newCapacity)
 {
-    char* newAllocationPtr {nullptr};
-
     assert(newCapacity < mb_length && "Haven't implemented yet.");
 
-    // #### Allocate new portion of memoty in the heap
+    char* newAllocationPtr {nullptr};       // Dynamic pointer of new area
+    char* newPtr {nullptr};                 // Pointer to start of new area
+    char* oldAllocationPtr {mb_ptr};        // Dynamic pointer to old area
+
+    mb_capacity = newCapacity;
+
+    // #### Allocate new portion of memory in the heap
     try {
-        newAllocationPtr = new char[newCapacity];
+        newPtr = new char[mb_capacity];
+        newAllocationPtr = newPtr;
+
     }
     catch (std::bad_alloc) {
         std::cerr << "\n[ERROR]::[my::String::setCapacity]:"
@@ -264,21 +272,22 @@ void my::String::setCapacity(int newCapacity)
         exit(1);
     }
     // #### Copy original string in the new location.
-    for (int ii {0}; ii < newCapacity; ++ii) {
-        if (ii < mb_length - 1) {
-            //mb_lastElementPtr - don't changed in this case
-            *newAllocationPtr++ = *mb_ptr++;
+
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        if (ii < mb_length) {
+            *newAllocationPtr++ = *oldAllocationPtr++;
         }
         else {
             *newAllocationPtr++ = '\0';
         }
     }
 
-    // #### Reset parameters
+    // #### Delete old data
+    delete[] mb_ptr;
+    mb_ptr = newPtr;
 
 
-
-
+    return;
 }
 
 
@@ -297,8 +306,23 @@ void my::String::setLastElementPtr(char* newAdressOfLastElement)
 {
     mb_lastElementPtr = newAdressOfLastElement;
     return;
-
 }
 
+//==============================================================================
+//
+//==============================================================================
+int my::String::getAllocationDataChunk() const
+{
+    return mb_allocationDataChunk;
+}
+
+//==============================================================================
+//
+//==============================================================================
+void my::String::setAllocationDataChunk(int bytes)
+{
+    mb_allocationDataChunk = bytes;
+    return;
+}
 
 
