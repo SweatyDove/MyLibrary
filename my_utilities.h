@@ -14,12 +14,17 @@ enum class RetCode {
 
 };
 
+//==============================================================================
+// Function reads an input line (till '\n' inclusively) into the buffer @buffer.
+//==============================================================================
+int readLineToBuffer(char* buffer, int sizeOfBuffer);
+
+
 //===============================================================================
 // Convert integer number @intNumber into the set of chars, that represent all
 // number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
 //===============================================================================
 int intToChar(int intNumber, char* buffer, int sizeOfBuffer);
-
 
 //===============================================================================
 // Function just invert @buffer of size @sizeOfBuffer

@@ -1,9 +1,65 @@
 #include "my_utilities.h"
 
-//===============================================================================
+
+
+
+//==============================================================================
+// Function reads an input line (till '\n' inclusively) into the buffer @buffer.
+//==============================================================================
+int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
+{
+    char*   bufferPtr   {buffer};
+    char    ch          {'\0'};
+
+    bool    skipLeadingSpaces {true};
+
+    while (((ch = std::cin.get()) != '\n') && (!std::cin.eof())) {
+
+        // #1 Skip the leading whitespaces
+        if (skipLeadingSpaces && (ch == ' ' || ch == '\t')) {
+            continue;
+        }
+        else {} // Nothing to do
+        skipLeadingSpaces = false;
+
+        *bufferPtr++ = ch;
+        if (--sizeOfBuffer <= 0) {
+            std::cerr << "\n[WARNING]::[my::readLineToBuffer()]:"
+                      << "\nFree space in the buffer is over. Perhaps, not all data from the input stream"
+                      << "\nwere written..."
+                      << std::endl;
+            break;
+        }
+        else {} // Nothing to do
+    }
+
+    if (ch == '\n') {
+        *bufferPtr++ = '\n';
+        *bufferPtr = '\0';
+    }
+    else {
+        *bufferPtr = '\n';
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==============================================================================
 // Convert integer number @intNumber into the set of chars, that represent all
 // number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
-//===============================================================================
+//==============================================================================
 int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
 {
     int quotient    {intNumber};
@@ -125,3 +181,6 @@ int my::copyString(char *sourceAdress, char *destinationAdress, int numberOfSymb
 
 //	return 0;
 //}
+
+
+

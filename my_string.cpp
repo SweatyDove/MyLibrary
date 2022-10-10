@@ -4,38 +4,34 @@
 
 
 //===============================================================================
-// Constructor
+// NAME: Constructor
+// GOAL: Construct a my::String object from a raw buffer of characters
 //===============================================================================
-my::String::String(const char* str)
+my::String::String(const char* bufferOfChars)
 {
-    const char* inputStrPtr {str};
-    char* thisStrPtr {nullptr};
-    int inputStrlength {1};                         // 1 - for '\0'
 
-    // #### Determine the length of the input string
-    while (*inputStrPtr++ != '\0') {
-        ++inputStrlength;
+    // #### Determine the length of the input buffer
+    const char* bufferPtr       {bufferOfChars};
+    int         bufferLength    {0};
+
+    while (*bufferPtr++ != '\0') {
+        ++bufferLength;
     }
-    mb_length = inputStrlength;
+    mb_length = bufferLength;
 
     // #### Allocate memory in the heap (with a margin)
-    mb_capacity = ((mb_length / mb_allocationDataChunk) + 1) * mb_allocationDataChunk;
-    mb_ptr = new char[mb_capacity];
-    mb_lastElementPtr = mb_ptr;                 // At the start (mb_ptr == mb_lastElementPtr)
+    mb_capacity = (((mb_length + 1) / mb_allocationDataChunk) + 1) * mb_allocationDataChunk;
+    mb_firstElementAdress = new char[mb_capacity];
 
     // #### Copy source string @str into @this object
-    // #1 Initialize dynamic pointers
-    thisStrPtr = mb_ptr;
-    inputStrPtr = str;
-    // #2 Fill @this string with NOT NULL data
-    for (int ii {0}; ii < mb_length; ++ii) {
-        *thisStrPtr++ = *inputStrPtr++;
-    }
-    // #3 Set pointer to the first NULL element (last element of C-String)
-    mb_lastElementPtr = thisStrPtr;
-    // #4 Fill the remaining space with '\0'
-    for (int ii {mb_length}; ii < mb_capacity; ++ii)
-        *thisStrPtr++ = '\0';
+    // #1 Reinitialize dynamic pointers
+    char* thisPtr {mb_firstElementAdress};
+    bufferPtr = bufferOfChars;
+
+    // #2 Fill @this string with data from @bufferOfChars. Remeining space fill
+    // ## with '\0'.
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        *thisPtr++ = (ii < mb_length) ? *bufferPtr++ : '\0';
     }
 }
 
@@ -45,40 +41,43 @@ my::String::String(const char* str)
 // GOAL: CREATING a new object (in case of assignment - new object already EXISTS)
 //       and copy input @string into created (@this) string.
 //===============================================================================
-my::String::String(const String& string)
+my::String::String(const my::String& string)
 {
+    const char* inputStringPtr  {string.mb_firstElementAdress};
+    char*       thisPtr         {nullptr};
+
     // #### Copy all member variables into new object
     mb_length = string.mb_length;
     mb_capacity = string.mb_capacity;
-    mb_lastElementPtr = string.mb_lastElementPtr;
 
     // #### Allocate memory in the heap and copy data
-    mb_ptr = new char[mb_capacity];
+    thisPtr = mb_firstElementAdress = new char[mb_capacity];
     for (int ii {0}; ii < mb_capacity; ++ii) {
-        mb_ptr[ii] = string.mb_ptr[ii];
+        *thisPtr++ = *inputStringPtr++;
     }
 }
 
 
-//===============================================================================
+//==============================================================================
 // NAME: Destructor
-// GOAL:
-//===============================================================================
+// GOAL: Destruct @this object with the deallocation of memory.
+//==============================================================================
 my::String::~String()
 {
-    delete[] mb_ptr;
+    delete[] mb_firstElementAdress;
 }
 
 
 
-//===============================================================================
-// NAME: Overloaded operator<< for <int> type.
+//==============================================================================
+// NAME: Friend function.
+//       Overloaded [operator<<] for <int> type.
 // GOAL: Writing integer @intNumber as char data into the my::String object.
-//===============================================================================
+//==============================================================================
 my::String& my::operator<<(my::String& string, int intNumber)
 {
-    constexpr int bufSize_128 {128};
-    char tempBuffer[bufSize_128] = {'\0'};
+    constexpr int   bufSize_128 {128};
+    char            tempBuffer[bufSize_128] = {'\0'};
 
     // #### Convert intNumber to char
     my::intToChar(intNumber, tempBuffer, 128);
@@ -95,129 +94,156 @@ my::String& my::operator<<(my::String& string, int intNumber)
     }
 
     // #### If my::String object has enough space for the new data
-
-    // #1 Set new length
+    // #1 Set new string's length.
     string.setLength(string.getLength() + numberOfDigits);
 
-    // #2 Allocate new memory if need
-    if (string.getLength() > string.getCapacity()) {
-        int newCapacity {((string.getLength() / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+    // #2 Allocate memory if the new string length is higher than
+    // ## string's capacity.
+    if (string.getCapacity() < string.getLength() + 1) {
+        int newCapacity {(((string.getLength() + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
         string.setCapacity(newCapacity);
     }
     else {} // Nothing to do
 
     // #3 Copy digits in string
-    my::copyString(tempBuffer, string.getLastElementPtr(), numberOfDigits);
-    string.setLastElementPtr(string.getLastElementPtr() + numberOfDigits);
-    *(string.getLastElementPtr() + 1) = '\0';
+    my::copyString(tempBuffer, (string.mb_firstElementAdress + string.mb_length - numberOfDigits), numberOfDigits);
 
     return string;
 
 }
 
 
-//===============================================================================
-// Overloading [operator=]
-// We don't need to create a new object. Just assign to the existing one.
-//===============================================================================
-my::String& my::String::operator=(const String& string)
+//==============================================================================
+// NAME: Friend function.
+//       Overloaded [operator<<] for <const char*> type.
+// GOAL: Writing buffer of <char> into the my::String object.
+//==============================================================================
+my::String& my::operator<<(my::String& string, const char* charDataBuffer)
 {
-    // ## Self-assignment checking
+    return string;
+}
+
+
+
+//==============================================================================
+// NAME: Member function;
+//       Overloading [operator=]
+// GOAL: We don't need to create a new object. Just assign to the existing one.
+//==============================================================================
+my::String& my::String::operator=(const my::String& string)
+{
+    const char* inputStringPtr  {string.mb_firstElementAdress};
+    char*       thisPtr         {nullptr};
+
+    // #1 Self-assignment checking
     if (this == &string) {
         return *this;
     }
-    else { /* Nothing to do */ }
+    else {} // Nothing to do
 
-    // ## Delete data in the l-string
-    if (mb_ptr != nullptr) {
-        delete[] mb_ptr;
+    // #2 Delete data in the left-string
+    if (mb_firstElementAdress != nullptr) {
+        delete[] mb_firstElementAdress;
     }
-    else { /* Nothing to do */ }
+    else {} // Nothing to do
 
-    // ## Assign data from r-string to l-string
+    // #3 Assign data from right-string to left-string
     mb_length = string.mb_length;
-    mb_ptr = new char[mb_length];
-    for (int ii {0}; ii < mb_length; ++ii) {
-        mb_ptr[ii] = string.mb_ptr[ii];
+
+    if (mb_capacity < mb_length + 1) {
+        mb_capacity = (((mb_length + 1) / mb_allocationDataChunk) + 1) * mb_allocationDataChunk;
+    }
+    else {} // Nothing to do
+
+    thisPtr = mb_firstElementAdress = new char[mb_capacity];
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        *thisPtr++ = (ii < mb_length) ? *inputStringPtr++ : '\0';
     }
 
     return *this;
 }
 
-// #### Overloaded [operator>>]
-// #########
-std::istream& my::operator>>(std::istream& in, String& string)
+//==============================================================================
+// NAME: Friend function;
+//       Overloaded [operator>>]
+//==============================================================================
+std::istream& my::operator>>(std::istream& in, my::String& string)
 {
-    int base {40};
-    int bufSize{base};
-    char ch {};
-    char* bufPtr = new char[bufSize];
-    char* bufStart {bufPtr};
-    int length {0};
+    char    ch     {'\0'};
+
+    int   allocPortionSize {string.mb_allocationDataChunk};
+    char* bufferAdress = new char[allocPortionSize];
+    char* bufferPtr {bufferAdress};
+    int   length    {0};
+    int   capacity  {allocPortionSize};
+
+    // #### Temporary variables that are destined for the case, when there are
+    // #### not enough free space in the @inputBuffer and we need to allocate
+    // #### more memory
+    char* tempAdress    {nullptr};
+    char* tempPtr       {nullptr};
 
 
     bool skipLeadingSpaces {true};
-
     while ((ch = in.get()) != '\n' && !in.eof()) {
 
-        // ## Skip the leading whitespaces
+        // #1 Skip the leading whitespaces
         if (skipLeadingSpaces && (ch == ' ' || ch == '\t')) {
             continue;
         }
-        else { /* Nothing to do */ }
+        else {} // Nothing to do
         skipLeadingSpaces = false;
 
-        *bufPtr = ch;
+        // #2 Write input character in the buffer
+        *bufferPtr = ch;
         ++length;
 
-        // ## Resize buffer
-        if (length < bufSize) {
-            ++bufPtr;
+        // #3 If buffer has enough space for the NEXT character - nothing to do.
+        // ## Else - allocate more memory.
+        if (length < capacity) {
+            ++bufferPtr;
         }
         else {
-            bufSize += base;
-            bufPtr = new char[bufSize];
-            for (int ii {0}; ii < bufSize; ++ii) {
-                bufPtr[ii] = bufStart[ii];
+            capacity += allocPortionSize;
+
+            tempPtr = tempAdress = bufferAdress;                // Save the old pointers
+            bufferPtr = bufferAdress = new char[capacity];
+
+            for (int ii {0}; ii < length; ++ii) {
+                *bufferPtr++ = *tempPtr++;
             }
-            delete[] bufStart;
-            bufStart = bufPtr;
+            delete[] tempAdress;
+            tempPtr = tempAdress = nullptr;
         }
 
-    } /* End of while() */
-    *bufPtr = '\0';
+    }
+    *bufferPtr = '\0';
     ++length;
 
-    // ## Transfer input string into my::String
-    if (string.mb_ptr != nullptr)
-        delete[] string.mb_ptr;
-    else { /* Nothing to do */ }
-
-    string.mb_ptr = bufStart;
-    string.mb_length = length;
-
-    bufStart = bufPtr = nullptr;
+    // ## Transfer input string (<char> data) into my::String
+    string << bufferAdress;
 
     return in;
 
 }
 
 
-
-// #### Overloaded [operator<<]
-// #########
+//===============================================================================
+// Overloaded [operator<<]
+//===============================================================================
 std::ostream& my::operator<<(std::ostream& out, const String& string)
 {
-    int length {string.mb_length};
-    char* strPtr {string.mb_ptr};
+    int     length  {string.mb_length};
+    char*   thisPtr {string.mb_firstElementAdress};
 
     // Output symbols except last '\0'
-    while (--length > 0) {
-        out << *strPtr++;
+    while (length-- > 0) {
+        out << *thisPtr++;
     }
 
     return out;
 }
+
 
 //===============================================================================
 //
@@ -250,19 +276,17 @@ int my::String::getCapacity() const
 //==============================================================================
 void my::String::setCapacity(int newCapacity)
 {
-    assert(newCapacity < mb_length && "Haven't implemented yet.");
+    assert(newCapacity < mb_length + 1 && "Haven't implemented yet.");
 
-    char* newAllocationPtr {nullptr};       // Dynamic pointer of new area
-    char* newPtr {nullptr};                 // Pointer to start of new area
-    char* oldAllocationPtr {mb_ptr};        // Dynamic pointer to old area
+    char* newAdress {nullptr};                   // Pointer to start of new area
+    char* newPtr    {nullptr};                   // Dynamic pointer of new area
+    char* thisPtr   {mb_firstElementAdress};     // Dynamic pointer to old area
 
     mb_capacity = newCapacity;
 
     // #### Allocate new portion of memory in the heap
     try {
-        newPtr = new char[mb_capacity];
-        newAllocationPtr = newPtr;
-
+        newPtr = newAdress = new char[mb_capacity];
     }
     catch (std::bad_alloc) {
         std::cerr << "\n[ERROR]::[my::String::setCapacity]:"
@@ -271,21 +295,15 @@ void my::String::setCapacity(int newCapacity)
         // [QUESTION]: Should I free memory before exit?
         exit(1);
     }
-    // #### Copy original string in the new location.
 
+    // #### Copy original string in the new location.
     for (int ii {0}; ii < mb_capacity; ++ii) {
-        if (ii < mb_length) {
-            *newAllocationPtr++ = *oldAllocationPtr++;
-        }
-        else {
-            *newAllocationPtr++ = '\0';
-        }
+        *newPtr++ = (ii < mb_length) ? *thisPtr++ : '\0';
     }
 
     // #### Delete old data
-    delete[] mb_ptr;
-    mb_ptr = newPtr;
-
+    delete[] mb_firstElementAdress;
+    mb_firstElementAdress = newAdress;
 
     return;
 }
@@ -294,19 +312,12 @@ void my::String::setCapacity(int newCapacity)
 //==============================================================================
 //
 //==============================================================================
-char* my::String::getLastElementPtr() const
-{
-    return mb_lastElementPtr;
-}
+
 
 //==============================================================================
 //
 //==============================================================================
-void my::String::setLastElementPtr(char* newAdressOfLastElement)
-{
-    mb_lastElementPtr = newAdressOfLastElement;
-    return;
-}
+
 
 //==============================================================================
 //
