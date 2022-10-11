@@ -35,54 +35,54 @@ class Log {
 public:
 
 private:
-    //std::stringstream           mb_stringStream {};
-    std::fstream                mb_logFile {};              // Файл для записи лога
-    //std::string*                mb_string {nullptr};               // Указатель на очередную строку
-    //std::queue <std::string*>   mb_stringPtrQueue {};       // Очередь указателей на строки для записи в файл
 
+    std::fstream                mb_logFile {};              // Файл для записи лога
     my::String*                 mb_record {nullptr};
-    std::queue <my::String*>    mb_recordPtrQueue {};       // Очередь указателей на строки для записи в файл
+    std::queue <my::String*>    mb_recordQueue {};          // Очередь указателей на строки для записи в файл
+
+    int                         mb_numberOfRecord {1};
 
 public:
-    /***********************************************************************************
-     * Конструкторы и деструкторы
-     ***********************************************************************************/
+    //==========================================================================
+    // Конструкторы и деструкторы
+    //==========================================================================
     Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
     ~Log();
 
+    //==========================================================================
+    // Overloaded operators
+    //==========================================================================
+    template<typename InputType>
+    friend my::Log& operator<<(my::Log& log, InputType inputValue)
+    {
+        *(log.mb_record) << inputValue;
 
-    /*****************************************************************************
-     * Оператор вставки для моего класса. Получает данные и записывает их в динамически
-     * выделенную строку. Текущая строка заканчивается при передаче std::endl.
-     * Затем эта строка может быть записана в файл. Для этой записи планируется
-     * использовать отдельный поток.
-     *****************************************************************************/
-//    template<typename inputDataType>
-//    friend my::Log& operator<<(my::Log& log, const inputDataType& inputData)
-//    {
-//        //std::cout << "Invoke template version\n";
-//        log.mb_stringStream << inputData;
-//        std::cout << "\n[DEBUG]: Current stringstream: \n" << log.mb_stringStream.str() << std::endl;
+        return log;
+    }
 
 
-//        return log;
-//    }
-
-    void endString(void);
-    void printLog(void);
+//    friend my::Log& operator<<(my::Log& log, const char symbol);
+//    friend my::Log& operator<<(my::Log& log, const char* string);
 
 
+    //==========================================================================
+    // Other functions
+    //==========================================================================
+    void endString();
+    void printLog();
 
-//    friend Log& operator<<(Log& log, const int& intData)
-//    {
-//        std::cout << "Invoke int version\n";
-
-//        log.mb_string->
-
-//    }
 
 
 }; // #### End of Log-class ####
+
+
+template<typename InputType>
+my::Log& operator<<(my::Log& log, InputType input);
+
+//my::Log& operator<<(my::Log& log, int intNumber);
+//my::Log& operator<<(my::Log& log, const char symbol);
+//my::Log& operator<<(my::Log& log, const char* string);
+
 
 
 } // ######## End of NAMESPACE_MY ########

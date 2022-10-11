@@ -70,23 +70,33 @@ my::String::~String()
 
 
 //==============================================================================
-// NAME: Friend function.
-//       Overloaded [operator<<] for <int> type.
+// NAME: Overloaded [operator<<] for <int> type.
 // GOAL: Writing integer @intNumber as char data into the my::String object.
 //==============================================================================
 my::String& my::operator<<(my::String& string, int intNumber)
 {
     constexpr int   bufSize_128 {128};
     char            tempBuffer[bufSize_128] = {'\0'};
+    int ii          {0};
+
+    bool isNegative {(intNumber < 0)};
+
+    int positiveNumber {(isNegative) ? -intNumber : intNumber};
+
+
 
     // #### Convert intNumber to char
-    my::intToChar(intNumber, tempBuffer, 128);
+    if (isNegative) {
+        tempBuffer[ii++] = '-';
+    }
+    else {} // Nothing to do
+    my::intToChar(positiveNumber, &tempBuffer[ii], 128);
 
-    // #### Calculate number of digits in the buffer
-    int numberOfDigits {0};
-    for (int ii {0}; ii < bufSize_128; ++ii) {
+    // #### Calculate number of digits (or signs) in the buffer
+    int numberOfSymbols {0};
+    for (ii = 0; ii < bufSize_128; ++ii) {
         if (tempBuffer[ii] != '\0') {
-            ++numberOfDigits;
+            ++numberOfSymbols;
         }
         else {
             break;
@@ -95,7 +105,7 @@ my::String& my::operator<<(my::String& string, int intNumber)
 
     // #### If my::String object has enough space for the new data
     // #1 Set new string's length.
-    string.setLength(string.getLength() + numberOfDigits);
+    string.setLength(string.getLength() + numberOfSymbols);
 
     // #2 Allocate memory if the new string length is higher than
     // ## string's capacity.
@@ -106,23 +116,74 @@ my::String& my::operator<<(my::String& string, int intNumber)
     else {} // Nothing to do
 
     // #3 Copy digits in string
-    my::copyString(tempBuffer, (string.mb_firstElementAdress + string.mb_length - numberOfDigits), numberOfDigits);
+    my::copyString(tempBuffer, (string.mb_firstElementAdress + string.mb_length - numberOfSymbols), numberOfSymbols);
 
     return string;
 
+}
+
+
+//==============================================================================
+// NAME: Overloaded [operator<<] for <const char*> type.
+// GOAL: Writing buffer of <char> into the my::String object.
+//==============================================================================
+my::String& my::operator<<(my::String& string, const char* charDataBuffer)
+{
+
+
+
+    // #### Calculate length of @charDataBuffer
+    const char* bufferPtr       {charDataBuffer};
+    int         lengthOfBuffer  {0};
+    for (int ii {0}; *bufferPtr != '\0'; ++ii, ++bufferPtr) {
+        ++lengthOfBuffer;
+    }
+
+    // #### If my::String object has enough space for the new data
+    // #1 Set new string's length.
+    string.setLength(string.getLength() + lengthOfBuffer);
+
+    // #2 Allocate memory if the new string length is higher than
+    // ## string's capacity.
+    if (string.getCapacity() < string.getLength() + 1) {
+        int newCapacity {(((string.getLength() + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+        string.setCapacity(newCapacity);
+    }
+    else {} // Nothing to do
+
+    // #3 Copy digits in string
+    my::copyString(charDataBuffer, (string.mb_firstElementAdress + string.mb_length - lengthOfBuffer), lengthOfBuffer);
+
+    return string;
 }
 
 
 //==============================================================================
 // NAME: Friend function.
-//       Overloaded [operator<<] for <const char*> type.
-// GOAL: Writing buffer of <char> into the my::String object.
+//       Overloaded [operator<<] for <const char> type.
+// GOAL: Writing single <char> into the my::String object.
 //==============================================================================
-my::String& my::operator<<(my::String& string, const char* charDataBuffer)
+my::String& my::operator<<(my::String& string, const char symbol)
 {
-    return string;
-}
+    // #### If my::String object has enough space for the new data
+    // #1 Set new string's length.
+    string.setLength(string.getLength() + 1);
 
+    // #2 Allocate memory if the new string length is higher than
+    // ## string's capacity.
+    if (string.getCapacity() < string.getLength() + 1) {
+        int newCapacity {(((string.getLength() + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+        string.setCapacity(newCapacity);
+    }
+    else {} // Nothing to do
+
+    // #3 Copy digits in string
+    my::copyString(&symbol, (string.mb_firstElementAdress + string.mb_length - 1), 1);
+
+
+    return string;
+
+}
 
 
 //==============================================================================

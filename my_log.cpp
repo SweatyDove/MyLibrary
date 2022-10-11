@@ -1,80 +1,91 @@
 
-//#include "my_log.h"
+#include "my_log.h"
 
-///*****************************************************************************
-// * Конструктор класса. Открывает указанный файл @fileName для работы в режиме
-// * @fileMode. По-умолчанию, режим "только для записи".
-// ******************************************************************************/
-//my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
-//    mb_logFile {fileName, fileMode}
-//    //mb_string {new std::string}
-//{
-//    // #### Error handling
-//    // ##########
-//    if (!mb_logFile.good()) {
-//        std::cerr << "\n[ERROR]::[my::log::log()]: Openning file \"" << fileName
-//                  << "\" failed." << std::endl;
-//    }
-//    else {} // Nothing to do
+//==============================================================================
+// Конструктор класса. Открывает указанный файл @fileName для работы в режиме
+// @fileMode. По-умолчанию, режим "только для записи".
+//==============================================================================
+my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
+    mb_logFile {fileName, fileMode}
+{
+    mb_record = new my::String("");
 
+    *mb_record << "\n#" << mb_numberOfRecord++ << '\n';
 
-//}
-
+    // #### Error handling
+    if (!mb_logFile.good()) {
+       std::cerr << "\n[ERROR]::[my::log::log()]: Openning file \"" << fileName
+                << "\" failed." << std::endl;
+    }
+    else {} // Nothing to do
 
 
-///*****************************************************************************
-// * Деструктор класса.
-// *****************************************************************************/
-//my::Log::~Log()
-//{
-//    mb_logFile.close();
-//}
-
-///*****************************************************************************
-// * Функция обозначает конец текущей строки и запись её в массив элементов.
-// *****************************************************************************/
-//void my::Log::endString()
-//{
-//    // #### Add end-line symbol in the end of the data, stored in
-//    // #### std::stringstream object
-//    mb_stringStream.putback('\n');
-//    //mb_stringStream.putback('\0');
-//    std::cout << "\n[DEBUG]: Current stringstream: \n" << mb_stringStream.str() << std::endl;
+}
 
 
 
-//    // #### Allocate new std::string object in the heap and write data to it
-//    // #### from std::stringstream object
-//    mb_string = new std::string;
-//    *mb_string = mb_stringStream.str();
-//    std::cout << "\n[DEBUG]: Current string: \n" << *mb_string << std::endl;
-//    mb_stringStream.str("1");
+//==============================================================================
+// WHAT: Destructor
+//==============================================================================
+my::Log::~Log()
+{
+    // #### [TEMPORARY]
+    while (!mb_recordQueue.empty()) {
+        mb_record = mb_recordQueue.front();
+        mb_recordQueue.pop();
+        if (mb_record != nullptr) {
+            delete mb_record;
+        }
+        else {} // Nothing to do
+    }
 
-//    mb_stringPtrQueue.push(mb_string);
-//    mb_string = nullptr;
+    // #### Need to write in the logfile all records before closing.
+    // #### Going to add it in separate thread.
+    mb_logFile.close();
 
-//    //std::cout << *mb_string << std::endl;
-
-//}
-
+}
 
 
+//==============================================================================
+// WHAT: Функция обозначает конец текущей строки и запись её в массив элементов.
+//==============================================================================
+void my::Log::endString()
+{
+    // #### Add end-line symbol in the end of the data
+    *(mb_record) << '\n';
+    mb_recordQueue.push(mb_record);
 
-//void my::Log::printlog()
-//{
-//    while (!mb_stringPtrQueue.empty()) {
-//        // Выводим первую строку из очереди
-//        std::cout << "\nCurrent log size = " << mb_stringPtrQueue.size() << std::endl;
-//        mb_string = mb_stringPtrQueue.front();
-//        std::cout << *mb_string << std::endl;
+    mb_record = new my::String("");
+    *mb_record << "\n#" << mb_numberOfRecord++ << '\n';
 
-//        // Очищаем память, которая выделена под первую строку
-//        mb_stringPtrQueue.pop();
-//        if (mb_string != nullptr) {
-//            delete mb_string;
-//        }
-//        else {} // Nothing to do
-//    }
-//}
+    return;
+}
+
+
+
+//==============================================================================
+// WHAT: Printing the log into std::cout and free it.
+//==============================================================================
+void my::Log::printLog()
+{
+    std::cout << "########  Start Log  ########\n";
+
+    while (!mb_recordQueue.empty()) {
+        // Выводим первую строку из очереди
+        //std::cout << "\nCurrent log size = " << mb_stringPtrQueue.size() << std::endl;
+        mb_record = mb_recordQueue.front();
+        std::cout << *mb_record;
+
+        // Очищаем память, которая выделена под первую строку
+        mb_recordQueue.pop();
+        if (mb_record != nullptr) {
+            delete mb_record;
+        }
+        else {} // Nothing to do
+    }
+
+    std::cout << "\n########  Finish Log  ########" << std::endl;
+
+}
 
 

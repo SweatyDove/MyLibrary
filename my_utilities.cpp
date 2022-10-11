@@ -3,6 +3,11 @@
 
 
 
+//===============================================================================
+//
+//===============================================================================
+
+
 //==============================================================================
 // Function reads an input line (till '\n' inclusively) into the buffer @buffer.
 //==============================================================================
@@ -123,26 +128,26 @@ int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 //       If (@numberOfSymbols == 0) -> copy symbols till met '\0' in the source.
 //       Else -> copy @numberOfSymbols symbols.
 //===============================================================================
-int my::copyString(char *sourceAdress, char *destinationAdress, int numberOfSymbols)
+int my::copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols)
 {
-    char* src   {sourceAdress};
-    char* dest  {destinationAdress};
+    const char* srcPtr   {sourceAdress};
+    char*       destPtr  {destinationAdress};
 
     // #### Copy given number of symbols
     if (numberOfSymbols > 0) {
         for (int ii {0}; ii < numberOfSymbols; ++ii) {
-            *dest = *src;
-            ++dest;
-            ++src;
+            *destPtr = *srcPtr;
+            ++destPtr;
+            ++srcPtr;
         }
     }
     // #### Copy all symbols till '\0'
     else {
-        *dest = *src;
-        while (*dest != '\0') {
-            ++dest;
-            ++src;
-            *dest = *src;
+        *destPtr = *srcPtr;
+        while (*destPtr != '\0') {
+            ++destPtr;
+            ++srcPtr;
+            *destPtr = *srcPtr;
         }
     }
 

@@ -14,6 +14,7 @@ enum class RetCode {
 
 };
 
+
 //==============================================================================
 // Function reads an input line (till '\n' inclusively) into the buffer @buffer.
 //==============================================================================
@@ -38,7 +39,7 @@ int invertBuffer(char* buffer, int fromElement, int toElement);
 //       If (@numberOfSymbols == 0) -> copy symbols till met '\0' in the source.
 //       Else -> copy @numberOfSymbols symbols.
 //===============================================================================
-int copyString(char *sourceAdress, char *destinationAdress, int numberOfSymbols);
+int copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols);
 
 }
 

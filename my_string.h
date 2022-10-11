@@ -43,6 +43,7 @@ public:
 
     friend my::String& operator<<(my::String& string, int intNumber);
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);
+    friend my::String& operator<<(my::String& string, const char symbol);
 
 
 
@@ -53,6 +54,8 @@ public:
 
 my::String& operator<<(my::String& string, int intNumber);
 my::String& operator<<(my::String& string, const char* charDataBuffer);
+my::String& operator<<(my::String& string, const char symbol);
+
 
 
 
