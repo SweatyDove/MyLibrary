@@ -1,6 +1,8 @@
 
 #include "my_log.h"
 
+
+
 //==============================================================================
 // Конструктор класса. Открывает указанный файл @fileName для работы в режиме
 // @fileMode. По-умолчанию, режим "только для записи".
@@ -49,14 +51,14 @@ my::Log::~Log()
 //==============================================================================
 // WHAT: Функция обозначает конец текущей строки и запись её в массив элементов.
 //==============================================================================
-void my::Log::endString()
+void my::endRecord(my::Log& log)
 {
     // #### Add end-line symbol in the end of the data
-    *(mb_record) << '\n';
-    mb_recordQueue.push(mb_record);
+    *(log.mb_record) << '\n';
+    log.mb_recordQueue.push(log.mb_record);
 
-    mb_record = new my::String("");
-    *mb_record << "\n#" << mb_numberOfRecord++ << '\n';
+    log.mb_record = new my::String("");
+    *(log.mb_record) << "\n#" << log.mb_numberOfRecord++ << '\n';
 
     return;
 }

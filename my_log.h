@@ -8,7 +8,7 @@
 #include "my_string.h"
 #include <queue>
 
-//#include <typeinfo>
+
 
 /*
  * Нужно создать класс, реализующий лог. То есть имеется какая-то информация в главном
@@ -20,16 +20,19 @@
  *
  * Затем, как только появляется возможность, производится запись на диск очередной строки.
  *
+ *
+ * 1) Заменить std::queue на список
+ * 2) Добавить аналог std::endl;
+ * 3) Добавить поток в конструкторе класса, осуществляющий запись в файл
  */
+
+
 
 
 // ######## Start of NAMESPACE_MY ########
 namespace my {
 
-class Log;
 
-// Попытка реализовать аналог std::endl
-//void endString(my::Log& log);
 
 class Log {
 public:
@@ -44,13 +47,13 @@ private:
 
 public:
     //==========================================================================
-    // Конструкторы и деструкторы
+    // Constructors and Destructors.
     //==========================================================================
     Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
     ~Log();
 
     //==========================================================================
-    // Overloaded operators
+    // Overloaded operators.
     //==========================================================================
     template<typename InputType>
     friend my::Log& operator<<(my::Log& log, InputType inputValue)
@@ -60,29 +63,40 @@ public:
         return log;
     }
 
-
-//    friend my::Log& operator<<(my::Log& log, const char symbol);
-//    friend my::Log& operator<<(my::Log& log, const char* string);
+    friend my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&))
+    {
+        functionPointer(log);
+        return log;
+    }
 
 
     //==========================================================================
-    // Other functions
+    // Other functions.
     //==========================================================================
-    void endString();
     void printLog();
+
+    friend void endRecord(my::Log& log);
 
 
 
 }; // #### End of Log-class ####
 
 
+/*******************************************************************************
+ * Below, I've declared friend function of my::Log class in the "my" namespace.
+ * Otherwise - these functions are not visible.
+ ******************************************************************************/
 template<typename InputType>
 my::Log& operator<<(my::Log& log, InputType input);
 
-//my::Log& operator<<(my::Log& log, int intNumber);
-//my::Log& operator<<(my::Log& log, const char symbol);
-//my::Log& operator<<(my::Log& log, const char* string);
+my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&));
 
+/*******************************************************************************
+ * In the case below, my::endRecord and my::endr work with <my::Log>&, but
+ * in the future, I can add other types via overloading, like "std::endl".
+ ******************************************************************************/
+void endRecord(my::Log& log);
+void (*endr)(my::Log&) = my::endRecord;
 
 
 } // ######## End of NAMESPACE_MY ########
