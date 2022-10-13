@@ -32,9 +32,9 @@ my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
 my::Log::~Log()
 {
     // #### [TEMPORARY]
-    while (!mb_recordQueue.empty()) {
-        mb_record = mb_recordQueue.front();
-        mb_recordQueue.pop();
+    while (0 != mb_recordQueue.getSize()) {
+        mb_record = mb_recordQueue.getFront();
+        mb_recordQueue.removeFront();
         if (mb_record != nullptr) {
             delete mb_record;
         }
@@ -49,13 +49,14 @@ my::Log::~Log()
 
 
 //==============================================================================
-// WHAT: Функция обозначает конец текущей строки и запись её в массив элементов.
+// NAME: Friend function
+// GOAL: It finish the current record and makes preparations for the new one.
 //==============================================================================
 void my::endRecord(my::Log& log)
 {
     // #### Add end-line symbol in the end of the data
     *(log.mb_record) << '\n';
-    log.mb_recordQueue.push(log.mb_record);
+    log.mb_recordQueue.pushBack(log.mb_record);
 
     log.mb_record = new my::String("");
     *(log.mb_record) << "\n#" << log.mb_numberOfRecord++ << '\n';
@@ -72,14 +73,14 @@ void my::Log::printLog()
 {
     std::cout << "########  Start Log  ########\n";
 
-    while (!mb_recordQueue.empty()) {
+    while (0 != mb_recordQueue.getSize()) {
         // Выводим первую строку из очереди
         //std::cout << "\nCurrent log size = " << mb_stringPtrQueue.size() << std::endl;
-        mb_record = mb_recordQueue.front();
+        mb_record = mb_recordQueue.getFront();
         std::cout << *mb_record;
 
         // Очищаем память, которая выделена под первую строку
-        mb_recordQueue.pop();
+        mb_recordQueue.removeFront();
         if (mb_record != nullptr) {
             delete mb_record;
         }

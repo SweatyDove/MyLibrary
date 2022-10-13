@@ -64,6 +64,10 @@ my::String::String(const my::String& string)
 //==============================================================================
 my::String::~String()
 {
+    std::cout << "\n[DEBUG]:"
+              << "\nmy::String destructor has called!"
+              << std::endl;
+
     delete[] mb_firstElementAdress;
 }
 
@@ -349,11 +353,16 @@ void my::String::setCapacity(int newCapacity)
     try {
         newPtr = newAdress = new char[mb_capacity];
     }
-    catch (std::bad_alloc) {
+    catch (std::bad_alloc&) {
         std::cerr << "\n[ERROR]::[my::String::setCapacity]:"
                   << "Couldn't allocate memory in the heap. Operator 'new' threw an exception"
                   << std::endl;
-        // [QUESTION]: Should I free memory before exit?
+        /*
+         * [QUESTION]: Should I free memory before exit?
+         *             It seems that I haven't to catch an exception here.
+         *             Only if I can/going to do smth with it.
+         *             Just let the exception fall back to main.
+         */
         exit(1);
     }
 

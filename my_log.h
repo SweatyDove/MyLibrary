@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include "my_string.h"
+#include "my_queue.hpp"
 #include <queue>
 
 
@@ -21,9 +22,7 @@
  * Затем, как только появляется возможность, производится запись на диск очередной строки.
  *
  *
- * 1) Заменить std::queue на список
- * 2) Добавить аналог std::endl;
- * 3) Добавить поток в конструкторе класса, осуществляющий запись в файл
+ * 2) Добавить поток в конструкторе класса, осуществляющий запись в файл
  */
 
 
@@ -41,19 +40,29 @@ private:
 
     std::fstream                mb_logFile {};              // Файл для записи лога
     my::String*                 mb_record {nullptr};
-    std::queue <my::String*>    mb_recordQueue {};          // Очередь указателей на строки для записи в файл
+
+    my::Queue<my::String*>       mb_recordQueue {};
+    //std::queue <my::String*>    mb_recordQueue {};          // Очередь указателей на строки для записи в файл
 
     int                         mb_numberOfRecord {1};
 
 public:
-    //==========================================================================
-    // Constructors and Destructors.
-    //==========================================================================
+    /*
+     * Constructors and Destructors.
+     */
+
+
     Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
     ~Log();
 
+
+    /*************************
+     * Overloaded operators. *
+     *************************/
+
     //==========================================================================
-    // Overloaded operators.
+    // NAME: Friend overloaded [operator<<] for <char>, <const char*>, <int>.
+    // GOAL: Write @inputValue of specified type in the log record.
     //==========================================================================
     template<typename InputType>
     friend my::Log& operator<<(my::Log& log, InputType inputValue)
@@ -63,6 +72,10 @@ public:
         return log;
     }
 
+    //==========================================================================
+    // NAME: Friend overloaded [operator<<] for functions.
+    // GOAL: Call the specified function with @log parameter.
+    //==========================================================================
     friend my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&))
     {
         functionPointer(log);
@@ -75,6 +88,10 @@ public:
     //==========================================================================
     void printLog();
 
+    //==========================================================================
+    // NAME: Friend function
+    // GOAL: It finish the current record and makes preparations for the new one.
+    //==========================================================================
     friend void endRecord(my::Log& log);
 
 
@@ -82,21 +99,24 @@ public:
 }; // #### End of Log-class ####
 
 
-/*******************************************************************************
+/*
  * Below, I've declared friend function of my::Log class in the "my" namespace.
  * Otherwise - these functions are not visible.
- ******************************************************************************/
+ *
+ */
 template<typename InputType>
 my::Log& operator<<(my::Log& log, InputType input);
 
 my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&));
 
-/*******************************************************************************
+/*
  * In the case below, my::endRecord and my::endr work with <my::Log>&, but
- * in the future, I can add other types via overloading, like "std::endl".
- ******************************************************************************/
+ * in the future, I can add other types via overloading, like an "std::endl"
+ * is released.
+ *
+ */
 void endRecord(my::Log& log);
-void (*endr)(my::Log&) = my::endRecord;
+//void (*endr)(my::Log&) = my::endRecord;
 
 
 } // ######## End of NAMESPACE_MY ########
