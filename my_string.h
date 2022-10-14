@@ -37,9 +37,10 @@ public:
     int     getCapacity() const;
     void    setCapacity(int newCapacity);
 
-
     int     getAllocationDataChunk() const;
     void    setAllocationDataChunk(int bytes);
+
+    const char* getFirstElementAdress() const;
 
     friend my::String& operator<<(my::String& string, int intNumber);
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);

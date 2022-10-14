@@ -44,7 +44,7 @@ namespace my {
         // GOAL: Function provides an access to content of the FIRST element
         //       of the Queue.
         //======================================================================
-        Type& getFront()
+        Type& getFrontContent()
         {
             return mb_frontElementOfQueue->content;
         }
@@ -53,10 +53,30 @@ namespace my {
         // NAME:
         // GOAL: Function provides an access to the LAST element of the Queue.
         //======================================================================
-        Type& getBack()
+        Type& getBackContent()
         {
             return mb_backElementOfQueue->content;
         }
+
+        //======================================================================
+        // NAME: Getter
+        // GOAL: Function returns adress of the FRONT item of list
+        //======================================================================
+        Queue::Item* getFrontAdress() const
+        {
+            return mb_frontElementOfQueue;
+        }
+
+        //======================================================================
+        // NAME: Getter
+        // GOAL: Function returns adress of the BACK item of list
+        //======================================================================
+        Queue::Item* getBackAdress() const
+        {
+            return mb_backElementOfQueue;
+        }
+
+
 
         //======================================================================
         // NAME:

@@ -2,12 +2,14 @@
 #define MY_LOG_H
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
-#include <string>
 #include "my_string.h"
 #include "my_queue.hpp"
-#include <queue>
+
+#include <chrono>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 
 
@@ -41,10 +43,15 @@ private:
     std::fstream                mb_logFile {};              // Файл для записи лога
     my::String*                 mb_record {nullptr};
 
-    my::Queue<my::String*>       mb_recordQueue {};
-    //std::queue <my::String*>    mb_recordQueue {};          // Очередь указателей на строки для записи в файл
+    my::Queue<my::String*>      mb_recordQueue {};
 
     int                         mb_numberOfRecord {1};
+
+    std::mutex                  mb_lockFirstBlock {};
+
+    std::atomic<bool>           mb_allowFileWriting {};
+
+
 
 public:
     /*
@@ -56,9 +63,9 @@ public:
     ~Log();
 
 
-    /*************************
-     * Overloaded operators. *
-     *************************/
+    /***************************************
+     ******** Overloaded operators. ********
+     ***************************************/
 
     //==========================================================================
     // NAME: Friend overloaded [operator<<] for <char>, <const char*>, <int>.
@@ -84,9 +91,17 @@ public:
 
 
     //==========================================================================
-    // Other functions.
+    // WHAT: Function print current log to stdout and free memory.
+    // WHY:  Debug
     //==========================================================================
     void printLog();
+
+
+    //==========================================================================
+    //
+    //==========================================================================
+    void writeLogToFile();
+
 
     //==========================================================================
     // NAME: Friend function

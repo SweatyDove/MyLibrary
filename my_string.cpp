@@ -64,10 +64,6 @@ my::String::String(const my::String& string)
 //==============================================================================
 my::String::~String()
 {
-    std::cout << "\n[DEBUG]:"
-              << "\nmy::String destructor has called!"
-              << std::endl;
-
     delete[] mb_firstElementAdress;
 }
 
@@ -125,6 +121,17 @@ my::String& my::operator<<(my::String& string, int intNumber)
     return string;
 
 }
+
+
+//==============================================================================
+// NAME:
+// GOAL:
+//==============================================================================
+const char* my::String::getFirstElementAdress() const
+{
+    return mb_firstElementAdress;
+}
+
 
 
 //==============================================================================
@@ -191,8 +198,7 @@ my::String& my::operator<<(my::String& string, const char symbol)
 
 
 //==============================================================================
-// NAME: Member function;
-//       Overloading [operator=]
+// NAME: Overloaded [operator=]
 // GOAL: We don't need to create a new object. Just assign to the existing one.
 //==============================================================================
 my::String& my::String::operator=(const my::String& string)
