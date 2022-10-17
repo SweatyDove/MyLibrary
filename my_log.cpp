@@ -24,6 +24,10 @@ my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
     else {} // Nothing to do
 
 
+    // Здесь нужно запустить поток, осуществляющий запись в файл
+    mb_writeToFileThread = std::thread{&my::Log::writeLogToFile, this};
+
+
 
 }
 
@@ -36,71 +40,69 @@ my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
 //==============================================================================
 my::Log::~Log()
 {
-    // #### [TEMPORARY]
-    while (0 != mb_recordQueue.getSize()) {
-        mb_record = mb_recordQueue.getFrontContent();
-        mb_recordQueue.removeFront();
-        if (mb_record != nullptr) {
-            delete mb_record;
-        }
-        else {} // Nothing to do
+    if (mb_allowFileWriting) {
+        this->endLog();
     }
-
-    // #### Need to write in the logfile all records before closing.
-    // #### Going to add it in separate thread.
-    mb_logFile.close();
+    else {} // Nothing to do
 
 }
-
-
 
 
 //==========================================================================
 // NAME:
-// GOAL: Write log to file
+// GOAL: Write one record to the file.
 //==========================================================================
+void my::Log::writeRecordToFile()
+{
+    mb_record = mb_recordQueue.getFrontContent();
+    mb_logFile.write(mb_record->getFirstElementAdress(),
+                     mb_record->getLength());
+    mb_recordQueue.removeFront();
+
+    return;
+}
+
+
+
+
+
+//==============================================================================
+// NAME:
+// GOAL: Write available log records to the file. There is an opportunity,
+//       that not all records will be written, if the last log record is
+//       being handled at the same time, when main-thread is pushing a new one.
+//==============================================================================
 void my::Log::writeLogToFile()
 {
-    int size {0};
     // #### Write all elements of list to file untill @mb_allowFileWriting
     // #### is true.
-    while (mb_allowFileWriting) {
-
-        // ## Write to file available records
-        while ((size = mb_recordQueue.getSize()) > 0) {
-
-            if (size > 1) {
-
-                mb_record = mb_recordQueue.getFrontContent();
-                mb_logFile.write(mb_record->getFirstElementAdress(),
-                                 mb_record->getLength());
-                mb_recordQueue.removeFront();
+    while (mb_allowFileWriting)
+    {
+        // ## Write to file all available records.
+        if (mb_recordQueue.getSize() > 0){
+            // Free writing all records till the last one.
+            while (mb_recordQueue.getSize() > 1) {
+                writeRecordToFile();
             }
-            else if (size == 1 && )
-        /*
-         * Отдельно не нужно освобождать память, так как когда я вызываю
-         * mb_record.removeFront -> вызывается деструктор который удаляет элемент
-         * списка. А так как в этом элементе есть локальная переменная
-         * <my::String> content - для неё конструктор вызовется автоматически.
-         *
-         * if (mb_record != nullptr) {
-         *    delete[] mb_record;
-         * }
-         * else {} // Nothing to do
-         */
-    }
+            // Write the last one record if it is available (there is not
+            // writing to the log from main-thread).
+            if (mb_lockFirstBlock.try_lock()) {
+                writeRecordToFile();
+                mb_lockFirstBlock.unlock();
+            }
+            else {} // Nothing to do
+        }
+        else {} // Nothing to do
 
-    // #### If @mb_recordQueue has (1) element, need to check mutex
-    // #### Don't need to block this thread, it can wait.
-    if (mb_lockFirstBlock.try_lock()) {
-        mb_record = mb_recordQueue.getFrontContent();
-        mb_logFile.write(mb_record->getFirstElementAdress(),
-                         mb_record->getLength());
-        mb_recordQueue.removeFront();
+        // ## Sleep
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     }
-    else {}
 
 }
+
+
+
+
 
 //==============================================================================
 // NAME: Friend function
@@ -158,6 +160,36 @@ void my::Log::printLog()
 
     std::cout << "\n########  Finish Log  ########" << std::endl;
 
+}
+
+
+
+//==============================================================================
+// GOAL: Function performs actions for writing remaining records to the file
+//       and closing this file.
+//==============================================================================
+int my::Log::endLog()
+{
+
+    // #1 Stop the file-writing-thread
+    mb_allowFileWriting.store(false);
+    mb_writeToFileThread.join();
+
+    // #2 If there is some data in the [mb_record], have to write it in the
+    // ## [mb_recordQueue].
+    if (mb_record->getLength() > 0) {
+        my::endRecord(*this);
+    }
+    else {} // Nothing to do
+
+    // #3 Write to the [mb_logFile] remaining records and close this file.
+    while (mb_recordQueue.getSize() > 0) {
+        writeRecordToFile();
+    }
+    mb_logFile.close();
+
+
+    return 0;
 }
 
 
