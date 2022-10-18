@@ -9,12 +9,12 @@
 //==============================================================================
 my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
     mb_logFile              {fileName, fileMode},
+    mb_recordNumber         {1},
     mb_allowFileWriting     {true}
 {
 
-    mb_record = new my::String("");
 
-    *mb_record << "\n#" << mb_numberOfRecord++ << '\n';
+    mb_recordTitle << "\n#" << mb_recordNumber++ << '\n';
 
     // #### Error handling
     if (!mb_logFile.good()) {
@@ -54,9 +54,10 @@ my::Log::~Log()
 //==========================================================================
 void my::Log::writeRecordToFile()
 {
-    mb_record = mb_recordQueue.getFrontContent();
-    mb_logFile.write(mb_record->getFirstElementAdress(),
-                     mb_record->getLength());
+    my::String* record {mb_recordQueue.getFrontContent()};
+
+    mb_logFile.write(record->getFirstElementAdress(),
+                     record->getLength());
     mb_recordQueue.removeFront();
 
     return;
@@ -86,9 +87,9 @@ void my::Log::writeLogToFile()
             }
             // Write the last one record if it is available (there is not
             // writing to the log from main-thread).
-            if (mb_lockFirstBlock.try_lock()) {
+            if (mb_lastRecordMutex.try_lock()) {
                 writeRecordToFile();
-                mb_lockFirstBlock.unlock();
+                mb_lastRecordMutex.unlock();
             }
             else {} // Nothing to do
         }
@@ -110,27 +111,36 @@ void my::Log::writeLogToFile()
 //==============================================================================
 void my::endRecord(my::Log& log)
 {
-    // #### Add end-line symbol in the end of the data
-    *(log.mb_record) << '\n';
+    my::String *record {new my::String("")};
+
+
+    // #### Add end-line symbol in the end of the [mb_recordContent]
+    log.mb_recordContent << '\n';
+
+    // #### Create full-record entity, that will be pushed into the
+    // #### [mb_recordQueue].
+    *record = log.mb_recordTitle + log.mb_recordContent;
 
     // #### Have no issues if the size of queue > 1
     if (log.mb_recordQueue.getSize() > 1) {
-        log.mb_recordQueue.pushBack(log.mb_record);
+        log.mb_recordQueue.pushBack(record);
     }
     // #### If there is 1 (or 0) elements in queue, we need to block writing
-    // #### data in log-file, 'cause access to the first block of list is
+    // #### data in log-file, 'cause access to the last block of list is
     // #### a critical section.
     else {
-        // #1 Block access to the first item of queue.
-        log.mb_lockFirstBlock.lock();
+        // #1 Block access to the last item of queue.
+        log.mb_lastRecordMutex.lock();
 
         // #2 Write data and unlock mutex.
-        log.mb_recordQueue.pushBack(log.mb_record);
-        log.mb_lockFirstBlock.unlock();
+        log.mb_recordQueue.pushBack(record);
+        log.mb_lastRecordMutex.unlock();
     }
 
-    log.mb_record = new my::String("");
-    *(log.mb_record) << "\n#" << log.mb_numberOfRecord++ << '\n';
+    log.mb_recordTitle.softClear();
+    log.mb_recordTitle << "\n#" << log.mb_recordNumber++ << '\n';
+
+    log.mb_recordContent.softClear();
 
     return;
 }
@@ -140,27 +150,27 @@ void my::endRecord(my::Log& log)
 //==============================================================================
 // WHAT: Printing the log into std::cout and free it.
 //==============================================================================
-void my::Log::printLog()
-{
-    std::cout << "########  Start Log  ########\n";
-
-    while (0 != mb_recordQueue.getSize()) {
-        // Выводим первую строку из очереди
-        //std::cout << "\nCurrent log size = " << mb_stringPtrQueue.size() << std::endl;
-        mb_record = mb_recordQueue.getFrontContent();
-        std::cout << *mb_record;
-
-        // Очищаем память, которая выделена под первую строку
-        mb_recordQueue.removeFront();
-        if (mb_record != nullptr) {
-            delete mb_record;
-        }
-        else {} // Nothing to do
-    }
-
-    std::cout << "\n########  Finish Log  ########" << std::endl;
-
-}
+//void my::Log::printLog()
+//{
+//    std::cout << "########  Start Log  ########\n";
+//
+//    while (0 != mb_recordQueue.getSize()) {
+//        // Выводим первую строку из очереди
+//        //std::cout << "\nCurrent log size = " << mb_stringPtrQueue.size() << std::endl;
+//        mb_record = mb_recordQueue.getFrontContent();
+//        std::cout << *mb_record;
+//
+//        // Очищаем память, которая выделена под первую строку
+//        mb_recordQueue.removeFront();
+//        if (mb_record != nullptr) {
+//            delete mb_record;
+//        }
+//        else {} // Nothing to do
+//    }
+//
+//    std::cout << "\n########  Finish Log  ########" << std::endl;
+//
+//}
 
 
 
@@ -177,7 +187,7 @@ int my::Log::endLog()
 
     // #2 If there is some data in the [mb_record], have to write it in the
     // ## [mb_recordQueue].
-    if (mb_record->getLength() > 0) {
+    if (mb_recordContent.getLength() > 0) {
         my::endRecord(*this);
     }
     else {} // Nothing to do

@@ -69,6 +69,36 @@ my::String::~String()
 
 
 
+
+//==============================================================================
+// NAME: Friend binary [operator+] for <my::String> and <my::String>
+// GOAL: Create new <my::String> object via concatenation its arguments.
+//==============================================================================
+my::String& my::operator+(const my::String& leftString, const my::String& rightString)
+{
+    my::String* string {new my::String("")};
+    *string << leftString.mb_firstElementAdress << rightString.mb_firstElementAdress;
+
+    return *string;
+
+
+}
+
+//==============================================================================
+// NAME: Member function
+// GOAL: Soft clear the string
+//==============================================================================
+void my::String::softClear()
+{
+    *mb_firstElementAdress = '\0';
+    mb_length = 0;
+
+    return;
+}
+
+
+
+
 //==============================================================================
 // NAME: Overloaded [operator<<] for <int> type.
 // GOAL: Writing integer @intNumber as char data into the my::String object.
@@ -121,17 +151,6 @@ my::String& my::operator<<(my::String& string, int intNumber)
     return string;
 
 }
-
-
-//==============================================================================
-// NAME:
-// GOAL:
-//==============================================================================
-const char* my::String::getFirstElementAdress() const
-{
-    return mb_firstElementAdress;
-}
-
 
 
 //==============================================================================
@@ -198,8 +217,9 @@ my::String& my::operator<<(my::String& string, const char symbol)
 
 
 //==============================================================================
-// NAME: Overloaded [operator=]
-// GOAL: We don't need to create a new object. Just assign to the existing one.
+// NAME: Copy assignment via overloaded [operator=].
+// GOAL: We don't need to create a new object. Just assign to the existing one
+//       doing a deep copy.
 //==============================================================================
 my::String& my::String::operator=(const my::String& string)
 {
@@ -233,6 +253,33 @@ my::String& my::String::operator=(const my::String& string)
 
     return *this;
 }
+
+
+//==============================================================================
+// NAME: Move assignment via overloaded [operator=].
+// GOAL: Transfer ownership from
+//==============================================================================
+my::String& my::String::operator=(my::String&& rString)
+{
+    // #1 Self-assignment checking
+    if (&rString == this) {
+        return *this;
+    }
+    else {} // Nothing to do
+
+    delete[] mb_firstElementAdress;
+
+    mb_firstElementAdress = rString.mb_firstElementAdress;
+    rString.mb_firstElementAdress = nullptr;
+
+    mb_length = rString.mb_length;
+    mb_capacity = rString.mb_capacity;
+
+    return *this;
+}
+
+
+
 
 //==============================================================================
 // NAME: Friend function;
@@ -347,7 +394,7 @@ int my::String::getCapacity() const
 //==============================================================================
 void my::String::setCapacity(int newCapacity)
 {
-    assert(newCapacity < mb_length + 1 && "Haven't implemented yet.");
+    assert((newCapacity < (mb_length + 1)) && "Haven't implemented yet.");
 
     char* newAdress {nullptr};                   // Pointer to start of new area
     char* newPtr    {nullptr};                   // Dynamic pointer of new area
@@ -385,15 +432,6 @@ void my::String::setCapacity(int newCapacity)
 }
 
 
-//==============================================================================
-//
-//==============================================================================
-
-
-//==============================================================================
-//
-//==============================================================================
-
 
 //==============================================================================
 //
@@ -412,4 +450,11 @@ void my::String::setAllocationDataChunk(int bytes)
     return;
 }
 
-
+//==============================================================================
+// NAME:
+// GOAL:
+//==============================================================================
+const char* my::String::getFirstElementAdress() const
+{
+    return mb_firstElementAdress;
+}

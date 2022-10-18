@@ -28,8 +28,17 @@ public:
     ~String();
 
     String(const my::String& string);
-    my::String& operator=(const my::String& string);
 
+    // Copy assignment
+    // Here we do deep copy
+    my::String& operator=(const my::String& lString);
+
+    // Move assignment
+    // Here we transfer ownership
+    my::String& operator=(my::String&& rString);
+
+    void    softClear();
+    void    hardClear();
 
     int     getLength() const;
     void    setLength(int length);
@@ -46,6 +55,8 @@ public:
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);
     friend my::String& operator<<(my::String& string, const char symbol);
 
+    friend my::String& operator+(const my::String& leftString, const my::String& rightString);
+
 
 
     friend std::ostream& operator<<(std::ostream& out, const String& string);
@@ -57,6 +68,7 @@ my::String& operator<<(my::String& string, int intNumber);
 my::String& operator<<(my::String& string, const char* charDataBuffer);
 my::String& operator<<(my::String& string, const char symbol);
 
+my::String& operator+(const my::String& leftString, const my::String& rightString);
 
 
 

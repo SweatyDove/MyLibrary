@@ -45,18 +45,18 @@ public:
 
 private:
 
-    std::fstream                mb_logFile {};              // Файл для записи лога
-    my::String*                 mb_record {nullptr};
+    std::fstream                mb_logFile {};              // File-stream connected with the file for writing
+    int                         mb_recordNumber {};         // Number of current record in this log entity
+    my::String                  mb_recordTitle   {};        // Just temporary object for the record-title
+    my::String                  mb_recordContent {};        // Temporary object for the record-content
 
-    my::Queue<my::String*>      mb_recordQueue {};
+    my::Queue<my::String*>      mb_recordQueue {};          // <my::String*> object will be formed from the [mb_recordTitle]
+                                                            // and [mb_recordContent] and pushed into this [mb_recordQueue]
 
-    int                         mb_numberOfRecord {1};
-
-    std::mutex                  mb_lockFirstBlock {};       // It manages access to the last record
-
+    std::mutex                  mb_lastRecordMutex {};       // It manages access to the last record
     std::atomic<bool>           mb_allowFileWriting {};     // Variable for the tread synchronization
 
-    std::thread                 mb_writeToFileThread {};
+    std::thread                 mb_writeToFileThread {};    // Off-thread that is writing records to the file
 
 
 
@@ -81,7 +81,7 @@ public:
     template<typename InputType>
     friend my::Log& operator<<(my::Log& log, InputType inputValue)
     {
-        *(log.mb_record) << inputValue;
+        log.mb_recordContent << inputValue;
 
         return log;
     }
@@ -101,7 +101,7 @@ public:
     // WHAT: Function print current log to stdout and free memory.
     // WHY:  Debug
     //==========================================================================
-    void printLog();
+    //void printLog();
 
 
     //==========================================================================
