@@ -100,10 +100,10 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
 
 
 
-//===============================================================================
+//==============================================================================
 // Function just invert elements of C-buffer @buffer.
 // Buffer has least one element: '\0'.
-//===============================================================================
+//==============================================================================
 int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 {
     char* a {buffer + fromIndex};
@@ -121,13 +121,16 @@ int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
     return 0;
 }
 
-//===============================================================================
-// NAME:
-// GOAL: Copy string (substring) from @sourceAdress into the string (substring)
-//       @destinationAdress.
-//       If (@numberOfSymbols == 0) -> copy symbols till met '\0' in the source.
-//       Else -> copy @numberOfSymbols symbols.
-//===============================================================================
+//==============================================================================
+// What: Global function
+// Why:  Copy string (substring) from the [sourceAdress] into the string
+//       (substring) at the [destinationAdress].
+//
+//       1) If [numberOfSymbols] == 0, then copy all symbols untill  the meeting
+//       '\0' in the source string.
+//       2) If [numberOfSymbols] > 0, then copy specified number of symbols plus
+//          null-terminator '\0'.
+//==============================================================================
 int my::copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols)
 {
     const char* srcPtr   {sourceAdress};
@@ -140,6 +143,7 @@ int my::copyString(const char *sourceAdress, char *destinationAdress, int number
             ++destPtr;
             ++srcPtr;
         }
+        *destPtr = '\0';
     }
     // #### Copy all symbols till '\0'
     else {

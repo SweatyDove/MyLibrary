@@ -24,7 +24,7 @@ private:
     int     mb_allocationDataChunk {64};            // Default size of portion while allocate memory in the heap
 public:
     String() = default;
-    String(const char* string);
+    explicit String(const char* string);
     ~String();
 
     String(const my::String& string);
@@ -35,25 +35,25 @@ public:
 
     // Move assignment
     // Here we transfer ownership
-    my::String& operator=(my::String&& rString);
+    my::String& operator=(my::String&& rString) noexcept;
 
     void    softClear();
-    void    hardClear();
+    //void    hardClear();
 
-    int     getLength() const;
-    void    setLength(int length);
+    [[nodiscard]]   int     getLength() const;
+                    void    setLength(int length);
 
-    int     getCapacity() const;
-    void    setCapacity(int newCapacity);
+    [[nodiscard]]   int     getCapacity() const;
+                    void    setCapacity(int newCapacity);
 
-    int     getAllocationDataChunk() const;
-    void    setAllocationDataChunk(int bytes);
+    [[nodiscard]]   int     getAllocationDataChunk() const;
+                    void    setAllocationDataChunk(int bytes);
 
-    const char* getFirstElementAdress() const;
+    [[nodiscard]]   const char* getFirstElementAdress() const;
 
     friend my::String& operator<<(my::String& string, int intNumber);
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);
-    friend my::String& operator<<(my::String& string, const char symbol);
+    friend my::String& operator<<(my::String& string, char symbol);
 
     friend my::String& operator+(const my::String& leftString, const my::String& rightString);
 
@@ -66,7 +66,7 @@ public:
 
 my::String& operator<<(my::String& string, int intNumber);
 my::String& operator<<(my::String& string, const char* charDataBuffer);
-my::String& operator<<(my::String& string, const char symbol);
+my::String& operator<<(my::String& string, char symbol);
 
 my::String& operator+(const my::String& leftString, const my::String& rightString);
 

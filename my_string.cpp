@@ -165,6 +165,7 @@ my::String& my::operator<<(my::String& string, const char* charDataBuffer)
     // #### Calculate length of @charDataBuffer
     const char* bufferPtr       {charDataBuffer};
     int         lengthOfBuffer  {0};
+
     for (int ii {0}; *bufferPtr != '\0'; ++ii, ++bufferPtr) {
         ++lengthOfBuffer;
     }
@@ -259,7 +260,7 @@ my::String& my::String::operator=(const my::String& string)
 // NAME: Move assignment via overloaded [operator=].
 // GOAL: Transfer ownership from
 //==============================================================================
-my::String& my::String::operator=(my::String&& rString)
+my::String& my::String::operator=(my::String&& rString) noexcept
 {
     // #1 Self-assignment checking
     if (&rString == this) {
@@ -389,12 +390,13 @@ int my::String::getCapacity() const
 }
 
 //==============================================================================
-// Member function allocate new my::String object with specified capacity and
-// copy primary string into the new one.
+// WHAT: Member function
+// WHY:  Allocates new <my::String> object with specified capacity and copies
+//       primary string into the new one.
 //==============================================================================
 void my::String::setCapacity(int newCapacity)
 {
-    assert((newCapacity < (mb_length + 1)) && "Haven't implemented yet.");
+    //assert((newCapacity < (mb_length + 1)) && "Haven't implemented yet.");
 
     char* newAdress {nullptr};                   // Pointer to start of new area
     char* newPtr    {nullptr};                   // Dynamic pointer of new area
@@ -421,7 +423,7 @@ void my::String::setCapacity(int newCapacity)
 
     // #### Copy original string in the new location.
     for (int ii {0}; ii < mb_capacity; ++ii) {
-        *newPtr++ = (ii < mb_length) ? *thisPtr++ : '\0';
+        *newPtr++ = (ii < mb_length && thisPtr != nullptr) ? *thisPtr++ : '\0';
     }
 
     // #### Delete old data
