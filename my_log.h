@@ -61,12 +61,14 @@ private:
 
 
 public:
-    /*
-     * Constructors and Destructors.
-     */
+    //==========================================================================
+    // NAME: Constructor
+    //==========================================================================
+    explicit Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
 
-
-    Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
+    //==========================================================================
+    // NAME: Destructor
+    //==========================================================================
     ~Log();
 
 
@@ -125,7 +127,7 @@ public:
 
     //==========================================================================
     // NAME: Friend function
-    // GOAL: It finish the current record and makes preparations for the new one.
+    // GOAL: It finishes the current record and makes preparations for the new one.
     //==========================================================================
     friend void endRecord(my::Log& log);
 
@@ -137,7 +139,6 @@ public:
 /*
  * Below, I've declared friend function of my::Log class in the "my" namespace.
  * Otherwise - these functions are not visible.
- *
  */
 template<typename InputType>
 my::Log& operator<<(my::Log& log, InputType input);
@@ -146,9 +147,8 @@ my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&));
 
 /*
  * In the case below, my::endRecord and my::endr work with <my::Log>&, but
- * in the future, I can add other types via overloading, like an "std::endl"
+ * in the future, I can add other types via overloading, like a "std::endl"
  * is released.
- *
  */
 void endRecord(my::Log& log);
 //void (*endr)(my::Log&) = my::endRecord;

@@ -1,15 +1,24 @@
+
+
+/******************************************************************************
+ * This file describes general utilities for different things.
+ ******************************************************************************/
 #include "my_utilities.h"
 
 
 
-
-//===============================================================================
-//
-//===============================================================================
-
-
 //==============================================================================
-// Function reads an input line (till '\n' inclusively) into the buffer @buffer.
+// Function reads an input line (till '\n' inclusively) into the
+// buffer [buffer].
+//
+// If there is not enough space for whole line in the buffer - just end it with
+// the null-terminator. In the future it will allow us to concatenate line with
+// the next one(s).
+//
+// Else we will end up with the line, that is terminated by symbols:
+// '\n' and '\0'.
+//
+// Function returns 0 in case of success.
 //==============================================================================
 int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
 {
@@ -18,7 +27,7 @@ int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
 
     bool    skipLeadingSpaces {true};
 
-    while (((ch = std::cin.get()) != '\n') && (!std::cin.eof())) {
+    while (((ch = static_cast<char>(std::cin.get())) != '\n') && (!std::cin.eof())) {
 
         // #1 Skip the leading whitespaces
         if (skipLeadingSpaces && (ch == ' ' || ch == '\t')) {
@@ -27,23 +36,30 @@ int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
         else {} // Nothing to do
         skipLeadingSpaces = false;
 
-        *bufferPtr++ = ch;
-        if (--sizeOfBuffer <= 0) {
+        // #2 Have to reserve 2 positions in the buffer (for '\n' and '\0').
+        if (--sizeOfBuffer - 1 <= 0) {
             std::cerr << "\n[WARNING]::[my::readLineToBuffer()]:"
                       << "\nFree space in the buffer is over. Perhaps, not all data from the input stream"
                       << "\nwere written..."
                       << std::endl;
+            // # In the case of the buffer overflowing - return an extracted
+            // # character back into the <std::istream> object.
+            std::cin.unget();
             break;
         }
-        else {} // Nothing to do
+        else {
+            *bufferPtr++ = ch;
+        }
     }
 
+    // #### If the new line is finished by the '\n' symbol - it's OK.
     if (ch == '\n') {
         *bufferPtr++ = '\n';
         *bufferPtr = '\0';
     }
+    // #### Else if not enough space in the [buffer] - just add '\0'.
     else {
-        *bufferPtr = '\n';
+        *bufferPtr = '\0';
     }
 
     return 0;
@@ -76,15 +92,15 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
     // #### Have to reserve two positions in the @buffer (for the last "remainder"
     // #### and '\0').
     while ((ii < sizeOfBuffer - 2) && (quotient >= base)) {
-        *bufferPtr++ = (quotient % base) + '0';
+        *bufferPtr++ = static_cast<char>((quotient % base) + '0');
 
         quotient /= base;
         ++ii;
     }
 
-    // #### It's OK if we exit for()-loop by second condition.
+    // #### It's OK if we exit for-loop by second condition.
     if (quotient < base) {
-        *bufferPtr++ = quotient + '0';
+        *bufferPtr++ = static_cast<char>(quotient + '0');
         *bufferPtr = '\0';
 
         invertBuffer(buffer, 0, ii);

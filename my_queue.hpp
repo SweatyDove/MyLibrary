@@ -10,8 +10,8 @@ namespace my {
 
     public:
         struct Item {
-            Queue::Item* lastItem {nullptr};         // Adress of the NEXT element of the queue
-            Queue::Item* nextItem {nullptr};         // Adress of the LAST element of the Queue
+            Queue::Item* lastItem;         // Adress of the NEXT element of the queue
+            Queue::Item* nextItem;         // Adress of the LAST element of the Queue
 
             Type content;
         };
@@ -88,6 +88,8 @@ namespace my {
             // #### Allocate space for the new element of the Queue and bind it
             // #### with the previous one.
             Queue::Item* newItem {new Queue<Type>::Item};
+            newItem->lastItem = nullptr;
+            newItem->nextItem = nullptr;
             newItem->content = content;
 
             // #1 Queue is empty
@@ -102,8 +104,6 @@ namespace my {
             }
 
             mb_sizeOfQueue++;
-
-            return;
 
         }
 
@@ -135,15 +135,13 @@ namespace my {
                 --mb_sizeOfQueue;
             }
 
-            return;
-
         }
 
         //======================================================================
         // NAME:
         // GOAL: Remove the front element from the Queue
         //======================================================================
-        int getSize() const
+        [[nodiscard]] int getSize() const
         {
             return mb_sizeOfQueue;
         }

@@ -59,8 +59,6 @@ void my::Log::writeRecordToFile()
     mb_logFile.write(record->getFirstElementAdress(),
                      record->getLength());
     mb_recordQueue.removeFront();
-
-    return;
 }
 
 
@@ -107,7 +105,7 @@ void my::Log::writeLogToFile()
 
 //==============================================================================
 // NAME: Friend function
-// GOAL: It finish the current record and makes preparations for the new one.
+// GOAL: It finishes the current record and makes preparations for the new one.
 //==============================================================================
 void my::endRecord(my::Log& log)
 {
@@ -142,7 +140,6 @@ void my::endRecord(my::Log& log)
 
     log.mb_recordContent.softClear();
 
-    return;
 }
 
 

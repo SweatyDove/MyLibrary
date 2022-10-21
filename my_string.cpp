@@ -65,6 +65,7 @@ my::String::String(const my::String& string)
 my::String::~String()
 {
     delete[] mb_firstElementAdress;
+    mb_firstElementAdress = nullptr;
 }
 
 
@@ -92,8 +93,6 @@ void my::String::softClear()
 {
     *mb_firstElementAdress = '\0';
     mb_length = 0;
-
-    return;
 }
 
 
@@ -234,10 +233,9 @@ my::String& my::String::operator=(const my::String& string)
     else {} // Nothing to do
 
     // #2 Delete data in the left-string
-    if (mb_firstElementAdress != nullptr) {
-        delete[] mb_firstElementAdress;
-    }
-    else {} // Nothing to do
+    delete[] mb_firstElementAdress;
+    mb_firstElementAdress = nullptr;
+
 
     // #3 Assign data from right-string to left-string
     mb_length = string.mb_length;
@@ -269,6 +267,7 @@ my::String& my::String::operator=(my::String&& rString) noexcept
     else {} // Nothing to do
 
     delete[] mb_firstElementAdress;
+    mb_firstElementAdress = nullptr;
 
     mb_firstElementAdress = rString.mb_firstElementAdress;
     rString.mb_firstElementAdress = nullptr;
@@ -296,15 +295,10 @@ std::istream& my::operator>>(std::istream& in, my::String& string)
     int   length    {0};
     int   capacity  {allocPortionSize};
 
-    // #### Temporary variables that are destined for the case, when there are
-    // #### not enough free space in the @inputBuffer and we need to allocate
-    // #### more memory
-    char* tempAdress    {nullptr};
-    char* tempPtr       {nullptr};
 
 
     bool skipLeadingSpaces {true};
-    while ((ch = in.get()) != '\n' && !in.eof()) {
+    while ((ch = static_cast<char>(in.get())) != '\n' && !in.eof()) {
 
         // #1 Skip the leading whitespaces
         if (skipLeadingSpaces && (ch == ' ' || ch == '\t')) {
@@ -323,6 +317,9 @@ std::istream& my::operator>>(std::istream& in, my::String& string)
             ++bufferPtr;
         }
         else {
+            char* tempAdress    {nullptr};
+            char* tempPtr       {nullptr};
+
             capacity += allocPortionSize;
 
             tempPtr = tempAdress = bufferAdress;                // Save the old pointers
@@ -378,7 +375,6 @@ int my::String::getLength() const
 void my::String::setLength(int length)
 {
     mb_length = length;
-    return;
 }
 
 //===============================================================================
@@ -412,12 +408,12 @@ void my::String::setCapacity(int newCapacity)
         std::cerr << "\n[ERROR]::[my::String::setCapacity]:"
                   << "Couldn't allocate memory in the heap. Operator 'new' threw an exception"
                   << std::endl;
-        /*
+        /******************************************************************
          * [QUESTION]: Should I free memory before exit?
          *             It seems that I haven't to catch an exception here.
          *             Only if I can/going to do smth with it.
          *             Just let the exception fall back to main.
-         */
+         ******************************************************************/
         exit(1);
     }
 
@@ -429,8 +425,6 @@ void my::String::setCapacity(int newCapacity)
     // #### Delete old data
     delete[] mb_firstElementAdress;
     mb_firstElementAdress = newAdress;
-
-    return;
 }
 
 
@@ -449,7 +443,6 @@ int my::String::getAllocationDataChunk() const
 void my::String::setAllocationDataChunk(int bytes)
 {
     mb_allocationDataChunk = bytes;
-    return;
 }
 
 //==============================================================================
