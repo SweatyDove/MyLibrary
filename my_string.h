@@ -8,8 +8,6 @@
 
 //==============================================================================
 // Comments:
-//  1) Don't need last element adress (it is equal to mb_ptr + length)
-//
 //==============================================================================
 
 namespace my {
@@ -24,20 +22,45 @@ private:
     int     mb_allocationDataChunk {64};            // Default size of portion while allocate memory in the heap
 public:
     String() = default;
-    explicit String(const char* string);
+
+    //==========================================================================
+    // NAME: Constructor from <const char*> type.
+    // GOAL: Didn't mark it is as explicit, because it is often used for the
+    //       implicit conversions (like [std::string] from <const char*>).
+    //==========================================================================
+    String(const char* string);
     ~String();
 
     String(const my::String& string);
 
-    // Copy assignment
-    // Here we do deep copy
+    //==========================================================================
+    // NAME: Copy assignment via overloaded [operator=].
+    // GOAL: We don't need to create a new object. Just assign to the existing
+    //       one, doing a deep copy.
+    //==========================================================================
     my::String& operator=(const my::String& lString);
 
-    // Move assignment
-    // Here we transfer ownership
+
+    //==========================================================================
+    // NAME: Move assignment via overloaded [operator=].
+    // GOAL: Transfer ownership.
+    //==========================================================================
     my::String& operator=(my::String&& rString) noexcept;
 
-    void    softClear();
+
+    //==========================================================================
+    // NAME: Assignment overloaded [operator=] for <const char*> type.
+    // GOAL:
+    //==========================================================================
+    my::String& operator=(const char* stringLiteral);
+
+
+
+
+
+
+    void      clear();
+    //void    softClear();
     //void    hardClear();
 
     [[nodiscard]]   int     getLength() const;

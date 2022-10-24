@@ -3,10 +3,11 @@
 #include "my_utilities.h"
 
 
-//===============================================================================
-// NAME: Constructor
-// GOAL: Construct a my::String object from a raw buffer of characters
-//===============================================================================
+//==========================================================================
+// NAME: Constructor from <const char*> type.
+// GOAL: Didn't mark it is as explicit, because it is often used for the
+//       implicit conversions (like [std::string] from <const char*>).
+//==========================================================================
 my::String::String(const char* bufferOfChars)
 {
 
@@ -87,12 +88,16 @@ my::String& my::operator+(const my::String& leftString, const my::String& rightS
 
 //==============================================================================
 // NAME: Member function
-// GOAL: Soft clear the string
+// GOAL: Clear the <my::String> object without deallocation memory.
+//       Just write '\0' in each significant symbol.
 //==============================================================================
-void my::String::softClear()
+void my::String::clear()
 {
-    *mb_firstElementAdress = '\0';
-    mb_length = 0;
+    char*   tempPtr {mb_firstElementAdress};
+
+    while (mb_length-- > 0) {
+        *tempPtr++ = '\0';
+    }
 }
 
 
@@ -280,6 +285,24 @@ my::String& my::String::operator=(my::String&& rString) noexcept
 
 
 
+//==============================================================================
+// NAME: Assignment overloaded [operator=] for <const char*> type.
+// GOAL:
+//==============================================================================
+my::String& my::String::operator=(const char* stringLiteral)
+{
+    // #### Clear the current <my::String> object
+    this->clear();
+
+    // #### Write [stringLiteral] to [*this]
+    *this << stringLiteral;
+
+    return *this;
+}
+
+
+
+
 
 //==============================================================================
 // NAME: Friend function;
@@ -347,7 +370,7 @@ std::istream& my::operator>>(std::istream& in, my::String& string)
 //===============================================================================
 // Overloaded [operator<<]
 //===============================================================================
-std::ostream& my::operator<<(std::ostream& out, const String& string)
+std::ostream& my::operator<<(std::ostream& out, const my::String& string)
 {
     int     length  {string.mb_length};
     char*   thisPtr {string.mb_firstElementAdress};
