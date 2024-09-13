@@ -1,9 +1,15 @@
 #include "my_array.h"
 
 
-
-
-my::Array::Array()
+//==================================================================================================
+//         TYPE:    Constructor
+//   PARAMETERS:    --------
+// RETURN VALUE:    --------
+//  DESCRIPTION:    --------
+//     COMMENTS:    --------
+//==================================================================================================
+template <typename Type, int size>
+my::Array<Type, size>::Array()
 {
 
 }

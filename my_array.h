@@ -12,7 +12,12 @@ namespace my {
 //  DESCRIPTION:    Class, representing my version of <std::array>
 //     COMMENTS:    --------
 //==================================================================================================
+template <typename Type, int size>
 class Array {
+private:
+    int mb_length {0};
+    Type* mb_data {nullptr};
+
 public:
     Array();
 };
