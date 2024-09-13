@@ -4,7 +4,7 @@
 
 
 //==========================================================================
-// NAME: Constructor from <const char*> type.
+// TYPE: Constructor from <const char*> type.
 // GOAL: Didn't mark it is as explicit, because it is often used for the
 //       implicit conversions (like [std::string] from <const char*>).
 //==========================================================================
@@ -38,7 +38,7 @@ my::String::String(const char* bufferOfChars)
 
 
 //===============================================================================
-// NAME: Copy constructor
+// TYPE: Copy constructor
 // GOAL: CREATING a new object (in case of assignment - new object already EXISTS)
 //       and copy input @string into created (@this) string.
 //===============================================================================
@@ -60,7 +60,7 @@ my::String::String(const my::String& string)
 
 
 //==============================================================================
-// NAME: Destructor
+// TYPE: Destructor
 // GOAL: Destruct @this object with the deallocation of memory.
 //==============================================================================
 my::String::~String()
@@ -73,7 +73,7 @@ my::String::~String()
 
 
 //==============================================================================
-// NAME: Friend binary [operator+] for <my::String> and <my::String>
+// TYPE: Friend binary [operator+] for <my::String> and <my::String>
 // GOAL: Create new <my::String> object via concatenation its arguments.
 //==============================================================================
 my::String& my::operator+(const my::String& leftString, const my::String& rightString)
@@ -87,7 +87,7 @@ my::String& my::operator+(const my::String& leftString, const my::String& rightS
 }
 
 //==============================================================================
-// NAME: Member function
+// TYPE: Member function
 // GOAL: Clear the <my::String> object without deallocation memory.
 //       Just write '\0' in each significant symbol.
 //==============================================================================
@@ -95,16 +95,17 @@ void my::String::clear()
 {
     char*   tempPtr {mb_firstElementAdress};
 
-    while (mb_length-- > 0) {
+    for (int ii {0}; ii < mb_length; ++ii) {
         *tempPtr++ = '\0';
     }
+    mb_length = 0;
 }
 
 
 
 
 //==============================================================================
-// NAME: Overloaded [operator<<] for <int> type.
+// TYPE: Overloaded [operator<<] for <int> type.
 // GOAL: Writing integer @intNumber as char data into the my::String object.
 //==============================================================================
 my::String& my::operator<<(my::String& string, int intNumber)
@@ -158,7 +159,7 @@ my::String& my::operator<<(my::String& string, int intNumber)
 
 
 //==============================================================================
-// NAME: Overloaded [operator<<] for <const char*> type.
+// TYPE: Overloaded [operator<<] for <const char*> type.
 // GOAL: Writing buffer of <char> into the my::String object.
 //==============================================================================
 my::String& my::operator<<(my::String& string, const char* charDataBuffer)
@@ -194,7 +195,7 @@ my::String& my::operator<<(my::String& string, const char* charDataBuffer)
 
 
 //==============================================================================
-// NAME: Friend function.
+// TYPE: Friend function.
 //       Overloaded [operator<<] for <const char> type.
 // GOAL: Writing single <char> into the my::String object.
 //==============================================================================
@@ -221,8 +222,22 @@ my::String& my::operator<<(my::String& string, const char symbol)
 }
 
 
+
 //==============================================================================
-// NAME: Copy assignment via overloaded [operator=].
+// TYPE: Overloaded [operator<<] for <const my::String&> type.
+// GOAL:
+//==============================================================================
+my::String& my::operator<<(my::String& string, const my::String& inputString)
+{
+    string << inputString.getFirstElementAdress();
+
+    return string;
+}
+
+
+
+//==============================================================================
+// TYPE: Copy assignment via overloaded [operator=].
 // GOAL: We don't need to create a new object. Just assign to the existing one
 //       doing a deep copy.
 //==============================================================================
@@ -260,7 +275,7 @@ my::String& my::String::operator=(const my::String& string)
 
 
 //==============================================================================
-// NAME: Move assignment via overloaded [operator=].
+// TYPE: Move assignment via overloaded [operator=].
 // GOAL: Transfer ownership from
 //==============================================================================
 my::String& my::String::operator=(my::String&& rString) noexcept
@@ -286,7 +301,7 @@ my::String& my::String::operator=(my::String&& rString) noexcept
 
 
 //==============================================================================
-// NAME: Assignment overloaded [operator=] for <const char*> type.
+// TYPE: Assignment overloaded [operator=] for <const char*> type.
 // GOAL:
 //==============================================================================
 my::String& my::String::operator=(const char* stringLiteral)
@@ -305,7 +320,7 @@ my::String& my::String::operator=(const char* stringLiteral)
 
 
 //==============================================================================
-// NAME: Friend function;
+// TYPE: Friend function;
 //       Overloaded [operator>>]
 //==============================================================================
 std::istream& my::operator>>(std::istream& in, my::String& string)
@@ -367,13 +382,29 @@ std::istream& my::operator>>(std::istream& in, my::String& string)
 }
 
 
-//===============================================================================
-// Overloaded [operator<<]
-//===============================================================================
+
+//==================================================================================================
+//         TYPE:    Overloaded operator<<
+//   PARAMETERS:    --------
+// RETURN VALUE:    --------
+//  DESCRIPTION:    --------
+//     COMMENTS:    With simple handling of output alignment
+//==================================================================================================
 std::ostream& my::operator<<(std::ostream& out, const my::String& string)
 {
     int     length  {string.mb_length};
     char*   thisPtr {string.mb_firstElementAdress};
+
+    // ######## Handle the case, when "std::setw()" has been used for <my::String> object
+    auto width = out.width();                       // Get required width of the output field
+    if (width > length) {
+        auto fillChar = out.fill();                 // Get the character-filler
+        out << std::setw(0);                             // Reset "old" allignment 'cause it will be applied for the 1-st << operation
+        for (int ii {0}; ii < width - length; ++ii) {
+            out << fillChar;
+        }
+    }
+    else {} // Nothing to do
 
     // Output symbols except last '\0'
     while (length-- > 0) {
@@ -410,22 +441,24 @@ int my::String::getCapacity() const
 
 //==============================================================================
 // WHAT: Member function
-// WHY:  Allocates new <my::String> object with specified capacity and copies
-//       primary string into the new one.
+// WHY:  Allocates new raw char buffer with new capacity, copy original data
+//       into the new buffer and delete[] original buffer.
 //==============================================================================
 void my::String::setCapacity(int newCapacity)
 {
-    //assert((newCapacity < (mb_length + 1)) && "Haven't implemented yet.");
+    //assert(newCapacity < mb_length + 1 && "Haven't implemented yet.");
 
-    char* newAdress {nullptr};                   // Pointer to start of new area
-    char* newPtr    {nullptr};                   // Dynamic pointer of new area
-    char* thisPtr   {mb_firstElementAdress};     // Dynamic pointer to old area
-
+    // ###1 Set new capacity to [*this] object.
     mb_capacity = newCapacity;
 
-    // #### Allocate new portion of memory in the heap
+
+    // ###2 Allocate new portion of memory in the heap
+    char* newAdress {nullptr};                   // Pointer to the start of a new area
+    char* newPtr    {nullptr};                   // Dynamic pointer of the new area
+
     try {
-        newPtr = newAdress = new char[mb_capacity];
+        newAdress = new char[mb_capacity];
+        newPtr = newAdress;
     }
     catch (std::bad_alloc&) {
         std::cerr << "\n[ERROR]::[my::String::setCapacity]:"
@@ -440,12 +473,15 @@ void my::String::setCapacity(int newCapacity)
         exit(1);
     }
 
-    // #### Copy original string in the new location.
+
+    // ###3 Copy original data into the new area
+    char* thisPtr   {mb_firstElementAdress};     // Dynamic pointer to the old area
+
     for (int ii {0}; ii < mb_capacity; ++ii) {
         *newPtr++ = (ii < mb_length && thisPtr != nullptr) ? *thisPtr++ : '\0';
     }
 
-    // #### Delete old data
+    // ###4 Delete old data
     delete[] mb_firstElementAdress;
     mb_firstElementAdress = newAdress;
 }
@@ -469,7 +505,7 @@ void my::String::setAllocationDataChunk(int bytes)
 }
 
 //==============================================================================
-// NAME:
+// TYPE:
 // GOAL:
 //==============================================================================
 const char* my::String::getFirstElementAdress() const

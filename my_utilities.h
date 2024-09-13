@@ -33,7 +33,7 @@ int intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 int invertBuffer(char* buffer, int fromElement, int toElement);
 
 //===============================================================================
-// NAME:
+// TYPE:
 // GOAL: Copy string (substring) from @sourceAdress into the string (substring)
 //       @destinationAdress.
 //       If (@numberOfSymbols == 0) -> copy symbols till met '\0' in the source.

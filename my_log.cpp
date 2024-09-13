@@ -4,15 +4,18 @@
 
 
 //==============================================================================
-// Конструктор класса. Открывает указанный файл [fileName] для работы в режиме
-// [fileMode]. По-умолчанию, режим "только для записи".
+// WHAT: Constructor.
+//  WHY: Opens specified [fileName] for work in [fileMode].
 //==============================================================================
 my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
     mb_logFile              {fileName, fileMode},
     mb_recordNumber         {1},
-    mb_allowFileWriting     {true}
+    mb_allowFileWriting     {true},
+    mb_sleepTimeMSec        {1000}
 {
 
+    // #### Flush data into the file after each writing operation
+    std::unitbuf(mb_logFile);
 
     mb_recordTitle << "\n#" << mb_recordNumber++ << '\n';
 
@@ -40,6 +43,8 @@ my::Log::Log(const char* fileName, std::ios_base::openmode fileMode) :
 //==============================================================================
 my::Log::~Log()
 {
+    //std::cerr << "\n[DEBUG]: Log's destructor has called...";
+
     if (mb_allowFileWriting) {
         this->endLog();
     }
@@ -49,7 +54,7 @@ my::Log::~Log()
 
 
 //==========================================================================
-// NAME:
+// TYPE:
 // GOAL: Write one record to the file.
 //==========================================================================
 void my::Log::writeRecordToFile()
@@ -66,7 +71,7 @@ void my::Log::writeRecordToFile()
 
 
 //==============================================================================
-// NAME:
+// TYPE:
 // GOAL: Write available log records to the file. There is an opportunity,
 //       that not all records will be written, if the last log record is
 //       being handled at the same time, when main-thread is pushing a new one.
@@ -94,7 +99,7 @@ void my::Log::writeLogToFile()
         else {} // Nothing to do
 
         // ## Sleep
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        std::this_thread::sleep_for(mb_sleepTimeMSec);
     }
 
 }
@@ -104,7 +109,7 @@ void my::Log::writeLogToFile()
 
 
 //==============================================================================
-// NAME: Friend function
+// TYPE: Friend function
 // GOAL: It finishes the current record and makes preparations for the new one.
 //==============================================================================
 void my::endRecord(my::Log& log)
@@ -135,10 +140,10 @@ void my::endRecord(my::Log& log)
         log.mb_lastRecordMutex.unlock();
     }
 
-    log.mb_recordTitle.softClear();
+    log.mb_recordTitle.clear();
     log.mb_recordTitle << "\n#" << log.mb_recordNumber++ << '\n';
 
-    log.mb_recordContent.softClear();
+    log.mb_recordContent.clear();
 
 }
 

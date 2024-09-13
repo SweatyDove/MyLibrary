@@ -146,6 +146,10 @@ int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 //       '\0' in the source string.
 //       2) If [numberOfSymbols] > 0, then copy specified number of symbols plus
 //          null-terminator '\0'.
+//
+// TRAP: If specified incorrect pointer to destination - this funnction can
+//       override "title" of the block of memory, that is needed for delete[]
+//       operator. In this case - delete[] will cause an error.
 //==============================================================================
 int my::copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols)
 {

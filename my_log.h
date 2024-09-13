@@ -13,31 +13,14 @@
 
 
 
-/*
- * Нужно создать класс, реализующий лог. То есть имеется какая-то информация в главном
- * потоке. Она передается в этот лог. А вспомогательный поток уже работает с этим логом,
- * т.е. пишет его в файл и т.п.
- *
- * Как работает лог? По-идее, для каждого входящего сообщения выделяется строка в динамической
- * памяти. И записывается указатель на эту строку в массив указателей.
- *
- * Затем, как только появляется возможность, производится запись на диск очередной строки.
- *
- *
- *
- * Проблемы:
- *
- *  1)  Разный вывод при одинаковых запусках. Скорее всего имеется состояние
- *      гонки.
- *
- */
-
-
 
 
 // ######## Start of NAMESPACE_MY ########
 namespace my {
 
+
+
+// Где-то ошибка с подобным описанием: "съедает первую букву в "The " и из-за этого ошибка delete[] так как не с первого символа удаление"
 
 
 class Log {
@@ -53,21 +36,24 @@ private:
     my::Queue<my::String*>      mb_recordQueue {};          // <my::String*> object will be formed from the [mb_recordTitle]
                                                             // and [mb_recordContent] and pushed into this [mb_recordQueue]
 
-    std::mutex                  mb_lastRecordMutex {};       // It manages access to the last record
-    std::atomic<bool>           mb_allowFileWriting {};     // Variable for the tread synchronization
+    std::mutex                  mb_lastRecordMutex {};      // It manages access to the last record.
+    std::atomic<bool>           mb_allowFileWriting {};     // Variable for the tread synchronization.
 
-    std::thread                 mb_writeToFileThread {};    // Off-thread that is writing records to the file
+    std::thread                 mb_writeToFileThread {};    // Off-thread that is writing records to the file.
+
+    std::chrono::milliseconds   mb_sleepTimeMSec {};        // Time of sleep for [mb_writeToFileThread].
 
 
 
 public:
     //==========================================================================
-    // NAME: Constructor
+    // TYPE: Constructor
     //==========================================================================
-    explicit Log(const char* fileName = nullptr, std::ios_base::openmode fileMode = std::ios_base::out);
+    explicit Log(const char* fileName = "log_file.txt",
+                 std::ios_base::openmode fileMode = std::ios_base::out);
 
     //==========================================================================
-    // NAME: Destructor
+    // TYPE: Destructor
     //==========================================================================
     ~Log();
 
@@ -77,8 +63,8 @@ public:
      ***************************************/
 
     //==========================================================================
-    // NAME: Friend overloaded [operator<<] for <char>, <const char*>, <int>.
-    // GOAL: Write @inputValue of specified type in the log record.
+    // TYPE: Friend overloaded [operator<<] for <char>, <const char*>, <int>.
+    // GOAL: Write [inputValue] of specified type in the log record.
     //==========================================================================
     template<typename InputType>
     friend my::Log& operator<<(my::Log& log, InputType inputValue)
@@ -89,7 +75,7 @@ public:
     }
 
     //==========================================================================
-    // NAME: Friend overloaded [operator<<] for functions.
+    // TYPE: Friend overloaded [operator<<] for functions.
     // GOAL: Call the specified function with @log parameter.
     //==========================================================================
     friend my::Log& operator<<(my::Log& log, void (*functionPointer)(my::Log&))
@@ -126,7 +112,7 @@ public:
 
 
     //==========================================================================
-    // NAME: Friend function
+    // TYPE: Friend function
     // GOAL: It finishes the current record and makes preparations for the new one.
     //==========================================================================
     friend void endRecord(my::Log& log);

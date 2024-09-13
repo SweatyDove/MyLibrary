@@ -28,7 +28,7 @@ namespace my {
 
 
         //======================================================================
-        // NAME: Destructor
+        // TYPE: Destructor
         // GOAL: Destructor releases all allocated memory for each element of
         //       list (struct my::List::Item).
         //======================================================================
@@ -40,7 +40,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME:
+        // TYPE:
         // GOAL: Function provides an access to content of the FIRST element
         //       of the Queue.
         //======================================================================
@@ -50,7 +50,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME:
+        // TYPE:
         // GOAL: Function provides an access to the LAST element of the Queue.
         //======================================================================
         Type& getBackContent()
@@ -59,7 +59,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME: Getter
+        // TYPE: Getter
         // GOAL: Function returns adress of the FRONT item of list
         //======================================================================
         Queue::Item* getFrontAdress() const
@@ -68,7 +68,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME: Getter
+        // TYPE: Getter
         // GOAL: Function returns adress of the BACK item of list
         //======================================================================
         Queue::Item* getBackAdress() const
@@ -79,7 +79,7 @@ namespace my {
 
 
         //======================================================================
-        // NAME:
+        // TYPE:
         // GOAL: Allocate new element of Queue with the specified @content and
         //       push it to the back of the Queue
         //======================================================================
@@ -108,7 +108,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME:
+        // TYPE:
         // GOAL: Remove the front element from the Queue
         //======================================================================
         void removeFront()
@@ -138,7 +138,7 @@ namespace my {
         }
 
         //======================================================================
-        // NAME:
+        // TYPE:
         // GOAL: Remove the front element from the Queue
         //======================================================================
         [[nodiscard]] int getSize() const

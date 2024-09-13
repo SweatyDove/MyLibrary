@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cassert>
 #include <new>
+#include <iomanip>
 
 
 //==============================================================================
@@ -24,7 +25,7 @@ public:
     String() = default;
 
     //==========================================================================
-    // NAME: Constructor from <const char*> type.
+    // TYPE: Constructor from <const char*> type.
     // GOAL: Didn't mark it is as explicit, because it is often used for the
     //       implicit conversions (like [std::string] from <const char*>).
     //==========================================================================
@@ -34,7 +35,7 @@ public:
     String(const my::String& string);
 
     //==========================================================================
-    // NAME: Copy assignment via overloaded [operator=].
+    // TYPE: Copy assignment via overloaded [operator=].
     // GOAL: We don't need to create a new object. Just assign to the existing
     //       one, doing a deep copy.
     //==========================================================================
@@ -42,14 +43,14 @@ public:
 
 
     //==========================================================================
-    // NAME: Move assignment via overloaded [operator=].
+    // TYPE: Move assignment via overloaded [operator=].
     // GOAL: Transfer ownership.
     //==========================================================================
     my::String& operator=(my::String&& rString) noexcept;
 
 
     //==========================================================================
-    // NAME: Assignment overloaded [operator=] for <const char*> type.
+    // TYPE: Assignment overloaded [operator=] for <const char*> type.
     // GOAL:
     //==========================================================================
     my::String& operator=(const char* stringLiteral);
@@ -77,19 +78,22 @@ public:
     friend my::String& operator<<(my::String& string, int intNumber);
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);
     friend my::String& operator<<(my::String& string, char symbol);
+    friend my::String& operator<<(my::String& string, const my::String& inputString);
 
     friend my::String& operator+(const my::String& leftString, const my::String& rightString);
 
 
 
-    friend std::ostream& operator<<(std::ostream& out, const String& string);
-    friend std::istream& operator>>(std::istream& in, String& string);
+    friend std::ostream& operator<<(std::ostream& out, const my::String& string);
+    friend std::istream& operator>>(std::istream& in, my::String& string);
 
 };
 
 my::String& operator<<(my::String& string, int intNumber);
 my::String& operator<<(my::String& string, const char* charDataBuffer);
 my::String& operator<<(my::String& string, char symbol);
+my::String& operator<<(my::String& string, const my::String& inputString);
+
 
 my::String& operator+(const my::String& leftString, const my::String& rightString);
 
