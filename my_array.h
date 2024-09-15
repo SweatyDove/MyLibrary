@@ -1,6 +1,8 @@
 #ifndef MY_ARRAY_H
 #define MY_ARRAY_H
 
+#include <initializer_list>
+
 
 namespace my {
 
@@ -15,11 +17,12 @@ namespace my {
 template <typename Type, int size>
 class Array {
 private:
-    int mb_length {0};
-    Type* mb_data {nullptr};
+    int mb_length;
+    Type mb_data[];
 
 public:
-    Array();
+    Array(int length);
+    Array(std::initializer_list<Type> list);
 };
 
 
