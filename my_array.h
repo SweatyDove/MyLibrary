@@ -24,10 +24,19 @@ public:
     Array();
     Array(std::initializer_list<Type> list);
 
+
     Type& operator[](int index);
     const Type& operator[](int index) const;
+
 };
 
+
+/***************************************************************************************************
+ * I couldn't declare operator<< inside the class declaration 'cause some errors - need to sort out
+ * this issue
+ **************************************************************************************************/
+template <typename Type, unsigned int size>
+std::ostream& operator<<(std::ostream& out, const Array<Type, size>& array);
 
 
 

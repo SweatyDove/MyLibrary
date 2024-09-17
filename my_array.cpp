@@ -12,6 +12,7 @@
 template <typename Type, unsigned int size>
 my::Array<Type, size>::Array()
 {
+    static_assert(size > 0, "Array's size must be more than 0");
     std::cout << "[DEBUG]: default constructor of <my::Array> has been called." << std::endl;
 }
 
@@ -26,21 +27,26 @@ my::Array<Type, size>::Array()
 //   DESCRIPTION:    --------
 // COMMENTS/BUGS:    1) <std::initializer_list> doesn't have overloaded subscription operator "[]" --
 //                      that is why need to use initializer_list::begin() function.
-//                   2) Here we can pass initializer list with size lower than array's size - in such
-//                      case I just copy values from list in array and do not change array's left
-//                      values. But may be it will be better to accept only 2 options: initializer
-//                      list of exactly the same size and 1-elemnt size (for all array's elements).
+//                   2)
 //==================================================================================================
 template <typename Type, unsigned int size>
 my::Array<Type, size>::Array(std::initializer_list<Type> list)
 {
     auto listSize {list.size()};
 
-    assert(size >= listSize && "[ERROR]: initializer list's size must be no more than array's size ");
 
-    for (int ii {0}; ii < listSize; ++ii) {
-        mb_data[ii] = list.begin()[ii];
+    static_assert(size > 0, "Array's size must be more than 0");
+    assert(listSize == size || (listSize == 1) && "[ERROR]: incorrect initializer list's size");
+
+
+    int ii {0};
+    int kk {(listSize == 1) ? 0 : ii};
+    while (ii < size) {
+        mb_data[ii] = list.begin()[kk];
+        ++ii;
+        kk = (listSize == 1) ? 0 : ii;
     }
+
 
 }
 
@@ -88,4 +94,27 @@ const Type& my::Array<Type, size>::operator[](int index) const
     }
 
 }
+
+
+
+//==================================================================================================
+//          TYPE:    --------
+//    PARAMETERS:    --------
+//  RETURN VALUE:    --------
+//   DESCRIPTION:    --------
+// COMMENTS/BUGS:    --------
+//==================================================================================================
+template <typename Type, unsigned int size>
+std::ostream& my::operator<<(std::ostream& out, const my::Array<Type, size>& array)
+{
+    out << '[';
+    int ii {0};
+    while (ii < size - 1) {
+        out << array[ii++] << ", ";
+    }
+    out << array[ii] << "]";
+
+    return out;
+}
+
 

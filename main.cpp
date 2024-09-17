@@ -2,6 +2,14 @@
 #include "my_array.hpp"
 
 
+/*
+ * QUESTIONS:
+ *
+ * 1) Order of evaluation of 3-d part (incrementing) of the for-loop-statement? (Could begin from
+ *      here: https://en.cppreference.com/w/cpp/language/eval_order
+ */
+
+
 int main()
 {
 //    int a {7};
@@ -32,6 +40,6 @@ int main()
         intArray[ii] = ii * 2;
     }
 
-//    std::cout << intArray << std::endl;
+    std::cout << intArray << std::endl;
     return 0;
 }
