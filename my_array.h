@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <cassert>
+#include <type_traits>              // For std::enable_if_t
 
 namespace my {
 
@@ -21,12 +22,24 @@ private:
     Type mb_data[size] {};
 
 public:
+    // Constructors and destructors
     Array();
     Array(std::initializer_list<Type> list);
 
-
+    // Subscriprion operators
     Type& operator[](int index);
     const Type& operator[](int index) const;
+
+    // Copy assignment
+    template <unsigned int otherSize>
+    Array<Type, size>& operator=(const Array<Type, otherSize>& otherArray);
+
+    // Copy constructor
+//    Array& operator=(const Array&);
+
+
+    // Interface
+    unsigned int getSize() const;
 
 };
 
@@ -37,6 +50,13 @@ public:
  **************************************************************************************************/
 template <typename Type, unsigned int size>
 std::ostream& operator<<(std::ostream& out, const Array<Type, size>& array);
+
+
+//template <typename Type, unsigned int thisSize, unsigned int argSize>
+//Array<Type, thisSize>& operator=(Array<Type, thisSize>& thisArr, const Array<Type, argSize>& argArr);
+
+
+
 
 
 

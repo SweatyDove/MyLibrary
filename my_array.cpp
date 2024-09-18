@@ -53,7 +53,7 @@ my::Array<Type, size>::Array(std::initializer_list<Type> list)
 
 
 //==================================================================================================
-//          TYPE:    Non-const version of subscription operator
+//          TYPE:    NON-CONST version of subscription operator
 //    PARAMETERS:    --------
 //  RETURN VALUE:    --------
 //   DESCRIPTION:    --------
@@ -75,7 +75,7 @@ Type& my::Array<Type, size>::operator[](int index)
 
 
 //==================================================================================================
-//          TYPE:    Non-const version of subscription operator
+//          TYPE:    CONST version of subscription operator
 //    PARAMETERS:    --------
 //  RETURN VALUE:    --------
 //   DESCRIPTION:    --------
@@ -98,7 +98,7 @@ const Type& my::Array<Type, size>::operator[](int index) const
 
 
 //==================================================================================================
-//          TYPE:    --------
+//          TYPE:    General function
 //    PARAMETERS:    --------
 //  RETURN VALUE:    --------
 //   DESCRIPTION:    --------
@@ -117,4 +117,52 @@ std::ostream& my::operator<<(std::ostream& out, const my::Array<Type, size>& arr
     return out;
 }
 
+
+
+//==================================================================================================
+//          TYPE:   --------
+//    PARAMETERS:   --------
+//  RETURN VALUE:   --------
+//   DESCRIPTION:   --------
+// COMMENTS/BUGS:   It will be a good idea to generate compile-time warning if size != argSize, but
+//                  as far as I know, without some tricks (using unused variables: https://stackoverflow.com/questions/77549920/conditional-compile-time-warning-in-c)
+//                  I couldn't do this...
+//==================================================================================================
+template <typename Type, unsigned int size>
+template <unsigned int argSize>
+my::Array<Type, size>& my::Array<Type, size>::operator=(const Array<Type, argSize>& array)
+{
+    // ######## Just an info message (see the COMMENTS/BUGS section in the description above)
+    if (size != argSize) {
+        std::cout << "[WARNING]: operator= is invoked with arrays of diferent sizes. Be carefull!"
+                  << std::endl;
+    }
+    else {};
+
+    // ######## Evaluate maximum size of submitted arrays and copy that amount of values from
+    // ######## right to left array
+    unsigned int maxSize {(size < argSize) ? size : argSize};
+    for (int ii {0}; ii < maxSize; ++ii) {
+        (*this)[ii] = array[ii];
+    }
+
+    // ######## Return left array
+    return *this;
+
+}
+
+
+
+//==================================================================================================
+//          TYPE:    --------
+//    PARAMETERS:    --------
+//  RETURN VALUE:    --------
+//   DESCRIPTION:    --------
+// COMMENTS/BUGS:    --------
+//==================================================================================================
+template <typename Type, unsigned int size>
+unsigned int my::Array<Type, size>::getSize() const
+{
+    return size;
+}
 
