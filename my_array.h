@@ -22,26 +22,51 @@ private:
     Type mb_data[size] {};
 
 public:
-    // Constructors and destructors
+    // ######## Constructors and destructors
     Array();
     Array(std::initializer_list<Type> list);
 
-    // Subscriprion operators
+    ~Array();
+
+    // ######## Subscriprion operators
     Type& operator[](int index);
     const Type& operator[](int index) const;
 
-    // Copy assignment
+    // ######## Copy assignment
     template <unsigned int otherSize>
-    Array<Type, size>& operator=(const Array<Type, otherSize>& otherArray);
+    Array& operator=(const Array<Type, otherSize>& otherArray);
 
-    // Copy constructor
-//    Array& operator=(const Array&);
+    // ######## Copy assignment_2
+    Array& operator=(const Array& otherArray);
+
+    // ######## Copy constructor
+//    template <unsigned int otherSize>
+    Array(const Array& otherArray);
+
+    // ######## For using in iteration algorithms
+    Type* begin() const;
+    Type* end() const;
+    Type* begin();
+    Type* end();
+
+    // ######## Move assignment -- deleted 'cause I'm not sure, that <my::Array> should choose
+    // ######## semantics - it is concern of <Type> object under this array, perhapse...
+//    template <unsigned int otherSize>
+//    Array& operator=(Array<Type, otherSize>&& otherArray) = delete;
+
+//    // ######## Move constructor -- deleted for the same reason I mentioned above
+//    template <unsigned int otherSize>
+//    Array(Array&& otherArray) = delete;
 
 
-    // Interface
+
+    // ######## Interface
     unsigned int getSize() const;
 
 };
+
+
+
 
 
 /***************************************************************************************************
