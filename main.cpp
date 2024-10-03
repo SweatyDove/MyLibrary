@@ -1,8 +1,14 @@
 #include <iostream>
 #include "my_array.hpp"
+#include "my_string.h"
 #include <string>
 #include <array>
 
+
+using StringClass = my::String;
+
+template <typename SomeType, int size>
+using ArrayClass = my::Array<SomeType, size>;
 
 /*
  * QUESTIONS:
@@ -15,6 +21,21 @@
 class Base {
 public:
     int* mb_data;
+    enum class Name {
+        HEALTH,
+        STAMINA,
+        MANA,
+
+        TOTAL
+    };
+
+
+    inline static const ArrayClass<StringClass,  static_cast<unsigned int>(Name::TOTAL)> mb_strArray = {
+        "Hello",
+        "Beautifull",
+        "World!"
+    };
+
     Base()
     {
         std::cout << "[DEBUG]: Base's default ctor has been called" << std::endl;
@@ -40,6 +61,11 @@ public:
 //        mb_data = nullptr;
     }
 
+    static const StringClass& getStringName(Base::Name name)
+    {
+        return mb_strArray[static_cast<unsigned int>(name)];
+    }
+
 
 
 };
@@ -57,25 +83,10 @@ std::ostream& operator<<(std::ostream& out, const Base& base)
 
 int main()
 {
-    //    int* aPtr = new int {3};
-    //    int* bPtr = new int {4};
-    //    int* cPtr = new int {5};
-    //    my::Array<int*, 3> ptrArr {};
-    //    ptrArr[0] = aPtr;
-    //    ptrArr[1] = bPtr;
-    //    ptrArr[2] = cPtr;
 
-    //    my::Array<int*, 3> otherPtrArr {};
-    //    otherPtrArr = ptrArr;
+    Base base {};
 
-
-        my::Array<int, 3> arrA {1, 2, 3};
-
-        for (auto& element: arrA) {
-            element *= 2;
-        }
-
-        std::cout << arrA << std::endl;
+    std::cout << base.mb_strArray << std::endl;
 
 
     /*

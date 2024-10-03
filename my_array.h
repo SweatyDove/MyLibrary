@@ -11,10 +11,17 @@ namespace my {
 
 //==================================================================================================
 //         TYPE:    Class
-//   PARAMETERS:    --------
-// RETURN VALUE:    --------
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
 //  DESCRIPTION:    Class, representing my version of <std::array>
-//     COMMENTS:    --------
+//                  --------
+//     COMMENTS:    1)  There is a problem, that I can't use "constexpr" qualifier before <my::Array>
+//                      class. As I understand, in order to use constexpr qualifier - I should make
+//                      <my::Array> class type a LITERAL type. There are some conditions that i need
+//                      to sutisfy (constexpr functions, constructors and etc - but I'm not sure).
+//                      Going to leave this issue for the future...
+//                  2)  ........
+//
 //==================================================================================================
 template <typename Type, unsigned int size>
 class Array {
