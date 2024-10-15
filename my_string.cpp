@@ -1,4 +1,3 @@
-
 #include "my_string.h"
 #include "my_utilities.h"
 
@@ -319,10 +318,13 @@ my::String& my::String::operator=(const char* stringLiteral)
 
 
 
-//==============================================================================
-// TYPE: Friend function;
-//       Overloaded [operator>>]
-//==============================================================================
+//==================================================================================================
+//         TYPE:    Friend function
+//  DESCRIPTION:    Overloaded operator>>()
+//   PARAMETERS:    --------
+// RETURN VALUE:    --------
+//     COMMENTS:    --------
+//==================================================================================================
 std::istream& my::operator>>(std::istream& in, my::String& string)
 {
     char    ch     {'\0'};
@@ -384,10 +386,10 @@ std::istream& my::operator>>(std::istream& in, my::String& string)
 
 
 //==================================================================================================
-//         TYPE:    Overloaded operator<<
+//         TYPE:    Friend function
 //   PARAMETERS:    --------
-// RETURN VALUE:    --------
 //  DESCRIPTION:    --------
+// RETURN VALUE:    --------
 //     COMMENTS:    With simple handling of output alignment
 //==================================================================================================
 std::ostream& my::operator<<(std::ostream& out, const my::String& string)

@@ -1,14 +1,9 @@
-#include <iostream>
-#include "my_array.hpp"
-#include "my_string.h"
-#include <string>
-#include <array>
 
 
-using StringClass = my::String;
+#include "main.h"
+#include "attribute.h"
 
-template <typename SomeType, int size>
-using ArrayClass = my::Array<SomeType, size>;
+
 
 /*
  * QUESTIONS:
@@ -30,11 +25,11 @@ public:
     };
 
 
-    inline static const ArrayClass<StringClass,  static_cast<unsigned int>(Name::TOTAL)> mb_strArray = {
-        "Hello",
-        "Beautifull",
-        "World!"
-    };
+//    inline static const ArrayClass<my::String,  static_cast<unsigned int>(Name::TOTAL)> mb_strArray = {
+//        "Hello",
+//        "Beautifull",
+//        "World!"
+//    };
 
     Base()
     {
@@ -61,10 +56,10 @@ public:
 //        mb_data = nullptr;
     }
 
-    static const StringClass& getStringName(Base::Name name)
-    {
-        return mb_strArray[static_cast<unsigned int>(name)];
-    }
+//    static const my::String& getStringName(Base::Name name)
+//    {
+//        return mb_strArray[static_cast<unsigned int>(name)];
+//    }
 
 
 
@@ -83,11 +78,56 @@ std::ostream& operator<<(std::ostream& out, const Base& base)
 
 int main()
 {
+//    Base a {5};
+//    Base b {7};
+//    int ii {0};
 
-    Base base {};
+    // Тут происходит две вещи. Как я понимаю, сперва создаётся пустой массив <my::Array>, каждый
+    // элемент которого создаётся при помощи дефолтного конструктора (здесь Base()). Затем происходит
+    // копирование a и b в элементы массива.
+    // Единственное, что при вызове деструктора массива, почему-то вызывается деструктор только для
+    // одного элемента <Base>...
+    my::Array<my::String, 2> temp {
+        "Hello",
+        "World"
+    };
 
-    std::cout << base.mb_strArray << std::endl;
+    ArrayClass<StringClass, 3> foo {
+        "Hello",
+        "my",
+        "world!"
+    };
 
+
+    /*
+     * А почему он создается ещё на этапе компиляции?
+     * Тут вроде бы всё нормально.
+     * 1 -- Сперва конструируются временные объекты <Base>, содержащие 5 и 7
+     * соответственно (сами "результаты" выражений (5) и (7) имеют тип int и являются rvalue).
+     * 2 -- Затем сам массив bar конструирует два "свободных" места <Base> под вычисленные элементы -
+     * используя для этого дефолтный конструктор <Base>.
+     * 3 -- Ну и на третем шаге происходит копирование временных объектов в объекты из массивы.
+     * 4 -- Потом временные обьекты уничтожаются.
+     */
+//    my::Array<Base, 2> bar {5, 7};
+
+
+
+
+
+//    Attribute attr_1 = Attribute(Attr::Name::DODGE_CHANCE, Attribute::Type::RATING, -1, -1, -1);
+//    Attribute attr_2 {Attr::Name::CRIT_CHANCE, Attribute::Type::RATING, -1, -1, -1};
+//    Attribute attr_3 {Attribute(Attr::Name::ESCAPE_CHANCE, Attribute::Type::RATING, 66, 66, 66)};
+
+//    ArrayClass<Attribute, 3> mb_ratings = {attr_1, attr_2, attr_3};
+//    ArrayClass<Attribute, 3> mb_ratings = {
+//        {
+//            {Attr::Name::DODGE_CHANCE, Attribute::Type::RATING, -1, -1, -1},
+//            {Attr::Name::CRIT_CHANCE, Attribute::Type::RATING, -1, -1, -1},
+//            {Attr::Name::ESCAPE_CHANCE, Attribute::Type::RATING, 66, 66, 66}
+//        }
+//    };
+//    std::array<Attribute, 1> mb_ratingsClassic {attr_1};
 
     /*
      * По идее, выбор семантики (копирование или перемещение), зависит не от массива, а от типа

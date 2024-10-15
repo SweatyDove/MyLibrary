@@ -15,6 +15,8 @@ namespace my {
 
 class String {
 
+
+
 private:
     char*   mb_firstElementAdress {nullptr};        // Pointer contains adress of the first element of the string
     int     mb_length {0};                          // Number of characters in the string (without '\0' symbol)
@@ -23,6 +25,7 @@ private:
     int     mb_allocationDataChunk {64};            // Default size of portion while allocate memory in the heap
 public:
     String() = default;
+
 
     //==========================================================================
     // TYPE: Constructor from <const char*> type.
@@ -83,7 +86,7 @@ public:
     friend my::String& operator+(const my::String& leftString, const my::String& rightString);
 
 
-
+    /* Here we declare overloaded operators as friend functions */
     friend std::ostream& operator<<(std::ostream& out, const my::String& string);
     friend std::istream& operator>>(std::istream& in, my::String& string);
 
@@ -98,12 +101,12 @@ my::String& operator<<(my::String& string, const my::String& inputString);
 my::String& operator+(const my::String& leftString, const my::String& rightString);
 
 
-
+/* And here is just a PROTOTYPES */
 std::ostream& operator<<(std::ostream& out, const my::String& string);
 std::istream& operator>>(std::istream& in, my::String& string);
 
 
-} // End of namespace "my{}"
+} // End of namespace "my"
 
 
 #endif  // MY_STRING_H

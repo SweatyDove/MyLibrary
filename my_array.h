@@ -20,10 +20,10 @@ namespace my {
 //                      <my::Array> class type a LITERAL type. There are some conditions that i need
 //                      to sutisfy (constexpr functions, constructors and etc - but I'm not sure).
 //                      Going to leave this issue for the future...
-//                  2)  ........
+//                  2)  Maybe make a constructor "constexpr"?
 //
 //==================================================================================================
-template <typename Type, unsigned int size>
+template <typename Type, int size>
 class Array {
 private:
     Type mb_data[size] {};
@@ -40,14 +40,14 @@ public:
     const Type& operator[](int index) const;
 
     // ######## Copy assignment
-    template <unsigned int otherSize>
+    template <int otherSize>
     Array& operator=(const Array<Type, otherSize>& otherArray);
 
     // ######## Copy assignment_2
     Array& operator=(const Array& otherArray);
 
     // ######## Copy constructor
-//    template <unsigned int otherSize>
+//    template <int otherSize>
     Array(const Array& otherArray);
 
     // ######## For using in iteration algorithms
@@ -58,19 +58,20 @@ public:
 
     // ######## Move assignment -- deleted 'cause I'm not sure, that <my::Array> should choose
     // ######## semantics - it is concern of <Type> object under this array, perhapse...
-//    template <unsigned int otherSize>
+//    template <int otherSize>
 //    Array& operator=(Array<Type, otherSize>&& otherArray) = delete;
 
 //    // ######## Move constructor -- deleted for the same reason I mentioned above
-//    template <unsigned int otherSize>
+//    template <int otherSize>
 //    Array(Array&& otherArray) = delete;
 
 
 
     // ######## Interface
-    unsigned int getSize() const;
+    int getSize() const;
 
 };
+
 
 
 
@@ -80,11 +81,11 @@ public:
  * I couldn't declare operator<< inside the class declaration 'cause some errors - need to sort out
  * this issue
  **************************************************************************************************/
-template <typename Type, unsigned int size>
+template <typename Type, int size>
 std::ostream& operator<<(std::ostream& out, const Array<Type, size>& array);
 
 
-//template <typename Type, unsigned int thisSize, unsigned int argSize>
+//template <typename Type, int thisSize, int argSize>
 //Array<Type, thisSize>& operator=(Array<Type, thisSize>& thisArr, const Array<Type, argSize>& argArr);
 
 
