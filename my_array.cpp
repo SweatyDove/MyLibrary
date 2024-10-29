@@ -146,6 +146,12 @@ my::Array<Type, size>& my::Array<Type, size>::operator=(const my::Array<Type, si
 //    std::cout << "[my::Array]:[DEBUG]: copy assignment operator for the arrays of the SAME sizes"
 //              << " has been called" << std::endl;
 
+    // # Self-assignment checking
+    if (this == &otherArray) {
+        return *this;
+    }
+    else {} // Nothing to do
+
 
     for (int ii {0}; ii < size; ++ii) {
         mb_data[ii] = otherArray[ii];
@@ -160,13 +166,9 @@ my::Array<Type, size>& my::Array<Type, size>::operator=(const my::Array<Type, si
 
 //==================================================================================================
 //          TYPE:   Copy assignment operator with argument of OTHER size
-//--------------------------------------------------------------------------------------------------
 //    PARAMETERS:   ********
-//--------------------------------------------------------------------------------------------------
-//  RETURN VALUE:   ********
-//--------------------------------------------------------------------------------------------------
 //   DESCRIPTION:   ********
-//--------------------------------------------------------------------------------------------------
+//  RETURN VALUE:   ********
 // COMMENTS/BUGS:   It will be a good idea to generate compile-time warning if size != argSize, but
 //                  as far as I know, without some tricks (using unused variables: https://stackoverflow.com/questions/77549920/conditional-compile-time-warning-in-c)
 //                  I couldn't do this...
