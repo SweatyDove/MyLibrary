@@ -257,7 +257,7 @@ std::ostream& my::operator<<(std::ostream& out, const my::DynamicArray<Type>& dy
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type>
-Type* my::DynamicArray<Type>::begin() const
+const Type* my::DynamicArray<Type>::begin() const
 {
     return mb_dataPtr;
 }
@@ -301,7 +301,7 @@ Type* my::DynamicArray<Type>::end()
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type>
-Type* my::DynamicArray<Type>::end() const
+const Type* my::DynamicArray<Type>::end() const
 {
     return (mb_dataPtr + mb_size);
 }
@@ -358,8 +358,9 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, size>& staticArr)
     }
     else {} // Nothing to do
 
+    // # Copy data from @staticArray to *this array
     for (const auto& element: staticArr) {
-        // (mb_dataPtr + mb_size++) = element;
+        // (mb_dataPtr + mb_size++) = element;        // Just an option
         mb_dataPtr[mb_size++] = element;
     }
 

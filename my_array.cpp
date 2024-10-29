@@ -234,7 +234,7 @@ my::Array<Type, size>::Array(const my::Array<Type, size>& otherArray)
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type, int size>
-Type* my::Array<Type, size>::begin() const
+const Type* my::Array<Type, size>::begin() const
 {
     return mb_data;
 }
@@ -262,7 +262,7 @@ Type* my::Array<Type, size>::begin()
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type, int size>
-Type* my::Array<Type, size>::end() const
+const Type* my::Array<Type, size>::end() const
 {
     return (mb_data + size);
 }

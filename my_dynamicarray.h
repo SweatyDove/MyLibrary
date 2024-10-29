@@ -74,8 +74,8 @@ public:
 
 
     // ######## For using in iteration algorithms
-    Type* begin() const;
-    Type* end() const;
+    const Type* begin() const;
+    const Type* end() const;
     Type* begin();
     Type* end();
 
