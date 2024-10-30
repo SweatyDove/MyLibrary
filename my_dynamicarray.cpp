@@ -114,10 +114,12 @@ Type& my::DynamicArray<Type>::operator[](int ii)
 //    PARAMETERS:   --------
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Добавить обработку исключений при ошибке выделения памяти оператором new[]
+// COMMENTS/BUGS:   Добавить обработку исключений при ошибке выделения памяти оператором new[].
+//                  Кроме того, а может стоит передавать в качестве аргумента <const Type&>,
+//                  а не передавать по значению...
 //==================================================================================================
 template <typename Type>
-void my::DynamicArray<Type>::pushBack(Type value)
+void my::DynamicArray<Type>::pushBack(const Type& value)
 {
     // # Сперва проверяем наличие свободной памяти (здесь можно вызывать и оператор[] наверное, но
     // # пока в явном виде)
@@ -132,6 +134,20 @@ void my::DynamicArray<Type>::pushBack(Type value)
     // # Добавляем новый элемент в массив и увеличиваем его размер
     *(mb_dataPtr + mb_size) = value;
     mb_size++;
+}
+
+
+//==================================================================================================
+//          TYPE:   --------
+//    PARAMETERS:   --------
+//   DESCRIPTION:   --------
+//  RETURN VALUE:   --------
+// COMMENTS/BUGS:   For interchangeability with std::vector
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::push_back(const Type& value)
+{
+    this->pushBack(value);
 }
 
 
@@ -196,6 +212,21 @@ int my::DynamicArray<Type>::getSize() const
 {
     return mb_size;
 }
+
+
+//==================================================================================================
+//          TYPE:    Getter
+//    PARAMETERS:    --------
+//   DESCRIPTION:    --------
+//  RETURN VALUE:    --------
+// COMMENTS/BUGS:    For interchangeability with std::vector
+//==================================================================================================
+template <typename Type>
+int my::DynamicArray<Type>::size() const
+{
+    return mb_size;
+}
+
 
 
 //==================================================================================================
@@ -429,6 +460,16 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 }
 
 
+//==================================================================================================
+//          TYPE:   --------
+//    PARAMETERS:   --------
+//   DESCRIPTION:   --------
+//  RETURN VALUE:   --------
+// COMMENTS/BUGS:   --------
+//==================================================================================================
+//template <typename Type>
+//void insert(Type* pos, Type* copyFrom, Type* copyTo)
+//{
 
-
+//}
 

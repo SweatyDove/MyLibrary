@@ -6,6 +6,8 @@
 #include <iostream>
 #include <cassert>
 #include <my_array.h>
+#include <iterator>         // For std::forward_iterator_tag
+#include <cstddef>          // For std::ptrdiff_t
 
 
 namespace my {
@@ -47,6 +49,7 @@ public:
 
     // # Setters and getters
     int getSize() const;
+    int size() const;
     int getCapacity() const;
     int getCapacityChunk() const;
     void reallocate(int newCapacity);
@@ -62,14 +65,20 @@ public:
 
 
     // # Interface
-    void pushBack(Type value);
+    void pushBack(const Type& value);
+    void push_back(const Type& value);
     Type popBack();
 
 
-    void extend(const DynamicArray<Type>& dynArr);
+    void extend(const my::DynamicArray<Type>& dynArr);
 
     template <int size>
     void extend(const my::Array<Type, size>& staticArr);
+
+//    template <typename Type>
+//    void insert(Type* pos, Type* copyFrom, Type* copyTo);
+
+
 
 
 
@@ -78,6 +87,31 @@ public:
     const Type* end() const;
     Type* begin();
     Type* end();
+
+
+//    class Iterator {
+//    public:
+//        // # The tags below are needed for the functions from <algorithms> and allow to provide
+//        // # optimal choices when choosing specific function (for sorting and etc)
+//        using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
+//        using difference_type = std::ptrdiff_t;                      // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
+//        using value_type = Type;
+//        using pointer = Type*;
+//        using reference = Type&;
+
+//        // Contructor
+//        Iterator(pointer ptr) : mb_ptr {ptr} {}
+
+//        reference operator*() const { return *mb_ptr; }
+//        pointer operator->() { return mb_ptr; }
+
+//        Iterator& operator++() { mb_ptr++; return *this; }
+//        Iterator operator++(Type) {}
+
+//    private:
+//        pointer mb_ptr;
+
+//    };
 
 
 
