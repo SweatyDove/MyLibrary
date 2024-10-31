@@ -38,6 +38,10 @@ private:
     int mb_capacity {};
 
 
+    // Функция костыль на смещение элементов массива
+//    void displace(int position, int shift);
+
+
 public:
     DynamicArray();
     DynamicArray(std::initializer_list<Type> list);
@@ -72,50 +76,63 @@ public:
 
     void extend(const my::DynamicArray<Type>& dynArr);
 
-    template <int size>
-    void extend(const my::Array<Type, size>& staticArr);
+//    template <int size>
+//    void extend(const my::Array<Type, size>& staticArr);
 
-//    template <typename Type>
-//    void insert(Type* pos, Type* copyFrom, Type* copyTo);
+
+    template <int length>
+    void extend(const my::Array<Type, length>& staticArr);
+
+    void insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 
 
 
 
     // ######## For using in iteration algorithms
-    const Type* begin() const;
-    const Type* end() const;
+    const Type* cbegin() const;
+    const Type* cend() const;
     Type* begin();
     Type* end();
 
 
-//    class Iterator {
-//    public:
-//        // # The tags below are needed for the functions from <algorithms> and allow to provide
-//        // # optimal choices when choosing specific function (for sorting and etc)
-//        using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
-//        using difference_type = std::ptrdiff_t;                      // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
-//        using value_type = Type;
-//        using pointer = Type*;
-//        using reference = Type&;
+    class Iterator {
+    public:
+        // # The tags below are needed for the functions from <algorithms> and allow to provide
+        // # optimal choices when choosing specific function (for sorting and etc)
+        using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
+        using difference_type = std::ptrdiff_t;                      // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
+        using value_type = Type;
+        using pointer = Type*;
+        using reference = Type&;
 
-//        // Contructor
-//        Iterator(pointer ptr) : mb_ptr {ptr} {}
+        // Contructor
+        Iterator(pointer ptr) : mb_ptr {ptr} {}
 
-//        reference operator*() const { return *mb_ptr; }
-//        pointer operator->() { return mb_ptr; }
+        reference operator*() const { return *mb_ptr; }
+        pointer operator->() { return mb_ptr; }
 
-//        Iterator& operator++() { mb_ptr++; return *this; }
-//        Iterator operator++(Type) {}
+        Iterator& operator++() { mb_ptr++; return *this; }
+        Iterator operator++(Type) {auto temp {*this}; ++(*this); return temp; }
 
-//    private:
-//        pointer mb_ptr;
+        friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
+        friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
 
-//    };
 
+        Iterator begin()    {return Iterator(&mb_dataPtr[0]);}
+        Iterator end()      {return Iterator(&mb_dataPtr[mb_size]);}
+
+
+
+    private:
+        pointer mb_ptr;
+
+    };
 
 
 };
+
+
 
 template <typename Type>
 std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);

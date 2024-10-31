@@ -288,7 +288,7 @@ std::ostream& my::operator<<(std::ostream& out, const my::DynamicArray<Type>& dy
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type>
-const Type* my::DynamicArray<Type>::begin() const
+const Type* my::DynamicArray<Type>::cbegin() const
 {
     return mb_dataPtr;
 }
@@ -332,7 +332,7 @@ Type* my::DynamicArray<Type>::end()
 // COMMENTS/BUGS:    --------
 //==================================================================================================
 template <typename Type>
-const Type* my::DynamicArray<Type>::end() const
+const Type* my::DynamicArray<Type>::cend() const
 {
     return (mb_dataPtr + mb_size);
 }
@@ -379,8 +379,8 @@ void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
 // COMMENTS/BUGS:   --------
 //==================================================================================================
 template <typename Type>
-template <int size>
-void my::DynamicArray<Type>::extend(const my::Array<Type, size>& staticArr)
+template <int length>
+void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 {
     // # Reallocate *this if not enough capacity for the extending with @staticArr
     int newSize {mb_size + staticArr.getSize()};
@@ -465,11 +465,76 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 //    PARAMETERS:   --------
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
+// COMMENTS/BUGS:   Простой вариант вставки с использованием указателей в качестве итераторов.
+//                  Ещё вопрос, какой алгоритм использовать при вставке элементов внутрь массива.
+//                  Пока сделаю в лоб, а там посмотрим.
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
+{
+    assert (copyFrom <= copyTo && "ERROR, begin-adress should be less than the end-adress");
+
+    // # Вычисляем кол-во эл-в, которые нужно вставить в массив *this
+    int shift {0};
+    for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
+        ++shift;
+    }
+
+
+    // # Check if the target (*this) can or can't fit new data
+    int newSize {mb_size + shift};
+    if (newSize > mb_capacity) {
+        this->reallocate(newSize);
+    }
+    else {} // Nothing to do
+
+
+    // # Displace elements in *this array
+    for (Type* ptr {this->end() - 1}; ptr >= pos; --ptr) {
+        *(ptr + shift) = *ptr;
+    }
+
+    // # Insert data from @copyFrom to @copyTo
+    for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
+        *pos = *ptr;
+        ++pos;
+    }
+
+    // # Set new size
+    mb_size = newSize;
+
+}
+
+
+
+//==================================================================================================
+//          TYPE:   --------
+//    PARAMETERS:   --------
+//   DESCRIPTION:   Функция смещает элементы массива, начиная с @position на @shift элементов вправо.
+//                  Если для смещения не хватает места в массиве - будет выделена дополнительная
+//                  память.
+//  RETURN VALUE:   --------
 // COMMENTS/BUGS:   --------
 //==================================================================================================
 //template <typename Type>
-//void insert(Type* pos, Type* copyFrom, Type* copyTo)
+//void my::DynamicArray<Type>::displace(int position, int shift)
 //{
+//    // # Reallocate array to a new place
+//    int newSize {mb_size + shift};
+//    if (newSize > mb_capacity) {
+//        this->reallocate(newSize + mb_capacityChunk);
+//    }
+//    else {} // Nothing to do
+
+//    // # Displace elements
+//    for (Type* ptr {this->end() - 1}; ptr >= &mb_dataPtr[position]; --ptr) {
+//        *(ptr + shift) = *ptr;
+//        ptr = nullptr;
+//    }
 
 //}
+
+
+
+
 
