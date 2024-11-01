@@ -467,7 +467,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 //  RETURN VALUE:   --------
 // COMMENTS/BUGS:   Простой вариант вставки с использованием указателей в качестве итераторов.
 //                  Ещё вопрос, какой алгоритм использовать при вставке элементов внутрь массива.
-//                  Пока сделаю в лоб, а там посмотрим.
+//                  Пока сделаю в лоб, сперва сдвигаю на кол-во вставляемых эл-в, а там посмотрим.
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
@@ -475,24 +475,28 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
     assert (copyFrom <= copyTo && "ERROR, begin-adress should be less than the end-adress");
 
     // # Вычисляем кол-во эл-в, которые нужно вставить в массив *this
-    int shift {0};
+    int len {0};
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
-        ++shift;
+        ++len;
     }
 
 
     // # Check if the target (*this) can or can't fit new data
-    int newSize {mb_size + shift};
+    int newSize {mb_size + len};
     if (newSize > mb_capacity) {
-        this->reallocate(newSize);
+        this->reallocate(newSize + mb_capacityChunk);
     }
     else {} // Nothing to do
 
 
     // # Displace elements in *this array
-    for (Type* ptr {this->end() - 1}; ptr >= pos; --ptr) {
-        *(ptr + shift) = *ptr;
+    auto ptr = this->end();
+    --ptr;
+    while (ptr >= pos) {
+        *(ptr + len) = *ptr;
+        --ptr;
     }
+
 
     // # Insert data from @copyFrom to @copyTo
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
