@@ -64,6 +64,8 @@ public:
     DynamicArray<Type>& operator=(const DynamicArray<Type>& dynArr);
 
     // # MOVE CONSTRUCTOR and MOVE ASSIGNMENT operators (do not release yet)
+    // ОСТАНОВИЛСЯ ЗДЕСЬ! Нужно что-то сделать с move-семантикой, т.к. в проекте RPG используется
+    // данный оператор над элементами массива
 //    DynamicArray(const DynamicArray<Type>&& dynArr);
 //    DynamicArray<Type> operator=(const DynamicArray<Type>&& dynArr);
 

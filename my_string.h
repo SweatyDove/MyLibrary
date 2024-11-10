@@ -59,6 +59,13 @@ public:
     my::String& operator=(const char* stringLiteral);
 
 
+    bool operator==(const char* stringLiteral);
+    bool operator==(const my::String& myString);
+    bool operator!=(const char* stringLiteral);
+    bool operator!=(const my::String& myString);
+
+
+
 
 
 

@@ -315,7 +315,70 @@ my::String& my::String::operator=(const char* stringLiteral)
 }
 
 
+//==================================================================================================
+//         TYPE:    Method
+//   PARAMETERS:    ........
+//  DESCRIPTION:    Overloaded operator==
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+bool my::String::operator==(const char* stringLiteral)
+{
+    for (int ii {0}; ii < mb_length; ++ii) {
+        if (*(mb_firstElementAdress + ii) != *(stringLiteral + ii)) {
+            return false;
+        }
+        else {} // Nothing to do
+    }
 
+    // Check if both @this and @stringLiteral terminated with '\0'
+    if (*(mb_firstElementAdress + mb_length) == *(stringLiteral + mb_length) == '\0') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+//==================================================================================================
+//         TYPE:    Method
+//   PARAMETERS:    ........
+//  DESCRIPTION:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+bool my::String::operator==(const my::String& myString)
+{
+    return (*this == myString.getFirstElementAdress());
+}
+
+
+//==================================================================================================
+//         TYPE:    Method
+//   PARAMETERS:    ........
+//  DESCRIPTION:    Overloaded operator!=
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+bool my::String::operator!=(const char* stringLiteral)
+{
+    return !(*this == stringLiteral);
+}
+
+
+
+//==================================================================================================
+//         TYPE:    Method
+//   PARAMETERS:    ........
+//  DESCRIPTION:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+bool my::String::operator!=(const my::String& myString)
+{
+    return (*this != myString.getFirstElementAdress());
+}
 
 
 //==================================================================================================
