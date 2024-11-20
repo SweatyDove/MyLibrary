@@ -57,6 +57,30 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 
 
 
+//==================================================================================================
+//          TYPE:   Copy constructor
+//    PARAMETERS:   --------
+//   DESCRIPTION:   --------
+//  RETURN VALUE:   --------
+// COMMENTS/BUGS:   Такой вопрос. А нужно ли мне в данном случае выделять память в куче? Или же
+//                  можно "украсть" указатель на данные из аргумента? Тут тогда такой вопрос
+//                  возникает, а является ли аргумент "временным обектом"?
+//                  Ещё вопрос, можно ли выделять память в куче не в фигурных скобках? Наверное,
+//                  можно, но тогда придётся ловить исключения вне*.
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
+    mb_size {dynArr.getSize()},
+    mb_capacity {dynArr.getCapacity()},
+    mb_capacityChunk {dynArr.getCapacityChunk()},
+    mb_dataPtr {static_cast<Type*>(sizeof(Type) * mb_capacity)}
+{
+    for (int ii {0}; ii < mb_size; ++ii) {
+        *(mb_dataPtr + ii) = dynArr[ii];
+    }
+
+}
+
 
 
 //==================================================================================================
@@ -434,30 +458,6 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
     return *this;
 }
 
-
-//==================================================================================================
-//          TYPE:   Copy constructor
-//    PARAMETERS:   --------
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Такой вопрос. А нужно ли мне в данном случае выделять память в куче? Или же
-//                  можно "украсть" указатель на данные из аргумента? Тут тогда такой вопрос
-//                  возникает, а является ли аргумент "временным обектом"?
-//                  Ещё вопрос, можно ли выделять память в куче не в фигурных скобках? Наверное,
-//                  можно, но тогда придётся ловить исключения вне*.
-//==================================================================================================
-template <typename Type>
-my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
-    mb_size {dynArr.getSize()},
-    mb_capacity {dynArr.getCapacity()},
-    mb_capacityChunk {dynArr.getCapacityChunk()},
-    mb_dataPtr {static_cast<Type*>(sizeof(Type) * mb_capacity)}
-{
-    for (int ii {0}; ii < mb_size; ++ii) {
-        *(mb_dataPtr + ii) = dynArr[ii];
-    }
-
-}
 
 
 //==================================================================================================
