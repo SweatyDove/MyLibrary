@@ -16,34 +16,24 @@ public:
     ~SmartPtr();
 
     // # По-идее, мне не нужна семантика копирования здесь, т.к. умный указатель нужен для единоличного
-    // # (если это не shared_ptr) и управления ресурсом. Тут нельзя копировать куда-то его (ресурс),
+    // # (если это не shared_ptr) управления ресурсом. Тут нельзя копировать куда-то его (ресурс),
     // # а можно только перемещать
     SmartPtr(const my::SmartPtr<Type>& smartPtr) = delete;
     my::SmartPtr<Type>& operator=(const my::SmartPtr<Type>& smartPtr) = delete;
 
 
 
-    //==============================================================================================
-    //          TYPE:    Move-constructor
-    //    PARAMETERS:    ........
-    //   DESCRIPTION:    ........
-    //  RETURN VALUE:    ........
-    // COMMENTS/BUGS:    ........
-    //==============================================================================================
+    // # Move-constructor
     SmartPtr(const my::SmartPtr<Type>&& smartPtr);
 
 
     //==============================================================================================
-    //          TYPE:    Move-assignment
-    //    PARAMETERS:    ........
-    //   DESCRIPTION:    ........
-    //  RETURN VALUE:    ........
-    // COMMENTS/BUGS:    ........
+    // # Move-assignment
     //==============================================================================================
     my::SmartPtr<Type>& operator=(const my::SmartPtr<Type>&& smartPtr);
 
     //==============================================================================================
-    //          TYPE:    Dereference operator2
+    //          TYPE:    Dereference operator
     //    PARAMETERS:    ........
     //   DESCRIPTION:    ........
     //  RETURN VALUE:    ........

@@ -12,7 +12,7 @@ template <typename Type>
 my::SmartPtr<Type>::SmartPtr(Type* resource) :
     mb_ptr {resource}
 {
-    std::cout << "[DEBUG]: smart pointer created" << std::endl;
+    std::cout << "[DEBUG]: smart pointer has created!" << std::endl;
 }
 
 
@@ -93,7 +93,7 @@ my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(const my::SmartPtr<Type>&& sma
 
 
 //==============================================================================================
-//          TYPE:   Dereference operator2
+//          TYPE:   Dereference operator
 //    PARAMETERS:   ........
 //   DESCRIPTION:   ........
 //  RETURN VALUE:   ........
