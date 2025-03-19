@@ -1,10 +1,19 @@
 #ifndef MY_PRETTYPRINT_H
 #define MY_PRETTYPRINT_H
 
+// # IO-libraries
 #include <iostream>
+
+
+// # Standart cotainers
 #include <array>
+#include <string>
+
+
+// # C-libraries
 #include <ctime>
 #include <cstring>                  // For: strncpy(), memset()
+#include <cstdarg>                  // For: ellipsis
 
 namespace my {
 
@@ -23,6 +32,7 @@ namespace my {
  *      стандартный функционал (sprintf() например)
  *
  */
+
 
 
 
@@ -50,6 +60,9 @@ public:
     bool mb_timeDisplay {true};
     bool mb_funcNameDisplay {true};
     const char* mb_separator {"::"};
+    int mb_lineLength {80};
+
+    std::string mb_message {};
 
 
 
@@ -69,12 +82,18 @@ public:
     void printTime();
     void printFuncName();
 
-//    void formMessage(char* line);
+    void formMessage(const char* formatLine, ...);
     void debug(char* line);
-};
 
 
-}
+
+}; // PrettyPrint
+
+
+bool isDigit(char ch);
+
+
+} // End of 'my' namespace
 
 
 #endif // MY_PRETTYPRINT_H
