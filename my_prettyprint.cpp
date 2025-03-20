@@ -197,15 +197,16 @@ void my::PrettyPrint::debug(char* line)
 //   DESCRIPTION:   Form the base message for different output levels
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   Нужно обработать случаи, когда точность указана в явном виде (в т.ч. и 0) и
-//                  когда точность не указана (т.е. нужно выводить всё число/строку).
+// COMMENTS/BUGS:   Если после символа '.' ничего не стоит или стоит ноль, то в обоих случаях
+//                  точность считается нулевой.
 //==================================================================================================
 void my::PrettyPrint::formMessage(const char* formatLine, ...)
 {
 
     bool    leftAlign {false};                          // Left alignment of the argument
     int     fieldWidth {0};                             // Field width for the argument
-    int     precision {0};                               // Required precision
+    int     precision {-1};                               // Required precision
+    int     floatDefaultPrecision {6};                  // Default precision for float number
     int     basePrecision {0};                          // Teporary value for precision
     int     length {0};                                 // Length of the optional argument
     int     tempVal {0};
@@ -246,16 +247,16 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
             ++p;
         }
 
-        // #### Precision
+        // #### Precision:
+        // ####   INT: -1 means display full value, 0 or nothing (after '.') has no effect, >0 - print '0' before.
+        // #### FLOAT: -1 means display full value, 0 or nothing (after '.') means not to display fractional part,
+        // ####        >0 - print additional values for fractional part (but maybe better to limit with 7 for float and 15 for double)
+        // ####   STR: -1 means display full string, 0 or nothing (after '.') means do not display string at all,
+        // ####        0 < precision <= string length - display precision symbols; precision > string length - print full string
         if (*p == '.') {
+            precision = 0;
             ++p;
-            // ######## Case of the absence 'precision' at all - means to display full number/string
-            if (!my::isDigit(*p)) {
-                precision = -1;
-            }
-            else {} // Nothing to do
-
-            // ######## Case of presence some 'precision' value
+            // ######## Case of the presence some 'precision' value
             while (my::isDigit(*p)) {
                 precision = precision * 10 + (*p - '0');
                 ++p;
@@ -266,8 +267,10 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
         // ## Handle the format specifier
         switch(*p) {
+
         // ## INTEGER ARGUMENT
         case 'd':
+
             // #### Read the next argument as integer and calculate its length
             intArg = va_arg(argList, int);
             length = 1;
@@ -278,27 +281,32 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
             // #### Left allignment
             if (leftAlign) {
-                    // ######## Replace 'freespace' with '0'
+
+                // ######## Replace 'freespace' with '0'
+                if (precision > 0) {
                     while (precision > length) {
                         mb_message.push_back('0');
                         --fieldWidth;
                         --precision;
                     }
-                    // ######## Push @intArg to the @mb_message and reduce the remaining @fieldWidth
-                    mb_message += std::to_string(intArg);
-                    fieldWidth -= length;
+                }
+                else {} // Nothing to do
 
-                    // ######## Other space in field fill with '_' symbol
-                    while (fieldWidth > 0) {
-                        mb_message.push_back('_');
-                        --fieldWidth;
-                    }
+                // ######## Push @intArg to the @mb_message and reduce the remaining @fieldWidth
+                mb_message += std::to_string(intArg);
+                fieldWidth -= length;
+
+                // ######## Other space in field fill with '_' symbol
+                while (fieldWidth > 0) {
+                    mb_message.push_back('_');
+                    --fieldWidth;
+                }
             }
             // #### Right allignment
             else {
                 // ######## Left some space for the @intArg with the given @precision and fill other
                 // ######## space with '_'
-                fieldWidth -= precision;
+                fieldWidth = (precision > 0) ? fieldWidth - precision - length : fieldWidth - length;
                 while (fieldWidth > 0) {
                     mb_message.push_back('_');
                     --fieldWidth;
@@ -306,17 +314,20 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
                 // ######## At this step we need to take into account the representation @precision
                 // ######## of the @intArg
-                precision -= length;
-                while (precision > 0) {
-                    mb_message.push_back('0');
-                    --precision;
+                if (precision > 0) {
+                    precision -= length;
+                    while (precision > 0) {
+                        mb_message.push_back('0');
+                        --precision;
+                    }
                 }
+                else {} // Nothing to do
                 mb_message += std::to_string(intArg);
             }
 
             // #### Reinitialization of some parameters
             fieldWidth = 0;
-            precision = 0;
+            precision = -1;
             leftAlign = false;
 
             break;
@@ -337,13 +348,14 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
             // #### Separately save fractional part of the @doubleArg
             doubleArg = doubleArg - intArg;
 
-            // #### Left allignment
+            // #### LEFT ALIGNMENT
             if (leftAlign) {
                 mb_message += std::to_string(intArg);
                 fieldWidth -= length;
 
-                // ######## Taking into account the fractional part
-                if (precision > 0) {
+                // ######## Display @precision elements of fractional part (do not consider float/double limits at this moment)
+                if (precision != 0) {
+                    precision = (precision < 0) ? floatDefaultPrecision : precision;
                     mb_message.push_back('.');
                     --fieldWidth;
                     // ######## Separate each digit of the fractional part and push_back() it
@@ -355,9 +367,8 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                         --precision;
                     }
                 }
-                else {
-                    mb_message += std::to_string(doubleArg);
-                }
+                // ######## Do not display fractional part at all
+                else {} // Nothing to do
 
                 // ######## Fill the left space with '_'
                 while (fieldWidth > 0) {
@@ -365,15 +376,16 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                     --fieldWidth;
                 }
             }
-            // #### Right allignment
+            // #### RIGHT ALIGNMENT
             else {
+                precision = (precision < 0) ? floatDefaultPrecision : precision;
                 fieldWidth -= (length + precision + ((precision > 0) ? 1 : 0)); // Last member for '.'
                 while (fieldWidth > 0) {
                     mb_message.push_back('_');
                     --fieldWidth;
                 }
                 mb_message += std::to_string(intArg);
-                if (precision > 0) {
+                if (precision != 0) {
                     mb_message.push_back('.');
                     // ######## Separate each digit of the fractional part and push_back() it
                     while (precision > 0) {
@@ -383,14 +395,12 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                         --precision;
                     }
                 }
-                else {
-                    mb_message += std::to_string(doubleArg);
-                }
+                else {} // Nothing to do
             }
 
             // #### Reinitialization of some parameters
             fieldWidth = 0;
-            precision = 0;
+            precision = -1;
             leftAlign = false;
 
             break;
@@ -459,7 +469,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
             // #### Reinitialization of some parameters
             fieldWidth = 0;
-            precision = 0;
+            precision = -1;
             leftAlign = false;
 
             break;
@@ -471,6 +481,9 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
     } // End of for-loop
 
     va_end(argList);
+
+    std::cout << "\nObtained result: \"" << mb_message << '\"' << std::endl;
+    mb_message.clear();
 
 }
 

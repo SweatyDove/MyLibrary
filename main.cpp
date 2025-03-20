@@ -6,9 +6,12 @@
 
 
 /*
+ * COMMENTS:
+ * 1) Add autotest somewhere (maybe try to use github functionality or smth else).
+ *
  * QUESTIONS:
  *
- * 1) Order of evaluation of 3-d part (incrementing) of the for-loop-statement? (Could begin from
+ * 1) Order of evaluation of 3-rd part (incrementing) of the for-loop-statement? (Could begin from
  *      here: https://en.cppreference.com/w/cpp/language/eval_order
  */
 

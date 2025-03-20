@@ -61,6 +61,7 @@ public:
     bool mb_funcNameDisplay {true};
     const char* mb_separator {"::"};
     int mb_lineLength {80};
+    char filler {'_'};
 
     std::string mb_message {};
 
