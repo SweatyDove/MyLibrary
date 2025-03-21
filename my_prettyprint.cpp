@@ -170,6 +170,20 @@ void my::PrettyPrint::printSeparator()
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::setFiller(const char filler)
+{
+    mb_filler = filler;
+}
+
+
+
 
 //==================================================================================================
 //          TYPE:   Method
@@ -296,19 +310,26 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                 mb_message += std::to_string(intArg);
                 fieldWidth -= length;
 
-                // ######## Other space in field fill with '_' symbol
+                // ######## Other space in field fill with @mb_filler
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
             }
             // #### Right allignment
             else {
                 // ######## Left some space for the @intArg with the given @precision and fill other
-                // ######## space with '_'
-                fieldWidth = (precision > 0) ? fieldWidth - precision - length : fieldWidth - length;
+                // ######## space with @mb_filler
+                if (precision > 0) {
+                    fieldWidth = (precision > length) ? fieldWidth - precision : fieldWidth - length;
+                }
+                else {
+                    fieldWidth = fieldWidth - length;
+                }
+
+
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
 
@@ -332,7 +353,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
             break;
 
-        // ## FLOAT ARGUMENT
+        //## FLOAT ARGUMENT
         case 'f':
 
             doubleArg = va_arg(argList, double);
@@ -370,9 +391,9 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                 // ######## Do not display fractional part at all
                 else {} // Nothing to do
 
-                // ######## Fill the left space with '_'
+                // ######## Fill the left space with @mb_filler
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
             }
@@ -381,7 +402,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
                 precision = (precision < 0) ? floatDefaultPrecision : precision;
                 fieldWidth -= (length + precision + ((precision > 0) ? 1 : 0)); // Last member for '.'
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
                 mb_message += std::to_string(intArg);
@@ -415,53 +436,64 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
             for (char* q {cStrArg}; (q != nullptr) && (*q != '\0'); ++q, ++length)
                 ;
 
-            // #### Left allignment (not sure if this is correct to increment original pointer to the
+            // #### LEFT ALIGNMENT (not sure if this is correct to increment original pointer to the
             // #### @cStrArg). Maybe better to use separate pointer (like 'q' above).
-            basePrecision = precision;
             if (leftAlign) {
-                while (*cStrArg) {
-                    mb_message.push_back(*cStrArg);
-                    ++cStrArg;
-                    --fieldWidth;
 
-                    // ######## In the case of 'absence' precision - print the whole string
-                    if (basePrecision == 0) {
-                        // Nothing to do
-                    }
-                    // ######## Below @precision means number of characters to print.
-                    else {
-                        if (precision > 0) {
-                            --precision;
-                        }
-                        else {
-                            break;      // Exit from while-loop
-                        }
+                // ######## Print the whole string
+                if (precision < 0) {
+                    while (*cStrArg) {
+                        mb_message.push_back(*cStrArg);
+                        ++cStrArg;
+                        --fieldWidth;
                     }
                 }
+                // ######## Print @precision symbols or full string if @precision > string length
+                else if (precision > 0) {
+                    while (*cStrArg && precision > 0) {
+                        mb_message.push_back(*cStrArg);
+                        ++cStrArg;
+                        --fieldWidth;
+                        --precision;
+                    }
+                }
+                // ######## Do not print string at all
+                else {} // Nothing to do
+
+                // ######## The left space fill with @mb_filler symbol
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
             }
-            // #### Right allignment
+            // #### RIGHT ALIGNMENT
             else {
-                fieldWidth -= ((precision == 0) ? length : precision);
+                // ######## Calculate the amount of symbols, that have to be filled with @mb_filler
+                if (precision < 0) {
+                    fieldWidth = fieldWidth - length;
+                }
+                else if (precision > 0) {
+                    fieldWidth = fieldWidth - ((precision < length) ? precision : length);
+                }
+                else {} // Nothing to do
+
+                // ######## Fill the 'free' space with @mb_filler
                 while (fieldWidth > 0) {
-                    mb_message.push_back('_');
+                    mb_message.push_back(mb_filler);
                     --fieldWidth;
                 }
-                while (*cStrArg != '\0') {
-                    mb_message.push_back(*cStrArg);
-                    ++cStrArg;
-                }
-                // ######## If the @basePrecision > 0 - print chars until precision > 0.
-                // ######## Otherwise - print the whole string
-                if (basePrecision > 0) {
-                    if (precision > 0) {
-                        --precision;
+
+                // ######## Print the whole string
+                if (precision < 0) {
+                    while (*cStrArg != '\0') {
+                        mb_message.push_back(*cStrArg);
+                        ++cStrArg;
                     }
-                    else {
-                        break;      // Exit from while-loop
+                }
+                // ######## Print @precision symbols or full string if @precision > string length
+                else if (precision > 0) {
+                    for (int ii {0}; ii < ((precision < length) ? precision : length); ++ii) {
+                        mb_message.push_back(*(cStrArg + ii));
                     }
                 }
                 else {} // Nothing to do

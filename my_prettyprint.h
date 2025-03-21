@@ -31,6 +31,8 @@ namespace my {
  * -- Так же нужно уметь работать со списком аргументов переменной длинны. Или как-то использовать
  *      стандартный функционал (sprintf() например)
  *
+ * -- Добавить функцию автотестирования в каком-то виде
+ *
  */
 
 
@@ -61,7 +63,7 @@ public:
     bool mb_funcNameDisplay {true};
     const char* mb_separator {"::"};
     int mb_lineLength {80};
-    char filler {'_'};
+    char mb_filler {'_'};
 
     std::string mb_message {};
 
@@ -85,6 +87,9 @@ public:
 
     void formMessage(const char* formatLine, ...);
     void debug(char* line);
+
+
+    void setFiller(const char filler);
 
 
 
