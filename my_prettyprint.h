@@ -14,6 +14,7 @@
 #include <ctime>
 #include <cstring>                  // For: strncpy(), memset()
 #include <cstdarg>                  // For: ellipsis
+#include <cstdio>                   // For: std::sprintf
 
 namespace my {
 
@@ -90,6 +91,8 @@ public:
 
 
     void setFiller(const char filler);
+
+    bool selfTest();
 
 
 

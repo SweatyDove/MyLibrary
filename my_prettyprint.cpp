@@ -514,8 +514,8 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
     va_end(argList);
 
-    std::cout << "\nObtained result: \"" << mb_message << '\"' << std::endl;
-    mb_message.clear();
+//    std::cout << "\nObtained result: \"" << mb_message << '\"' << std::endl;
+//    mb_message.clear();
 
 }
 
@@ -524,8 +524,164 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   Есть ли способ как-то объединить в структуре <test> сразу три типа значения и потом
+//                  по разному инициализировать каждую такую структуру в массиве testArray? Пока такого
+//                  сделать не получилось у меня (по крайней мере, через использование 'объединений').
+//==================================================================================================
+bool my::PrettyPrint::selfTest()
+{
+    int a {759};
+    double d {3.1415};
+    char* cString {"Hello, world!"};
+
+//    struct test {
+//        const char* fmtStr;
+//        union param {
+//            int intParam;
+//            float floatParam;
+//            const char* cStrParam;
+//        } parameter;
+//    };
+
+    struct intTest {
+        const char* fmtStr;
+        int arg;
+    };
+
+    struct floatTest {
+        const char* fmtStr;
+        double arg;
+    };
+
+    struct cStrTest {
+        const char* fmtStr;
+        char* arg;
+    };
 
 
+
+
+    std::array<intTest, 7> intTestArray = {
+        {
+            {"%%d %d", a},
+            {"%15d", a},
+            {"%-15d", a},
+            {"%.d", a},
+            {"%15.7d", a},
+            {"%15.0d", a},
+            {"%-15.4d", a},
+        }
+    };
+
+
+    std::array<floatTest, 7> floatTestArray = {
+        {
+            {"%%f %f", d},
+            {"%f", d},
+            {"%15f", d},
+            {"%-15f", d},
+            {"%.f", d},
+            {"%15.0f", d},
+            {"%-15.4f", d},
+        }
+    };
+
+
+    std::array<cStrTest, 7> cStrTestArray = {
+        {
+            {"%%s %s", cString},
+            {"%s", cString},
+            {"%15s", cString},
+            {"%-15s", cString},
+            {"%.s", cString},
+            {"%15.0s", cString},
+            {"%-15.4s", cString},
+        }
+    };
+
+
+
+    bool result {true};
+
+    int resSize {256};
+    char expectedResult[resSize];
+    std::memset(expectedResult, '\0', resSize);
+
+
+    // # Group of <int> tests
+    for (int ii {0}; ii < intTestArray.size(); ++ii) {
+
+        int n {0};
+
+        n = std::sprintf(expectedResult, intTestArray[ii].fmtStr, intTestArray[ii].arg);
+        this->formMessage(intTestArray[ii].fmtStr, intTestArray[ii].arg);
+
+        if (mb_message.compare(expectedResult) != 0) {
+            result = false;
+            std::cout << "\n[PrettyPrint]::[int group]: test #" << ii << " is FAILED" << std::endl;
+            std::cout << "         [Expected result]: \"" << expectedResult << '\"' << std::endl;
+            std::cout << "         [Obtained result]: \"" << mb_message << '\"' << std::endl;
+        }
+        else {
+            std::cout << "\n[PrettyPrint]::[int group]: test #" << ii << " is PASSED" << std::endl;
+        } // Nothing to do
+
+        std::memset(expectedResult, '\0', n);
+        mb_message.clear();
+    }
+
+    // # Group of <float> tests
+    for (int ii {0}; ii < floatTestArray.size(); ++ii) {
+
+        int n {0};
+
+        n = std::sprintf(expectedResult, floatTestArray[ii].fmtStr, floatTestArray[ii].arg);
+        this->formMessage(floatTestArray[ii].fmtStr, floatTestArray[ii].arg);
+
+        if (mb_message.compare(expectedResult) != 0) {
+            result = false;
+            std::cout << "\n[PrettyPrint]::[float group]: test #" << ii << " is FAILED" << std::endl;
+            std::cout << "           [Expected result]: \"" << expectedResult << '\"' << std::endl;
+            std::cout << "           [Obtained result]: \"" << mb_message << '\"' << std::endl;
+        }
+        else {
+            std::cout << "\n[PrettyPrint]::[float group]: test #" << ii << " is PASSED" << std::endl;
+        } // Nothing to do
+
+        std::memset(expectedResult, '\0', n);
+        mb_message.clear();
+    }
+
+    // # Group of <const char*> tests
+    for (int ii {0}; ii < cStrTestArray.size(); ++ii) {
+
+        int n {0};
+
+        n = std::sprintf(expectedResult, cStrTestArray[ii].fmtStr, cStrTestArray[ii].arg);
+        this->formMessage(cStrTestArray[ii].fmtStr, cStrTestArray[ii].arg);
+
+        if (mb_message.compare(expectedResult) != 0) {
+            result = false;
+            std::cout << "\n[PrettyPrint]::[c-string group]: test #" << ii << " is FAILED" << std::endl;
+            std::cout << "              [Expected result]: \"" << expectedResult << '\"' << std::endl;
+            std::cout << "              [Obtained result]: \"" << mb_message << '\"' << std::endl;
+        }
+        else {
+            std::cout << "\n[PrettyPrint]::[c-string group]: test #" << ii << " is PASSED" << std::endl;
+        } // Nothing to do
+
+        std::memset(expectedResult, '\0', n);
+        mb_message.clear();
+    }
+
+
+    return result;
+}
 
 
 
