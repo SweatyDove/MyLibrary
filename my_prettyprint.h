@@ -60,13 +60,17 @@ public:
     };
     std::array<bool, static_cast<int>(Level::TOTAL)> mb_level {true, true, true, true};
 
-    bool mb_timeDisplay {true};
-    bool mb_funcNameDisplay {true};
-    const char* mb_separator {"::"};
-    int mb_lineLength {80};
-    char mb_filler {'_'};
+    bool            mb_timeDisplay {true};
+    bool            mb_funcNameDisplay {true};
+    bool            mb_levelDisplay {true};
 
-    std::string mb_message {};
+    const char*     mb_separator {"::"};
+    int             mb_softMargin {80};                 // Soft right edge, after which we can finish to print word on the current line and then have to move to the next line
+    int             mb_hardNargin {100};                // Hard right edge, after which we have to move current word on the new line
+    char            mb_filler {'_'};
+
+    std::string     mb_header {};
+    std::string     mb_message {};
 
 
 
@@ -81,16 +85,23 @@ public:
     void setSeparator(const char* sep);
     void printSeparator();
 
-
-
-    void printTime();
-    void printFuncName();
-
-    void formMessage(const char* formatLine, ...);
-    void debug(char* line);
-
-
     void setFiller(const char filler);
+    void setSoftMargin(int n);
+    void setHardMargin(int n);
+
+
+    void formTime();
+    void formLevel(Level level);
+    void formCallerName();
+
+    void formHeader(Level level);
+    void formMessage(const char* fmtLine, std::va_list argList);
+
+    void debug(const char* fmtLine, ...);
+    void info(const char* fmtLine, ...);
+    void warn(const char* fmtLine, ...);
+    void error(const char* fmtLine, ...);
+
 
     bool selfTest();
 

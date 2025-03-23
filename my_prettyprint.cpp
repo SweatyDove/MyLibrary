@@ -83,21 +83,22 @@ void my::PrettyPrint::displayFuncName(bool b)
 
 //==================================================================================================
 //          TYPE:   Method
-//   DESCRIPTION:   ........
+//   DESCRIPTION:   Form a time string and place it into @mb_header
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::printTime()
+void my::PrettyPrint::formTime()
 {
-    std::time_t timeStamp;
-
-    int buffSize {32};
-    char timeBuff[buffSize];
-
-    std::memset(timeBuff, '\0', buffSize);
-
     if (mb_timeDisplay == true) {
+
+        std::time_t     timeStamp;
+        int             buffSize {32};
+        char            timeBuff[buffSize];
+
+        std::memset(timeBuff, '\0', buffSize);
+
+
         // ## Copy current time value into buffer
         std::time(&timeStamp);
         std::strncpy(timeBuff, std::ctime(&timeStamp), buffSize);
@@ -115,12 +116,47 @@ void my::PrettyPrint::printTime()
             }
         }
 
-        // ## Display time
-        std::cout << '[' << timeBuff << ']';
-        printSeparator();
-
+        // ## Push time into @mb_header
+        mb_header.push_back('[');
+        mb_header.append(timeBuff);
+        mb_header.push_back(']');
     }
     else {} // Nothing to do
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Form a level of the message and place it into @mb_header
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::formLevel(Level level)
+{
+
+    if (mb_levelDisplay == true) {
+        mb_header.push_back('[');
+
+        switch (level) {
+        case Level::DEBUG:
+            mb_header.append("DEBUG");
+            break;
+        case Level::INFO:
+            mb_header.append(" INFO");
+            break;
+        case Level::WARN:
+            mb_header.append(" WARN");
+            break;
+        case Level::ERROR:
+            mb_header.append("ERROR");
+            break;
+        }
+
+        mb_header.push_back(']');
+    }
+    else {} // Nothing to do
+
 }
 
 
@@ -185,24 +221,69 @@ void my::PrettyPrint::setFiller(const char filler)
 
 
 
+
+
+
+
+
 //==================================================================================================
 //          TYPE:   Method
-//   DESCRIPTION:   ........
+//   DESCRIPTION:   Output message with "DEBUG" prefix
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::debug(char* line)
+void my::PrettyPrint::debug(const char* formatLine, ...)
 {
+
+    std::va_list argList;                               // List of optional arguments (under ellipsis)
+
     if (mb_level[static_cast<int>(Level::DEBUG)] == true) {
-        printTime();
-        std::cout << "[DEBUG]=> " << line << std::endl;
+
+        this->formHeader(Level::DEBUG);
+
+        va_start(argList, formatLine);                      // Set up argList on first optional argument
+        this->formMessage(formatLine, argList);
+        va_end(argList);
+
+        std::cout << mb_header << mb_message << std::endl;
+
     }
-    else {
-        // Nothing to do
-    }
+    else {} // Nothing to do
+
 }
 
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Form the header part of the message
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::formHeader(Level level)
+{
+
+    // # Form the current time of the message and place it into the @mb_header
+    if (mb_timeDisplay == true) {
+        formTime();
+    }
+    else {} // Nothing to do
+
+    // # Form the message output level
+    if (mb_levelDisplay == true) {
+        // ## Check last header element to figure out if it is needed to print @mb_separator
+        if (mb_timeDisplay == true) {
+            mb_header.append(mb_separator);
+        }
+        else {} // Nothing to do
+        formLevel(level);
+    }
+    else {} // Nothing to do
+
+    mb_header.append(": ");
+
+}
 
 
 
@@ -211,17 +292,15 @@ void my::PrettyPrint::debug(char* line)
 //   DESCRIPTION:   Form the base message for different output levels
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   Если после символа '.' ничего не стоит или стоит ноль, то в обоих случаях
-//                  точность считается нулевой.
+// COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::formMessage(const char* formatLine, ...)
+void my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
 {
 
     bool    leftAlign {false};                          // Left alignment of the argument
     int     fieldWidth {0};                             // Field width for the argument
     int     precision {-1};                               // Required precision
     int     floatDefaultPrecision {6};                  // Default precision for float number
-    int     basePrecision {0};                          // Teporary value for precision
     int     length {0};                                 // Length of the optional argument
     int     tempVal {0};
 
@@ -229,9 +308,6 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
     double doubleArg {0.0};
     char *cStrArg {nullptr};
 
-    std::va_list argList;                               // List of optional arguments (under ellipsis)
-
-    va_start(argList, formatLine);                      // Set up argList on first optional argument
 
     // # Go through the @formatLine to find the type of the first optional argument
     for (const char* p {formatLine}; *p; ++p) {
@@ -282,7 +358,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
         // ## Handle the format specifier
         switch(*p) {
 
-        // ## INTEGER ARGUMENT
+            // ## INTEGER ARGUMENT
         case 'd':
 
             // #### Read the next argument as integer and calculate its length
@@ -353,7 +429,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
             break;
 
-        //## FLOAT ARGUMENT
+            //## FLOAT ARGUMENT
         case 'f':
 
             doubleArg = va_arg(argList, double);
@@ -426,7 +502,7 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
 
             break;
 
-        // ## C-STRING ARGUMENT
+            // ## C-STRING ARGUMENT
         case 's':
 
             cStrArg = va_arg(argList, char*);
@@ -511,11 +587,6 @@ void my::PrettyPrint::formMessage(const char* formatLine, ...)
             break;
         } // End of switch-operator
     } // End of for-loop
-
-    va_end(argList);
-
-//    std::cout << "\nObtained result: \"" << mb_message << '\"' << std::endl;
-//    mb_message.clear();
 
 }
 
@@ -619,7 +690,7 @@ bool my::PrettyPrint::selfTest()
         int n {0};
 
         n = std::sprintf(expectedResult, intTestArray[ii].fmtStr, intTestArray[ii].arg);
-        this->formMessage(intTestArray[ii].fmtStr, intTestArray[ii].arg);
+        this->debug(intTestArray[ii].fmtStr, intTestArray[ii].arg);
 
         if (mb_message.compare(expectedResult) != 0) {
             result = false;
@@ -641,7 +712,7 @@ bool my::PrettyPrint::selfTest()
         int n {0};
 
         n = std::sprintf(expectedResult, floatTestArray[ii].fmtStr, floatTestArray[ii].arg);
-        this->formMessage(floatTestArray[ii].fmtStr, floatTestArray[ii].arg);
+        this->debug(floatTestArray[ii].fmtStr, floatTestArray[ii].arg);
 
         if (mb_message.compare(expectedResult) != 0) {
             result = false;
@@ -663,7 +734,7 @@ bool my::PrettyPrint::selfTest()
         int n {0};
 
         n = std::sprintf(expectedResult, cStrTestArray[ii].fmtStr, cStrTestArray[ii].arg);
-        this->formMessage(cStrTestArray[ii].fmtStr, cStrTestArray[ii].arg);
+        this->debug(cStrTestArray[ii].fmtStr, cStrTestArray[ii].arg);
 
         if (mb_message.compare(expectedResult) != 0) {
             result = false;
