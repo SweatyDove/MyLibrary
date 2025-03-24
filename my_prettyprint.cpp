@@ -161,6 +161,71 @@ void my::PrettyPrint::formLevel(Level level)
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Forming the name of the caller function
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   At this moment I'm using placeholder for the function name.
+//                  Unfortunately, I couldn't get caller name with the usage of backtrace()/backtrace_symbols()
+//                  functions - thats why they are commented out.
+//                  But simple realization requires of independent initialization in each function -
+//                  it is too complicated I suppose.
+//==================================================================================================
+void my::PrettyPrint::formCallerName()
+{
+    if (mb_levelDisplay == true) {
+
+        mb_header.push_back('[');
+        mb_header.append("FUNC: ");
+        mb_header.append(mb_callerName);
+        mb_header.append("()");
+        mb_header.push_back(']');
+
+    }
+    else {} // Nothing to do
+
+
+
+//    if (mb_levelDisplay == true) {
+//        mb_header.push_back('[');
+
+//        int         stackLevel {4};                            // Stack level to climb to
+//        void*       buffer[stackLevel] {nullptr};
+//        int         retValue {0};
+//        char**      strings {};
+
+//        retValue = backtrace(buffer, stackLevel);
+
+//        int minSize = (stackLevel < retValue) ? stackLevel : retValue;
+
+
+
+//        strings = backtrace_symbols(buffer, minSize);
+//        for (int ii {0}; ii < minSize; ++ii) {
+//            std::cout << strings[ii] << std::endl;
+//        }
+
+//        std::string callerName {strings[stackLevel - 1]};
+//        int nameStart {callerName.find_first_of('(', 0) + 1};
+//        int nameEnd {callerName.find_first_of('+', nameStart)};
+
+//        std::string caller {callerName.substr(nameStart, nameEnd - nameStart)};
+
+
+
+//        mb_header.append(caller);
+//        mb_header.push_back(']');
+
+//        free(strings);
+
+//    }
+//    else {} // Nothing to do
+
+
+}
+
+
 
 
 //==================================================================================================
@@ -199,10 +264,11 @@ void my::PrettyPrint::setSeparator(const char* sep)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::printSeparator()
+void my::PrettyPrint::setCallerName(const char* callerName)
 {
-    std::cout << mb_separator;
+    mb_callerName = callerName;
 }
+
 
 
 
@@ -223,6 +289,22 @@ void my::PrettyPrint::setFiller(const char filler)
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::printSeparator()
+{
+    std::cout << mb_separator;
+}
+
+
+
+
+
 
 
 
@@ -235,6 +317,7 @@ void my::PrettyPrint::setFiller(const char filler)
 //==================================================================================================
 void my::PrettyPrint::debug(const char* formatLine, ...)
 {
+
 
     std::va_list argList;                               // List of optional arguments (under ellipsis)
 
@@ -250,6 +333,7 @@ void my::PrettyPrint::debug(const char* formatLine, ...)
 
     }
     else {} // Nothing to do
+
 
 }
 
@@ -270,6 +354,7 @@ void my::PrettyPrint::formHeader(Level level)
     }
     else {} // Nothing to do
 
+
     // # Form the message output level
     if (mb_levelDisplay == true) {
         // ## Check last header element to figure out if it is needed to print @mb_separator
@@ -278,6 +363,18 @@ void my::PrettyPrint::formHeader(Level level)
         }
         else {} // Nothing to do
         formLevel(level);
+    }
+    else {} // Nothing to do
+
+
+    // # Form the caller function name
+    if (mb_funcNameDisplay == true) {
+        // ## Check last header element to figure out if it is needed to print @mb_separator
+        if (mb_levelDisplay == true || mb_timeDisplay == true) {
+            mb_header.append(mb_separator);
+        }
+        else {} // Nothing to do
+        formCallerName();
     }
     else {} // Nothing to do
 

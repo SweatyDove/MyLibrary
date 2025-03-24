@@ -16,8 +16,12 @@
 #include <cstdarg>                  // For: ellipsis
 #include <cstdio>                   // For: std::sprintf
 
+#include <execinfo.h>               // For: backtrace()
+
+
 namespace my {
 
+//#define caller  __FUNCTION__
 
 /*
  * ПЛАН:
@@ -65,6 +69,7 @@ public:
     bool            mb_levelDisplay {true};
 
     const char*     mb_separator {"::"};
+    const char*     mb_callerName {"unknown"};
     int             mb_softMargin {80};                 // Soft right edge, after which we can finish to print word on the current line and then have to move to the next line
     int             mb_hardNargin {100};                // Hard right edge, after which we have to move current word on the new line
     char            mb_filler {'_'};
@@ -82,12 +87,14 @@ public:
     void displayTime(bool);
     void displayFuncName(bool);
 
+
     void setSeparator(const char* sep);
     void printSeparator();
 
     void setFiller(const char filler);
     void setSoftMargin(int n);
     void setHardMargin(int n);
+    void setCallerName(const char* callerName);
 
 
     void formTime();
@@ -96,6 +103,9 @@ public:
 
     void formHeader(Level level);
     void formMessage(const char* fmtLine, std::va_list argList);
+
+
+//#define foo(fmtLine, ...) debug(__FUNCTION__, const char* fmtLine, ...)
 
     void debug(const char* fmtLine, ...);
     void info(const char* fmtLine, ...);
