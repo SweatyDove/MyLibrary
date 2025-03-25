@@ -1,9 +1,30 @@
-
-
-/******************************************************************************
+/*
  * This file describes general utilities for different things.
- ******************************************************************************/
+ */
 #include "my_utilities.h"
+
+
+
+
+
+
+
+
+//==================================================================================================
+//          TYPE:   General function
+//   DESCRIPTION:   Return random number from @min to @max
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   Source: learncpp.com
+//==================================================================================================
+int my::getRandomNumber(int min, int max)
+{
+    static constexpr double fraction {1.0 / (RAND_MAX + 1.0)};
+
+    return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
+}
+
+
 
 
 
@@ -211,5 +232,44 @@ int my::copyString(const char *sourceAdress, char *destinationAdress, int number
 //	return 0;
 //}
 
+
+
+//==================================================================================================
+//          TYPE:   Timer class constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+my::Timer::Timer() :
+    mb_begin {Clock::now()}
+{
+    // Nothing to do
+}
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::Timer::reset()
+{
+        mb_begin = std::chrono::steady_clock::now();
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+double my::Timer::elapsed() const
+{
+    return std::chrono::duration_cast<Milli>(Clock::now() - mb_begin).count();
+}
 
 

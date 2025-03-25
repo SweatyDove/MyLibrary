@@ -1,76 +1,14 @@
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
 
 
-#include "main.h"
-#include "attribute.h"
+#include "my_sort.h"
+#include "my_utilities.h"
 
 
-
-/*
- * QUESTIONS:
- *
- * 1) Order of evaluation of 3-d part (incrementing) of the for-loop-statement? (Could begin from
- *      here: https://en.cppreference.com/w/cpp/language/eval_order
- */
-
-
-class Base {
-public:
-    int* mb_data;
-    enum class Name {
-        HEALTH,
-        STAMINA,
-        MANA,
-
-        TOTAL
-    };
-
-
-//    inline static const ArrayClass<my::String,  static_cast<unsigned int>(Name::TOTAL)> mb_strArray = {
-//        "Hello",
-//        "Beautifull",
-//        "World!"
-//    };
-
-    Base()
-    {
-        std::cout << "[DEBUG]: Base's default ctor has been called" << std::endl;
-    }
-
-    Base(int a) :
-        mb_data {new int {a} }
-    {
-        std::cout << "[DEBUG]: Base ctor has been called: allocate memory for mb_data" << std::endl;
-    }
-
-    Base& operator=(const Base& base)
-    {
-        std::cout << "[DEBUG]: <Base>'s copy assignment operator has been called" << std::endl;
-        this->mb_data = base.mb_data;
-        return *this;
-    }
-
-    ~Base()
-    {
-        std::cout << "[DEBUG]: Base dtor has been called: delete mb_data allocation" << std::endl;
-        delete mb_data;
-//        mb_data = nullptr;
-    }
-
-//    static const my::String& getStringName(Base::Name name)
-//    {
-//        return mb_strArray[static_cast<unsigned int>(name)];
-//    }
-
-
-
-};
-
-std::ostream& operator<<(std::ostream& out, const Base& base)
-{
-    out << base.mb_data;
-    return out;
-}
-
+int getRandomNumber(int min, int max);
 
 
 
@@ -78,64 +16,70 @@ std::ostream& operator<<(std::ostream& out, const Base& base)
 
 int main()
 {
-//    Base a {5};
-//    Base b {7};
-//    int ii {0};
+    // Устанавливаем зерно для std::rand() и затем вызываем 1 раз std::rand() для того, чтобы
+    // отбросить 1-ое значение.
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::rand();
 
-    // Тут происходит две вещи. Как я понимаю, сперва создаётся пустой массив <my::Array>, каждый
-    // элемент которого создаётся при помощи дефолтного конструктора (здесь Base()). Затем происходит
-    // копирование a и b в элементы массива.
-    // Единственное, что при вызове деструктора массива, почему-то вызывается деструктор только для
-    // одного элемента <Base>...
-    my::Array<my::String, 2> temp {
-        "Hello",
-        "World"
-    };
+    int randArrSize {20000};
+    std::vector<int> randomArray {};
+    std::vector<int> stdSortArray {};
+    std::vector<int> bubbleArray {};
+    std::vector<int> cocktailArray {};
 
-    ArrayClass<StringClass, 3> foo {
-        "Hello",
-        "my",
-        "world!"
-    };
+    randomArray.resize(randArrSize);
+    stdSortArray.resize(randArrSize);
+    bubbleArray.resize(randArrSize);
+    cocktailArray.resize(randArrSize);
+
+    bool bubbleTest {false};
+    bool cocktailTest {false};
 
 
-    /*
-     * А почему он создается ещё на этапе компиляции?
-     * Тут вроде бы всё нормально.
-     * 1 -- Сперва конструируются временные объекты <Base>, содержащие 5 и 7
-     * соответственно (сами "результаты" выражений (5) и (7) имеют тип int и являются rvalue).
-     * 2 -- Затем сам массив bar конструирует два "свободных" места <Base> под вычисленные элементы -
-     * используя для этого дефолтный конструктор <Base>.
-     * 3 -- Ну и на третем шаге происходит копирование временных объектов в объекты из массивы.
-     * 4 -- Потом временные обьекты уничтожаются.
-     */
-//    my::Array<Base, 2> bar {5, 7};
+    for (int ii {0}; ii < randArrSize - 1; ++ii) {
+        cocktailArray[ii] = bubbleArray[ii] = stdSortArray[ii] = randomArray[ii] = my::getRandomNumber(0, randArrSize);
+    }
 
 
 
+    std::vector<int> testArray = {1, 4, 7, 0, 5, 2, 2, 6, 3, 2};                // size = 10
+//    int k = 3;
+//    Solution sol {};
+//    std::vector<int> res {sol.getAverages(testArray, k)};
 
 
-//    Attribute attr_1 = Attribute(Attr::Name::DODGE_CHANCE, Attribute::Type::RATING, -1, -1, -1);
-//    Attribute attr_2 {Attr::Name::CRIT_CHANCE, Attribute::Type::RATING, -1, -1, -1};
-//    Attribute attr_3 {Attribute(Attr::Name::ESCAPE_CHANCE, Attribute::Type::RATING, 66, 66, 66)};
 
-//    ArrayClass<Attribute, 3> mb_ratings = {attr_1, attr_2, attr_3};
-//    ArrayClass<Attribute, 3> mb_ratings = {
-//        {
-//            {Attr::Name::DODGE_CHANCE, Attribute::Type::RATING, -1, -1, -1},
-//            {Attr::Name::CRIT_CHANCE, Attribute::Type::RATING, -1, -1, -1},
-//            {Attr::Name::ESCAPE_CHANCE, Attribute::Type::RATING, 66, 66, 66}
-//        }
-//    };
-//    std::array<Attribute, 1> mb_ratingsClassic {attr_1};
+    my::Sort    sort;
+    double      time;
 
-    /*
-     * По идее, выбор семантики (копирование или перемещение), зависит не от массива, а от типа
-     * элементов, которые находятся внутри него. То есть когда arrB[0] = arrA[0] - это оператор
-     * присваивания, относящийся НЕПОСРЕДСТВЕННО к элементам массива - и именно эти элементы
-     * ответственны за выбор семантики. А пользователь массива? МОжет ли он указать, что элементы
-     * нужно перемещать, а не копировать (и наоборот)?
-     */
+//    time = sort.stupid(stupidArray);
+//    std::cout << "\nSTUPID sort time: " << time << " seconds" << std::endl;
+
+    my::Timer t;
+    std::sort(stdSortArray.begin(), stdSortArray.end());
+    time = t.elapsed();
+    std::cout << "\nstd::sort time: " << time << " milliseconds" << std::endl;
+
+
+    time = sort.bubble(bubbleArray);
+    if (stdSortArray == bubbleArray) {
+        bubbleTest = true;
+        std::cout << "\nBUBBLE sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nBUBBLE test wasn't correct!" << std::endl;
+    }
+
+    time = sort.cocktail(cocktailArray);
+    if (stdSortArray == cocktailArray) {
+        cocktailTest = true;
+        std::cout << "\nCOCKTAIL sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nCOCKTAIL test wasn't correct!" << std::endl;
+    }
+
+
 
 
     return 0;
@@ -145,7 +89,65 @@ int main()
 
 
 
+class Solution {
+public:
+    std::vector<int> getAverages(std::vector<int>& nums, int k) {
+
+        /*
+         *  А разве можно создавать новый вектор и возвращать ссылку на него? Да, память
+         * выделяется в куче, но разве она не должна освобождаться после выхода из функции,
+         * т.к. сам вектор res - это локальная переменная, сидящая в стеке и при выходе из
+         * функции эта стековая переменная должна уничтожаться (а потому там должен
+         * вызываться деструктор). То есть почему он всё-таки возвращается?
+         */
+        std::vector<int> res;
+
+        int numSize {nums.size()};
+        int windowSize {2 * k + 1};
+        int windowSum {0};
 
 
+        res.resize(numSize);
+
+        // # Граничный случай, когда размер массива nums < 2k + 1.
+        if (numSize < windowSize) {
+            for (int ii {0}; ii < numSize; ++ii) {
+                res[ii] = -1;
+            }
+        }
+        else {
+
+            // Считаем сумму в окне
+            for (int ii {0}; ii < windowSize; ++ii) {
+                windowSum += nums[ii];
+            }
+
+            // Заполняем начало массива
+            int ii {0};
+
+            while (ii < k) {
+                res[ii] = -1;
+                ++ii;
+            }
+
+            // Заполняем середину массива
+            while (ii < numSize - k - 1) {
+                res[ii] = (windowSum / windowSize);
+                windowSum = windowSum - nums[ii - k] + nums[ii + k + 1];
+                ++ii;
+            }
+            res[ii] = (windowSum / windowSize);
+            ++ii;
+
+            // Заполняем конец массива
+            while (ii < numSize) {
+                res[ii] = -1;
+                ++ii;
+            }
+        }
+
+        return res;
+    }
+};
 
 
