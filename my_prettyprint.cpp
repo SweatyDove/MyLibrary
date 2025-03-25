@@ -26,10 +26,23 @@ bool my::isDigit(char ch)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-my::PrettyPrint::PrettyPrint()
+my::PrettyPrint::PrettyPrint(std::array<bool, static_cast<int>(Level::TOTAL)> levels,
+                             bool time,
+                             bool funcName,
+                             bool levelType,
+                             int hardMargin) :
+    mb_level {levels},
+
+    mb_timeDisplay {time},
+    mb_funcNameDisplay {funcName},
+    mb_levelTypeDisplay {levelType},
+
+    mb_hardMargin {hardMargin}
 {
-    // Nothing to do
+//    this->selfTest();
 }
+
+
 
 
 
@@ -41,12 +54,9 @@ my::PrettyPrint::PrettyPrint()
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::displayLevel(bool debug, bool info, bool warning, bool error)
+void my::PrettyPrint::displayLevel(bool displayLevelType)
 {
-    mb_level[static_cast<int>(Level::DEBUG)] = debug;
-    mb_level[static_cast<int>(Level::INFO)] = info;
-    mb_level[static_cast<int>(Level::WARN)] = warning;
-    mb_level[static_cast<int>(Level::ERROR)] = error;
+    mb_levelTypeDisplay = displayLevelType;
 }
 
 
@@ -63,6 +73,8 @@ void my::PrettyPrint::displayTime(bool b)
 {
     mb_timeDisplay = b;
 }
+
+
 
 
 
@@ -135,7 +147,7 @@ void my::PrettyPrint::formTime()
 void my::PrettyPrint::formLevel(Level level)
 {
 
-    if (mb_levelDisplay == true) {
+    if (mb_levelTypeDisplay == true) {
         mb_header.push_back('[');
 
         switch (level) {
@@ -174,12 +186,12 @@ void my::PrettyPrint::formLevel(Level level)
 //==================================================================================================
 void my::PrettyPrint::formCallerName()
 {
-    if (mb_levelDisplay == true) {
+    if (mb_funcNameDisplay == true) {
 
         mb_header.push_back('[');
         mb_header.append("FUNC: ");
         mb_header.append(mb_callerName);
-        mb_header.append("()");
+//        mb_header.append("()");
         mb_header.push_back(']');
 
     }
@@ -264,6 +276,34 @@ void my::PrettyPrint::setSeparator(const char* sep)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
+void my::PrettyPrint::setTopBorder(const char* border)
+{
+    mb_topBorder = border;
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::setBottomBorder(const char* border)
+{
+    mb_bottomBorder = border;
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 void my::PrettyPrint::setCallerName(const char* callerName)
 {
     mb_callerName = callerName;
@@ -285,6 +325,18 @@ void my::PrettyPrint::setFiller(const char filler)
 }
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::setLevels(std::array<bool, static_cast<int>(Level::TOTAL)> outputLevels)
+{
+    mb_level = outputLevels;
+
+}
 
 
 
@@ -317,25 +369,102 @@ void my::PrettyPrint::printSeparator()
 //==================================================================================================
 void my::PrettyPrint::debug(const char* formatLine, ...)
 {
+    std::va_list    argList;                               // List of optional arguments (under ellipsis)
+    int             level {static_cast<int>(Level::DEBUG)};
 
-
-    std::va_list argList;                               // List of optional arguments (under ellipsis)
-
-    if (mb_level[static_cast<int>(Level::DEBUG)] == true) {
-
-        this->formHeader(Level::DEBUG);
+    if (mb_level[level] == true) {
 
         va_start(argList, formatLine);                      // Set up argList on first optional argument
-        this->formMessage(formatLine, argList);
+        this->formOutput(Level::DEBUG, formatLine, argList);
         va_end(argList);
 
-        std::cout << mb_header << mb_message << std::endl;
+        std::cout << mb_output << std::endl;
 
     }
     else {} // Nothing to do
 
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Output message with "DEBUG" prefix
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::info(const char* formatLine, ...)
+{
+    std::va_list    argList;                               // List of optional arguments (under ellipsis)
+    int             level {static_cast<int>(Level::INFO)};
+
+    if (mb_level[level] == true) {
+
+        va_start(argList, formatLine);                      // Set up argList on first optional argument
+        this->formOutput(Level::INFO, formatLine, argList);
+        std::cout << mb_output << std::endl;
+        va_end(argList);
+
+
+    }
+    else {} // Nothing to do
 
 }
+
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Output message with "DEBUG" prefix
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::warn(const char* formatLine, ...)
+{
+    std::va_list    argList;                               // List of optional arguments (under ellipsis)
+    int             level {static_cast<int>(Level::WARN)};
+
+    if (mb_level[level] == true) {
+
+        va_start(argList, formatLine);                      // Set up argList on first optional argument
+        this->formOutput(Level::WARN, formatLine, argList);
+        std::cout << mb_output << std::endl;
+        va_end(argList);
+
+    }
+    else {} // Nothing to do
+
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Output message with "DEBUG" prefix
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::error(const char* formatLine, ...)
+{
+    std::va_list    argList;                               // List of optional arguments (under ellipsis)
+    int             level {static_cast<int>(Level::ERROR)};
+
+    if (mb_level[level] == true) {
+
+        va_start(argList, formatLine);                      // Set up argList on first optional argument
+        this->formOutput(Level::ERROR, formatLine, argList);
+        std::cout << mb_output << std::endl;
+        va_end(argList);
+
+    }
+    else {} // Nothing to do
+
+}
+
 
 
 //==================================================================================================
@@ -345,8 +474,10 @@ void my::PrettyPrint::debug(const char* formatLine, ...)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::formHeader(Level level)
+int my::PrettyPrint::formHeader(Level level)
 {
+    // # Remove last data
+    mb_header.clear();
 
     // # Form the current time of the message and place it into the @mb_header
     if (mb_timeDisplay == true) {
@@ -355,10 +486,22 @@ void my::PrettyPrint::formHeader(Level level)
     else {} // Nothing to do
 
 
-    // # Form the message output level
-    if (mb_levelDisplay == true) {
+    // # Form the caller function name
+    if (mb_funcNameDisplay == true) {
         // ## Check last header element to figure out if it is needed to print @mb_separator
         if (mb_timeDisplay == true) {
+            mb_header.append(mb_separator);
+        }
+        else {} // Nothing to do
+        formCallerName();
+    }
+    else {} // Nothing to do
+
+
+    // # Form the message output level
+    if (mb_levelTypeDisplay == true) {
+        // ## Check last header element to figure out if it is needed to print @mb_separator
+        if (mb_funcNameDisplay == true || mb_timeDisplay == true) {
             mb_header.append(mb_separator);
         }
         else {} // Nothing to do
@@ -367,18 +510,11 @@ void my::PrettyPrint::formHeader(Level level)
     else {} // Nothing to do
 
 
-    // # Form the caller function name
-    if (mb_funcNameDisplay == true) {
-        // ## Check last header element to figure out if it is needed to print @mb_separator
-        if (mb_levelDisplay == true || mb_timeDisplay == true) {
-            mb_header.append(mb_separator);
-        }
-        else {} // Nothing to do
-        formCallerName();
-    }
-    else {} // Nothing to do
+
 
     mb_header.append(": ");
+
+    return mb_header.size();
 
 }
 
@@ -391,7 +527,7 @@ void my::PrettyPrint::formHeader(Level level)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-void my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
+int my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
 {
 
     bool    leftAlign {false};                          // Left alignment of the argument
@@ -405,6 +541,10 @@ void my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
     double doubleArg {0.0};
     char *cStrArg {nullptr};
 
+
+
+    // # Clear the mb_message string from old data
+    mb_message.clear();
 
     // # Go through the @formatLine to find the type of the first optional argument
     for (const char* p {formatLine}; *p; ++p) {
@@ -685,8 +825,95 @@ void my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
         } // End of switch-operator
     } // End of for-loop
 
+    return mb_message.size();
+
 }
 
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Form output message taking into account the soft/hard margin
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+void my::PrettyPrint::formOutput(Level level, const char* fmtLine, std::va_list argList)
+{
+    int                 leftSpace       {};
+    int                 headerSize      {this->formHeader(level)};
+    int                 messageSize     {this->formMessage(fmtLine, argList)};
+    const std::string   delimeter       {" \t"};
+
+
+    // # At this moment do not consider cases, where header length is to high
+    assert (headerSize < mb_hardMargin && "Length of header is larger than hard margin. Abort");
+
+    mb_output.clear();
+
+    int borderEdge {mb_topBorder.size()};
+    borderEdge = (borderEdge < mb_hardMargin) ? borderEdge : mb_hardMargin;
+    if (borderEdge > 0) {
+        mb_output.push_back('\n');
+    }
+    else {} // Nothing to do
+
+    for (int ii {0}; ii < borderEdge; ++ii) {
+        mb_output.push_back(mb_topBorder[ii]);
+    }
+
+    /*
+     * In the abcence of the header at all I got an empty string...
+     */
+    mb_output.push_back('\n');
+    mb_output += mb_header;
+
+
+    if (mb_separateHeader == true) {
+        mb_output.back() = '\n';                    // mb_header always finishes with ' '
+        leftSpace = mb_hardMargin;
+    }
+    else {
+        leftSpace = mb_hardMargin - headerSize;
+    }
+
+
+
+    int startPos {0};
+    int lastValidPos {0};            // Last position lower than margin
+    int newPos {0};
+
+    while (newPos != std::string::npos) {
+
+        // # Find of the next occurrence of the delimeter
+        newPos = mb_message.find_first_of(delimeter, lastValidPos + 1);
+
+        if (newPos == std::string::npos) {
+            mb_output += mb_message.substr(startPos, messageSize);
+        }
+        else if (newPos - startPos < leftSpace) {
+            lastValidPos = newPos;
+        }
+        else {
+            mb_output += mb_message.substr(startPos, lastValidPos - startPos);
+            mb_output.push_back('\n');                  // Replace last space/tab with new-line character
+            startPos = lastValidPos + 1;
+            leftSpace = mb_hardMargin;
+        }
+    }
+
+    borderEdge = mb_bottomBorder.size();
+    borderEdge = (borderEdge < mb_hardMargin) ? borderEdge : mb_hardMargin;
+    if (borderEdge > 0) {
+        mb_output.push_back('\n');
+    }
+    else {} // Nothing to do
+
+    for (int ii {0}; ii < borderEdge; ++ii) {
+        mb_output.push_back(mb_bottomBorder[ii]);
+    }
+
+
+}
 
 
 

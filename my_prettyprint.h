@@ -3,7 +3,7 @@
 
 // # IO-libraries
 #include <iostream>
-
+#include <cassert>
 
 // # Standart cotainers
 #include <array>
@@ -53,7 +53,7 @@ namespace my {
 class PrettyPrint {
 public:
 
-    // # Levels of output
+    // # Levels of output in principle ('true' means to display such messages)
     enum class Level {
         DEBUG,
         INFO,
@@ -62,28 +62,40 @@ public:
 
         TOTAL
     };
-    std::array<bool, static_cast<int>(Level::TOTAL)> mb_level {true, true, true, true};
+    std::array<bool, static_cast<int>(Level::TOTAL)> mb_level {};
 
-    bool            mb_timeDisplay {true};
-    bool            mb_funcNameDisplay {true};
-    bool            mb_levelDisplay {true};
+    // # Header part
+    bool            mb_timeDisplay {};                  // Form TIME in header
+    bool            mb_funcNameDisplay {};              // Form FUNC in header
+    bool            mb_levelTypeDisplay {};             // Form TYPE in header
+
+
+    bool            mb_separateHeader {true};
 
     const char*     mb_separator {"::"};
-    const char*     mb_callerName {"unknown"};
+    const char*     mb_callerName {"........"};
     int             mb_softMargin {80};                 // Soft right edge, after which we can finish to print word on the current line and then have to move to the next line
-    int             mb_hardNargin {100};                // Hard right edge, after which we have to move current word on the new line
-    char            mb_filler {'_'};
+    int             mb_hardMargin {80};                // Hard right edge, after which we have to move current word on the new line
+    char            mb_filler {' '};
+
+    std::string     mb_topBorder {};
+    std::string     mb_bottomBorder {"------------------------------------------------------------------------------------------------------------------------------------------------------"};
 
     std::string     mb_header {};
     std::string     mb_message {};
+    std::string     mb_output {};
 
 
 
 
-    PrettyPrint();
+    PrettyPrint(std::array<bool, static_cast<int>(Level::TOTAL)> levels = {true, true, true, true},
+                bool displayTime = true,            // Header 'TIME' part
+                bool displayFuncName = false,       // Header 'FUNC' part
+                bool displayLevelType = true,       // Header 'LEVEL' part
+                int hardMargin = 100);
 
 
-    void displayLevel(bool debug, bool info, bool warning, bool error);
+    void displayLevel(bool);
     void displayTime(bool);
     void displayFuncName(bool);
 
@@ -95,14 +107,18 @@ public:
     void setSoftMargin(int n);
     void setHardMargin(int n);
     void setCallerName(const char* callerName);
+    void setTopBorder(const char* border);
+    void setBottomBorder(const char* border);
+    void setLevels(std::array<bool, static_cast<int>(Level::TOTAL)> outputLevels);
 
 
     void formTime();
     void formLevel(Level level);
     void formCallerName();
 
-    void formHeader(Level level);
-    void formMessage(const char* fmtLine, std::va_list argList);
+    int formHeader(Level level);
+    int formMessage(const char* fmtLine, std::va_list argList);
+    void formOutput(Level level, const char* fmtLine, std::va_list argList);
 
 
 //#define foo(fmtLine, ...) debug(__FUNCTION__, const char* fmtLine, ...)

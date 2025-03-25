@@ -5,7 +5,7 @@ project(MyLibrary LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(MyLibrary main.cpp main.h
+add_executable(MyLibrary main.cpp
 #    my_array.cpp my_array.h my_array.hpp
 #    my_dynamicarray.cpp my_dynamicarray.h my_dynamicarray.hpp
 #    my_log.cpp my_log.h
