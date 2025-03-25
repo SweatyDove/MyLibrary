@@ -17,9 +17,14 @@ public:
 
     Sort();
 
+    inline void swap(int& a, int& b);
+
     double stupid(std::vector<int>& nums);
     double bubble(std::vector<int>& nums);
     double cocktail(std::vector<int>& nums);
+    double oddEven(std::vector<int>& nums);
+    double oddEven_1(std::vector<int>& nums);
+
 
 };
 

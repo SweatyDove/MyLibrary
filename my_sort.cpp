@@ -15,6 +15,22 @@ my::Sort::Sort()
 
 
 //==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+inline void my::Sort::swap(int& a, int& b)
+{
+    int temp {a};
+    a = b;
+    b = temp;
+}
+
+
+
+//==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Realization of "stupid sort" algorithm
 //    PARAMETERS:   ........
@@ -132,6 +148,55 @@ double my::Sort::cocktail(std::vector<int>& nums)
 
     return mb_timeInterval;
 }
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   There is a version from wiki, that works a little bit faster:
+//
+//                  for (size_t i = 0; i < size - 1; i++) {
+//                      for (size_t j = (i % 2) ? 1 : 0; j + 1 < size; j += 2) {
+//                          if (nums[j] > nums[j + 1]) {
+//                              this->swap(nums[j], nums[j + 1]);
+//                          }
+//                      }
+//                  }
+//
+//==================================================================================================
+double my::Sort::oddEven(std::vector<int>& nums)
+{
+    int size {nums.size()};
+    int clearPass {0};              // Num of passes through @nums without changes
+    bool isSwapped {false};
+
+    mb_stopwatch.reset();
+
+    //while (clearPass < 2) {
+    for (int startIndex {0}; clearPass < 2; startIndex = (startIndex % 2) ? 0 : 1) {
+        isSwapped = false;
+        for (int ii {startIndex}; ii < size - 1; ii += 2) {
+            if (nums[ii] > nums[ii + 1]) {
+                this->swap(nums[ii], nums[ii+1]);
+                isSwapped = true;
+            }
+            else {}
+        }
+
+        clearPass = (isSwapped == true) ? 0 : clearPass + 1;
+    }
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+}
+
+
+
+
+
 
 
 
