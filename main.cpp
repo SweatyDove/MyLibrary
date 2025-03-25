@@ -16,29 +16,21 @@ int getRandomNumber(int min, int max);
 
 int main()
 {
+
     // Устанавливаем зерно для std::rand() и затем вызываем 1 раз std::rand() для того, чтобы
     // отбросить 1-ое значение.
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {20000};
-    std::vector<int> randomArray {};
-    std::vector<int> stdSortArray {};
-    std::vector<int> bubbleArray {};
-    std::vector<int> cocktailArray {};
-
-    randomArray.resize(randArrSize);
-    stdSortArray.resize(randArrSize);
-    bubbleArray.resize(randArrSize);
-    cocktailArray.resize(randArrSize);
-
-    bool bubbleTest {false};
-    bool cocktailTest {false};
-
-
+    int randArrSize {30000};
+    std::vector<int> randomArray(randArrSize);
     for (int ii {0}; ii < randArrSize - 1; ++ii) {
-        cocktailArray[ii] = bubbleArray[ii] = stdSortArray[ii] = randomArray[ii] = my::getRandomNumber(0, randArrSize);
+        randomArray[ii] = my::getRandomNumber(0, randArrSize);
     }
+
+
+
+
 
 
 
@@ -55,30 +47,58 @@ int main()
 //    time = sort.stupid(stupidArray);
 //    std::cout << "\nSTUPID sort time: " << time << " seconds" << std::endl;
 
+
+
+    std::vector<int> stdSortArray {randomArray};
     my::Timer t;
     std::sort(stdSortArray.begin(), stdSortArray.end());
     time = t.elapsed();
     std::cout << "\nstd::sort time: " << time << " milliseconds" << std::endl;
 
 
+
+
+
+
+    std::vector<int> bubbleArray {randomArray};
     time = sort.bubble(bubbleArray);
     if (stdSortArray == bubbleArray) {
-        bubbleTest = true;
         std::cout << "\nBUBBLE sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nBUBBLE test wasn't correct!" << std::endl;
+        std::cout << "\nBUBBLE sort wasn't correct!" << std::endl;
     }
 
+
+    std::vector<int> cocktailArray {randomArray};
     time = sort.cocktail(cocktailArray);
     if (stdSortArray == cocktailArray) {
-        cocktailTest = true;
         std::cout << "\nCOCKTAIL sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nCOCKTAIL test wasn't correct!" << std::endl;
+        std::cout << "\nCOCKTAIL sort wasn't correct!" << std::endl;
     }
 
+//    time = sort.oddEven(testArray);
+//    std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
+
+    std::vector<int> oddEvenArray {randomArray};
+    time = sort.oddEven(oddEvenArray);
+    if (stdSortArray == oddEvenArray) {
+        std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
+    }
+
+    std::vector<int> oddEvenArray_1 {randomArray};
+    time = sort.oddEven_1(oddEvenArray_1);
+    if (stdSortArray == oddEvenArray_1) {
+        std::cout << "\nODD-EVEN_1 sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nODD-EVEN_1 sort wasn't correct!" << std::endl;
+    }
 
 
 
