@@ -41,15 +41,12 @@ inline void my::Sort::swap(int& a, int& b)
 //==================================================================================================
 double my::Sort::stupid(std::vector<int>& nums)
 {
-    int temp {};
-    int size = nums.size();
+    int size    {static_cast<int>(nums.size())};
 
     mb_stopwatch.reset();
     for (int ii {0}; ii < size - 1; ++ii) {
         if (nums[ii] > nums[ii + 1]) {
-            temp = nums[ii];
-            nums[ii] = nums[ii + 1];
-            nums[ii + 1] = temp;
+            this->swap(nums[ii], nums[ii + 1]);
             ii = -1;
         }
         else {}
@@ -71,16 +68,13 @@ double my::Sort::stupid(std::vector<int>& nums)
 double my::Sort::bubble(std::vector<int>& nums)
 {
 
-    int     temp {};
-    int     size = nums.size();
+    int size    {static_cast<int>(nums.size())};
 
     mb_stopwatch.reset();
     for (int kk {size - 1}; kk > 0; --kk) {
         for (int ii {0}; ii < kk; ++ii) {
             if (nums[ii] > nums[ii + 1]) {
-                temp = nums[ii];
-                nums[ii] = nums[ii + 1];
-                nums[ii + 1] = temp;
+                this->swap(nums[ii], nums[ii + 1]);
             }
             else {} // Nothing to do
         }
@@ -102,9 +96,8 @@ double my::Sort::bubble(std::vector<int>& nums)
 double my::Sort::cocktail(std::vector<int>& nums)
 {
 
-    int     temp {};
-    int     size = nums.size();
-    bool    isSorted {false};
+    int     size        {static_cast<int>(nums.size())};
+    bool    isSorted    {false};
 
     mb_stopwatch.reset();
 
@@ -116,9 +109,7 @@ double my::Sort::cocktail(std::vector<int>& nums)
         // # Forward
         for (int ii {start}; ii < end; ++ii) {
             if (nums[ii] > nums[ii + 1]) {
-                temp = nums[ii];
-                nums[ii] = nums[ii + 1];
-                nums[ii + 1] = temp;
+                this->swap(nums[ii], nums[ii + 1]);
                 isSorted = false;                   // Oh, we were wrong...
             }
             else {} // Nothing to do
@@ -135,9 +126,7 @@ double my::Sort::cocktail(std::vector<int>& nums)
         // # Backward
         for (int ii {end - 1}; ii > start; --ii) {
             if (nums[ii] < nums[ii - 1]) {
-                temp = nums[ii];
-                nums[ii] = nums[ii - 1];
-                nums[ii - 1] = temp;
+                this->swap(nums[ii], nums[ii - 1]);
                 isSorted = false;
             }
             else {} // Nothing to do
@@ -158,10 +147,10 @@ double my::Sort::cocktail(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   There is a version from wiki, that works a little bit faster:
 //
-//                  for (size_t i = 0; i < size - 1; i++) {
-//                      for (size_t j = (i % 2) ? 1 : 0; j + 1 < size; j += 2) {
-//                          if (nums[j] > nums[j + 1]) {
-//                              this->swap(nums[j], nums[j + 1]);
+//                  for (int ii {0}; ii < size - 1; ++ii) {
+//                      for (int jj {(ii % 2) ? 1 : 0}; jj < size - 1; jj += 2) {
+//                          if (nums[jj] > nums[jj + 1]) {
+//                              this->swap(nums[jj], nums[jj + 1]);
 //                          }
 //                      }
 //                  }
@@ -169,13 +158,13 @@ double my::Sort::cocktail(std::vector<int>& nums)
 //==================================================================================================
 double my::Sort::oddEven(std::vector<int>& nums)
 {
-    int size {nums.size()};
-    int clearPass {0};              // Num of passes through @nums without changes
-    bool isSwapped {false};
+    int     size        {static_cast<int>(nums.size())};
+    int     clearPass   {0};              // Num of passes through @nums without changes
+    bool    isSwapped   {false};
 
     mb_stopwatch.reset();
 
-    //while (clearPass < 2) {
+    while (clearPass < 2) {
     for (int startIndex {0}; clearPass < 2; startIndex = (startIndex % 2) ? 0 : 1) {
         isSwapped = false;
         for (int ii {startIndex}; ii < size - 1; ii += 2) {
@@ -189,13 +178,47 @@ double my::Sort::oddEven(std::vector<int>& nums)
         clearPass = (isSwapped == true) ? 0 : clearPass + 1;
     }
 
+
     mb_timeInterval = mb_stopwatch.elapsed();
     return mb_timeInterval;
 }
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+double my::Sort::comb(std::vector<int>& nums)
+{
+    int     size        {static_cast<int>(nums.size())};
+    double  factor      {1.247};                                    // Constant (why "1.247" look wiki)
+    int     gap         {static_cast<int>(size / factor)};
+    bool    isSwapped   {true};
 
+    mb_stopwatch.reset();
+
+    while (gap > 1 || isSwapped == true) {
+
+        isSwapped = false;
+        for (int ii {0}; ii < size - gap; ++ii) {
+            if (nums[ii] > nums[ii + gap]) {
+                this->swap(nums[ii], nums[ii + gap]);
+                isSwapped = true;
+            }
+            else {} // Nothing to do
+        }
+        gap /= factor;
+        gap = (gap > 1) ? gap : 1;
+    }
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+
+}
 
 
 
