@@ -97,14 +97,30 @@ my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(const my::SmartPtr<Type>&& sma
 
 
 
-//==============================================================================================
-//          TYPE:   Dereference operator
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+template <typename Type>
+my::SmartPtr<Type>::operator bool() const
+{
+    return (mb_ptr != nullptr);
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   Стоит ли проверять mb_ptr на равенство nullptr?
 //                  Наверное, стоит кидать исключение при нулевом указателе... Подумать...
-//==============================================================================================
+//==================================================================================================
 template <typename Type>
 Type& my::SmartPtr<Type>::operator*()
 {
@@ -116,5 +132,43 @@ Type& my::SmartPtr<Type>::operator*()
     }
 }
 
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+template <typename Type>
+Type* my::SmartPtr<Type>::operator->()
+{
+    if (mb_ptr != nullptr) {
+        return mb_ptr;
+    }
+    else {
+        assert(false && "[ERROR]: can't get access to the class member, when class addr is nullptr. Abort.");
+    }
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Public method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+template <typename Type>
+Type* my::SmartPtr<Type>::release()
+{
+    Type* retVal {mb_ptr};
+    mb_ptr = nullptr;
+
+    return retVal;
+
+}
 
 

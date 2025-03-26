@@ -51,8 +51,17 @@ public:
     // # Dereference operator
     Type& operator*();
 
+    // # Access to the class member operator
+    Type* operator->();
+
+
+    operator bool() const;
+
     /* Should I have two versions of dereference operator: const and non-const? */
 //    const Type& operator*();
+
+    // # Release the OWNERSHIP under the resource and transfer OWNERSHIP to the caller.
+    Type* release();
 };
 
 
