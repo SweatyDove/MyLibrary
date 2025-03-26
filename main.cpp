@@ -22,10 +22,13 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {30000};
+    int randArrSize {30'000};
     std::vector<int> randomArray(randArrSize);
+    std::vector<int> stdSortArray(randArrSize);
+    std::vector<int> customSortArray(randArrSize);
+
     for (int ii {0}; ii < randArrSize - 1; ++ii) {
-        randomArray[ii] = my::getRandomNumber(0, randArrSize);
+        stdSortArray[ii] = randomArray[ii] = my::getRandomNumber(-randArrSize, randArrSize);
     }
 
 
@@ -49,7 +52,6 @@ int main()
 
 
 
-    std::vector<int> stdSortArray {randomArray};
     my::Timer t;
     std::sort(stdSortArray.begin(), stdSortArray.end());
     time = t.elapsed();
@@ -59,10 +61,9 @@ int main()
 
 
 
-
-    std::vector<int> bubbleArray {randomArray};
-    time = sort.bubble(bubbleArray);
-    if (stdSortArray == bubbleArray) {
+    customSortArray = randomArray;
+    time = sort.bubble(customSortArray);
+    if (stdSortArray == customSortArray) {
         std::cout << "\nBUBBLE sort time: " << time << " milliseconds" << std::endl;
     }
     else {
@@ -70,34 +71,31 @@ int main()
     }
 
 
-    std::vector<int> cocktailArray {randomArray};
-    time = sort.cocktail(cocktailArray);
-    if (stdSortArray == cocktailArray) {
+    customSortArray = randomArray;
+    time = sort.cocktail(customSortArray);
+    if (stdSortArray == customSortArray) {
         std::cout << "\nCOCKTAIL sort time: " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << "\nCOCKTAIL sort wasn't correct!" << std::endl;
     }
 
-//    time = sort.oddEven(testArray);
-//    std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
-
-    std::vector<int> oddEvenArray {randomArray};
-    time = sort.oddEven(oddEvenArray);
-    if (stdSortArray == oddEvenArray) {
+    customSortArray = randomArray;
+    time = sort.oddEven(customSortArray);
+    if (stdSortArray == customSortArray) {
         std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
     }
 
-    std::vector<int> oddEvenArray_1 {randomArray};
-    time = sort.oddEven_1(oddEvenArray_1);
-    if (stdSortArray == oddEvenArray_1) {
-        std::cout << "\nODD-EVEN_1 sort time: " << time << " milliseconds" << std::endl;
+    customSortArray = randomArray;
+    time = sort.comb(customSortArray);
+    if (stdSortArray == customSortArray) {
+        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nODD-EVEN_1 sort wasn't correct!" << std::endl;
+        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
     }
 
 
