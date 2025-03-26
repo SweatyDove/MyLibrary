@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(MyLibrary
     main.cpp main.h
-    my_string.cpp my_string.h
-    my_string.hpp
+    my_smartptr.cpp my_smartptr.h my_smartptr.hpp
+    my_prettyprint.cpp my_prettyprint.h
+#    my_string.cpp my_string.h
 #    my_log.cpp my_log.h
-    my_utilities.cpp my_utilities.h
+#    my_utilities.cpp my_utilities.h
 #    my_queue.hpp
-#    smartptr.h smartptr.cpp
-my_array.cpp my_array.h my_array.hpp
+#    my_array.cpp my_array.h my_array.hpp
 )
 
 

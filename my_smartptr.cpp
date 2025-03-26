@@ -2,32 +2,34 @@
 
 
 //==================================================================================================
-//          TYPE:    Default constructor
-//    PARAMETERS:    ........
-//   DESCRIPTION:    ........
-//  RETURN VALUE:    ........
-// COMMENTS/BUGS:    ........
+//          TYPE:   Default constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
 my::SmartPtr<Type>::SmartPtr(Type* resource) :
     mb_ptr {resource}
 {
-    std::cout << "[DEBUG]: smart pointer has created!" << std::endl;
+    mb_output.debug("Smart pointer has been created!");
 }
 
 
 
 
 //==============================================================================================
-//          TYPE:    Move-constructor
-//    PARAMETERS:    ........
-//   DESCRIPTION:    ........
-//  RETURN VALUE:    ........
-// COMMENTS/BUGS:    ........
+//          TYPE:   Move-constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
 //==============================================================================================
 template <typename Type>
 my::SmartPtr<Type>::SmartPtr(const my::SmartPtr<Type>&& smartPtr)
 {
+    mb_output.debug("Move-constructor has been called");
+
     // # Can access private member because "private" is on per-class basis, not per-object
     mb_ptr = smartPtr.mb_ptr;
 
@@ -39,11 +41,11 @@ my::SmartPtr<Type>::SmartPtr(const my::SmartPtr<Type>&& smartPtr)
 
 
 //==================================================================================================
-//          TYPE:    Destructor
-//    PARAMETERS:    ........
-//   DESCRIPTION:    ........
-//  RETURN VALUE:    ........
-// COMMENTS/BUGS:    ........
+//          TYPE:   Destructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
 my::SmartPtr<Type>::~SmartPtr()
@@ -51,25 +53,25 @@ my::SmartPtr<Type>::~SmartPtr()
     if (mb_ptr != nullptr) {
         delete mb_ptr;
         mb_ptr = nullptr;                   // Возможно, лишнее
-        std::cout << "[DEBUG]: Destructor of the smart pointer has been called and resource was "
-                  << "destroyed successfully!" << std::endl;
-    }
-    else {} // Nothing to do
 
-    std::cout << "[DEBUG]: Destructor of the smart pointer has been called but there isn't resource "
-              << "to destroy..." << std::endl;
+        mb_output.debug("Destructor of the smart pointer has been called and resource was destroyed successfully!");
+    }
+    else {
+        mb_output.debug("Destructor of the smart pointer has been called but there isn't resource to destroy...");
+    }
+
 
 }
 
 
 
-//==============================================================================================
-//          TYPE:    Move-assignment
-//    PARAMETERS:    ........
-//   DESCRIPTION:    ........
-//  RETURN VALUE:    ........
-// COMMENTS/BUGS:    ........
-//==============================================================================================
+//==================================================================================================
+//          TYPE:   Move-assignment
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 template <typename Type>
 my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(const my::SmartPtr<Type>&& smartPtr)
 {
@@ -80,22 +82,25 @@ my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(const my::SmartPtr<Type>&& sma
     }
     else {} // Nothing to do
 
+
     if (mb_ptr != nullptr) {
         delete mb_ptr;
     }
     else {} // Nothing to do
 
+
     mb_ptr = smartPtr.mb_ptr;
     smartPtr.mb_ptr = nullptr;
 
+    return *this;
 }
 
 
 
 //==============================================================================================
 //          TYPE:   Dereference operator
-//    PARAMETERS:   ........
 //   DESCRIPTION:   ........
+//    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   Стоит ли проверять mb_ptr на равенство nullptr?
 //                  Наверное, стоит кидать исключение при нулевом указателе... Подумать...
@@ -108,8 +113,7 @@ Type& my::SmartPtr<Type>::operator*()
     }
     else {
         assert(false && "[ERROR]: can't dereference nullptr. Abort.");
-    } //
-
+    }
 }
 
 

@@ -510,9 +510,15 @@ int my::PrettyPrint::formHeader(Level level)
     else {} // Nothing to do
 
 
-
-
-    mb_header.append(": ");
+    // # Form end of the header line
+    if (mb_separateHeader == true) {
+        for (int ii {mb_header.size()}; ii < mb_hardMargin; ++ii) {
+            mb_header.push_back(':');
+        }
+    }
+    else {
+        mb_header.append(": ");
+    }
 
     return mb_header.size();
 
@@ -829,7 +835,6 @@ int my::PrettyPrint::formMessage(const char* formatLine, std::va_list argList)
 
 }
 
-
 //==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Form output message taking into account the soft/hard margin
@@ -846,7 +851,7 @@ void my::PrettyPrint::formOutput(Level level, const char* fmtLine, std::va_list 
 
 
     // # At this moment do not consider cases, where header length is to high
-    assert (headerSize < mb_hardMargin && "Length of header is larger than hard margin. Abort");
+    assert (headerSize <= mb_hardMargin && "Length of header is larger than hard margin. Abort");
 
     mb_output.clear();
 
@@ -869,7 +874,7 @@ void my::PrettyPrint::formOutput(Level level, const char* fmtLine, std::va_list 
 
 
     if (mb_separateHeader == true) {
-        mb_output.back() = '\n';                    // mb_header always finishes with ' '
+        mb_output.push_back('\n');
         leftSpace = mb_hardMargin;
     }
     else {
