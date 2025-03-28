@@ -73,7 +73,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
     mb_size {dynArr.getSize()},
     mb_capacity {dynArr.getCapacity()},
     mb_capacityChunk {dynArr.getCapacityChunk()},
-    mb_dataPtr {static_cast<Type*>(sizeof(Type) * mb_capacity)}
+    mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
     for (int ii {0}; ii < mb_size; ++ii) {
         *(mb_dataPtr + ii) = dynArr[ii];
@@ -155,7 +155,9 @@ void my::DynamicArray<Type>::pushBack(const Type& value)
     }
     else {} // Nothing to do
 
-    // # Добавляем новый элемент в массив и увеличиваем его размер
+    // # Добавляем новый элемент в массив и увеличиваем его размер. Тут должна использоваться или
+    // # move-семантика, или copy-семантика, в зависимости от того, предоставлена ли она классом <Type>.
+    // # my::DynamicArray этим НЕ должен заниматься.
     *(mb_dataPtr + mb_size) = value;
     mb_size++;
 }
@@ -172,6 +174,47 @@ template <typename Type>
 void my::DynamicArray<Type>::push_back(const Type& value)
 {
     this->pushBack(value);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::pushBack(Type&& value)
+{
+
+    if (mb_size == mb_capacity) {
+        this->reallocate(mb_capacity + mb_capacityChunk);
+    }
+    else {} // Nothing to do
+
+    // # Добавляем новый элемент в массив и увеличиваем его размер. Тут должна использоваться или
+    // # move-семантика, или copy-семантика, в зависимости от того, предоставлена ли она классом <Type>.
+    // # my::DynamicArray этим НЕ должен заниматься. Но он и не занимается, а просто рассматривает
+    // # value согласно типу, который он принимает.
+    *(mb_dataPtr + mb_size) = my::move(value);
+    mb_size++;
+}
+
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::push_back(Type&& value)
+{
+    this->pushBack(my::move(value));
 }
 
 
@@ -197,11 +240,11 @@ Type my::DynamicArray<Type>::popBack()
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:   ........
+//   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::reallocate(int newCapacity)
@@ -211,9 +254,9 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
     Type* newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
     mb_capacity = newCapacity;
 
-    // ## Копируем старые данные в новую область памяти
+    // # Перемещаем данные из старой области в новую, используя move-семантику
     for (int ii {0}; ii < mb_size; ++ii) {
-        *(newDataPtr + ii) = *(mb_dataPtr + ii);
+        *(newDataPtr + ii) = my::move(*(mb_dataPtr + ii));
     }
     // ## Удаляем старые данные
     delete[] mb_dataPtr;

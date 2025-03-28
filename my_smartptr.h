@@ -43,10 +43,10 @@ public:
 
 
     // # Move-constructor
-    SmartPtr(const my::SmartPtr<Type>&& smartPtr);
+    SmartPtr(my::SmartPtr<Type>&& smartPtr);
 
     // # Move-assignment
-    my::SmartPtr<Type>& operator=(const my::SmartPtr<Type>&& smartPtr);
+    my::SmartPtr<Type>& operator=(my::SmartPtr<Type>&& smartPtr);
 
     // # Dereference operator
     Type& operator*();

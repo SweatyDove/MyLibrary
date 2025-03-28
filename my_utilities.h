@@ -16,6 +16,24 @@ enum class RetCode {
 };
 
 
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   Cast l-value reference into the r-value reference
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   Couldn't place definition in cpp file because, in such case need to create new
+//                  file (my_utilities.hpp) and place h/cpp-defines in it. But it causes errors with
+//                  multiple definitions.
+//==================================================================================================
+template <typename Type>
+Type&& move(Type& value)
+{
+    return static_cast<Type&&>(value);
+}
+
+
+
 //==============================================================================
 // Function reads an input line (till '\n' inclusively) into the buffer @buffer.
 //==============================================================================

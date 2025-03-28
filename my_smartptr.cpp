@@ -26,7 +26,7 @@ my::SmartPtr<Type>::SmartPtr(Type* resource) :
 // COMMENTS/BUGS:   ........
 //==============================================================================================
 template <typename Type>
-my::SmartPtr<Type>::SmartPtr(const my::SmartPtr<Type>&& smartPtr)
+my::SmartPtr<Type>::SmartPtr(my::SmartPtr<Type>&& smartPtr)
 {
     mb_output.debug("Move-constructor has been called");
 
@@ -50,16 +50,13 @@ my::SmartPtr<Type>::SmartPtr(const my::SmartPtr<Type>&& smartPtr)
 template <typename Type>
 my::SmartPtr<Type>::~SmartPtr()
 {
+    mb_output.debug("Destructor of the smart pointer has been called!");
+
     if (mb_ptr != nullptr) {
         delete mb_ptr;
-        mb_ptr = nullptr;                   // Возможно, лишнее
-
-        mb_output.debug("Destructor of the smart pointer has been called and resource was destroyed successfully!");
+        mb_ptr = nullptr;
     }
-    else {
-        mb_output.debug("Destructor of the smart pointer has been called but there isn't resource to destroy...");
-    }
-
+    else {} // Nothing to do
 
 }
 
@@ -73,7 +70,7 @@ my::SmartPtr<Type>::~SmartPtr()
 // COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
-my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(const my::SmartPtr<Type>&& smartPtr)
+my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(my::SmartPtr<Type>&& smartPtr)
 {
     // # А нужно ли проводить проверку на самоприсваивание? То есть если справа у нас rvalue, то оно
     // # в принципе не может быть равно lvalue, которое слева... Теоретически...

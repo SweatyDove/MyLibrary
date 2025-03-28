@@ -7,6 +7,23 @@
 
 
 
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   Cast l-value reference into the r-value reference
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+//template <typename Type>
+//Type&& my::move(Type& value)
+//{
+//    return static_cast<Type&&>(value);
+//}
+
+
+
 //==============================================================================
 // Function reads an input line (till '\n' inclusively) into the
 // buffer [buffer].

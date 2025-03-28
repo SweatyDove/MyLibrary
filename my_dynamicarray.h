@@ -1,11 +1,12 @@
 #ifndef MY_DYNAMIC_ARRAY_H
 #define MY_DYNAMIC_ARRAY_H
 
+#include "my_array.h"
+#include "my_utilities.h"
 
 #include <initializer_list>
 #include <iostream>
 #include <cassert>
-#include <my_array.h>
 #include <iterator>         // For std::forward_iterator_tag
 #include <cstddef>          // For std::ptrdiff_t
 
@@ -44,11 +45,11 @@ template <typename Type>
 class DynamicArray {
 private:
     int mb_capacityChunk {4};
-
-
-    Type* mb_dataPtr {nullptr};
-    int mb_size {};
     int mb_capacity {};
+    int mb_size {};
+    Type* mb_dataPtr {nullptr};
+
+
 
 
     // Функция костыль на смещение элементов массива
@@ -77,13 +78,17 @@ public:
     DynamicArray<Type>& operator=(const DynamicArray<Type>& dynArr);
 
     // # MOVE CONSTRUCTOR and MOVE ASSIGNMENT operators (do not release yet)
-    // DynamicArray(const DynamicArray<Type>&& dynArr);
-    // DynamicArray<Type>& operator=(const DynamicArray<Type>&& dynArr);
+//     DynamicArray(DynamicArray<Type>&& dynArr);
+//     DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
 
 
     // # Interface
     void pushBack(const Type& value);
+    void pushBack(Type&& value);
+
     void push_back(const Type& value);
+    void push_back(Type&& value);
+
     Type popBack();
 
 
