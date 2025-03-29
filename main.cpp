@@ -80,24 +80,37 @@ int main()
 //        std::cout << "\nCOCKTAIL sort wasn't correct!" << std::endl;
 //    }
 
-    customSortArray = randomArray;
-    time = sort.oddEven(customSortArray);
+//    customSortArray = randomArray;
+//    time = sort.oddEven(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
+//    }
+
+
+//    customSortArray = randomArray;
+//    time = sort.oddEven_1(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nODD-EVEN_1 sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nODD-EVEN_1 sort wasn't correct!" << std::endl;
+//    }
+
+
+
+    customSortArray = testArray;
+    time = sort.oddEven_2(customSortArray);
     if (stdSortArray == customSortArray) {
-        std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
+        std::cout << "\nODD-EVEN_1 sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
+        std::cout << "\nODD-EVEN_1 sort wasn't correct!" << std::endl;
     }
 
 
-    customSortArray = randomArray;
-    time = sort.oddEven_1(customSortArray);
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
-    }
 
 
 //    customSortArray = randomArray;
@@ -131,7 +144,7 @@ public:
          */
         std::vector<int> res;
 
-        int numSize {nums.size()};
+        int numSize {static_cast<int>(nums.size())};
         int windowSize {2 * k + 1};
         int windowSum {0};
 
