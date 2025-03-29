@@ -16,6 +16,8 @@ add_executable(MyLibrary main.cpp
 #    my_array.cpp my_array.h my_array.hpp
 )
 
+# Compiler optimization level
+target_compile_options(MyLibrary PRIVATE -O0)
 
 install(TARGETS MyLibrary
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

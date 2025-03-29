@@ -186,38 +186,99 @@ double my::Sort::oddEven(std::vector<int>& nums)
 
 //==================================================================================================
 //          TYPE:   Method
-//   DESCRIPTION:   ........
+//   DESCRIPTION:   Two loop version of oddEven sort algorithm.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+// COMMENTS/BUGS:   About 10% faster than base version (but need to compile with -O3 option)
 //==================================================================================================
 double my::Sort::oddEven_1(std::vector<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
-    bool    isSwapped   {false};
+    int     halfSize    {size / 2};
+    int     halfEdge    {(halfSize % 2 == 0) ? halfSize : halfSize + 1};
+
 
     mb_stopwatch.reset();
 
-    for (int startIndex {0}; clearPass < 2; startIndex = (startIndex % 2) ? 0 : 1) {
-        isSwapped = false;
-        for (int ii {startIndex}; ii < size - 1; ii += 2) {
+    for (int kk {1}; clearPass < 2; kk = (kk % 2) ? 0 : 1) {
+
+        int     edge            {halfEdge + kk};
+        bool    firstLoopSwap   {false};
+        bool    secondLoopSwap  {false};
+
+        // # First loop handles left (first) part of the source vector
+        for (int jj {kk}; jj < edge; jj += 2) {
+            if (nums[jj] > nums[jj + 1]) {
+                this->swap(nums[jj], nums[jj + 1]);
+                firstLoopSwap = true;
+            }
+            else {}
+        }
+
+        // # Second loop handles right (second) part of the source vector
+        for (int ii {edge}; ii < size - 1; ii += 2) {
             if (nums[ii] > nums[ii + 1]) {
-                this->swap(nums[ii], nums[ii+1]);
-                isSwapped = true;
+                this->swap(nums[ii], nums[ii + 1]);
+                secondLoopSwap = true;
+            }
+            else {}
+        }
+
+        clearPass = (firstLoopSwap || secondLoopSwap) ? 0 : clearPass + 1;
+    }
+
+
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Two if-else version of oddEven sort algorithm.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+double my::Sort::oddEven_2(std::vector<int>& nums)
+{
+    int     size        {static_cast<int>(nums.size())};
+    int     clearPass   {0};              // Num of passes through @nums without changes
+    int     halfSize    {size / 2};
+    int     halfEdge    {(halfSize % 2 == 0) ? halfSize : halfSize + 1};
+
+
+    mb_stopwatch.reset();
+
+    for (int kk {1}; clearPass < 2; kk = (kk % 2) ? 0 : 1) {
+
+        int     edge            {halfEdge + kk};
+        bool    firstPartSwap   {false};
+        bool    secondPartSwap  {false};
+
+        for (int ii {kk}; ii < edge; ii += 2) {
+            if (nums[ii] > nums[ii + 1]) {
+                this->swap(nums[ii], nums[ii + 1]);
+                firstPartSwap = true;
             }
             else {}
 
-            int max = (nums[ii] > nums[ii +1]) ? nums[ii] : nums[ii + 1];
-            int min = (nums[ii] > nums[ii +1]) ? nums[ii + 1] : nums[ii];
-
-            nums[ii] = min;
-            nums[ii + 1] = max;
-
+            // # УХОЖУ ЗА ГРАНИЦЫ!
+            if (nums[ii + edge] > nums[ii + edge + 1]) {
+                this->swap(nums[ii + edge], nums[ii + edge + 1]);
+                secondPartSwap = true;
+            }
+            else {}
         }
 
-        clearPass = (isSwapped == true) ? 0 : clearPass + 1;
+        clearPass = (firstPartSwap || secondPartSwap) ? 0 : clearPass + 1;
     }
+
 
 
     mb_timeInterval = mb_stopwatch.elapsed();
