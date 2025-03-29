@@ -25,6 +25,8 @@ public:
     double cocktail(std::vector<int>& nums);
     double oddEven(std::vector<int>& nums);
     double oddEven_1(std::vector<int>& nums);
+    double oddEven_2(std::vector<int>& nums);
+
     double comb(std::vector<int>& nums);
 
 
