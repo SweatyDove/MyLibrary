@@ -19,6 +19,13 @@
 #include <execinfo.h>               // For: backtrace()
 
 
+
+#define     ENABLE_DEBUG_MES    false
+#define     ENABLE_INFO_MES     false
+#define     ENABLE_WARN_MES     false
+#define     ENABLE_ERROR_MES    false
+
+
 namespace my {
 
 //#define caller  __FUNCTION__

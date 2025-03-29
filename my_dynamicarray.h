@@ -3,6 +3,7 @@
 
 #include "my_array.h"
 #include "my_utilities.h"
+#include "my_prettyprint.h"
 
 #include <initializer_list>
 #include <iostream>
@@ -50,6 +51,9 @@ private:
     Type* mb_dataPtr {nullptr};
 
 
+    my::PrettyPrint mb_output {{ENABLE_DEBUG_MES, ENABLE_INFO_MES, ENABLE_WARN_MES, ENABLE_ERROR_MES}, true, false, true, 100};
+
+
 
 
     // Функция костыль на смещение элементов массива
@@ -93,6 +97,8 @@ public:
 
 
     void extend(const my::DynamicArray<Type>& dynArr);
+
+
 
 //    template <int size>
 //    void extend(const my::Array<Type, size>& staticArr);

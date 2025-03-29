@@ -14,7 +14,7 @@ my::DynamicArray<Type>::DynamicArray():
     mb_size {0},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
-    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of <DynamicArray> has been called" << std::endl;
+    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
 
 }
 
@@ -31,7 +31,7 @@ my::DynamicArray<Type>::DynamicArray():
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 {
-    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of <DynamicArray> has been called" << std::endl;
+    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
 
     // Allocate memory for the list's objects of type <Type>
     // Остановился здесь: а что мне использовать? operator new/new[] или new/new[] оператор? Первый
@@ -93,7 +93,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 template <typename Type>
 my::DynamicArray<Type>::~DynamicArray()
 {
-    std::cout << "[DEBUG]: DESTRUCTOR of <DynamicArray> has been called" << std::endl;
+    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
 
     delete[] mb_dataPtr;
     mb_dataPtr = nullptr;

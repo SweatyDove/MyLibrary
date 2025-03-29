@@ -29,7 +29,7 @@ class SmartPtr {
 private:
     Type* mb_ptr {nullptr};
 
-    my::PrettyPrint mb_output {{true, true, true, true}, true, false, true, 100};
+    my::PrettyPrint mb_output {{ENABLE_DEBUG_MES, ENABLE_INFO_MES, ENABLE_WARN_MES, ENABLE_ERROR_MES}, true, false, true, 100};
 
 public:
     SmartPtr(Type* resource);
