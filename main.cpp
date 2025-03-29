@@ -61,24 +61,24 @@ int main()
 
 
 
-    customSortArray = randomArray;
-    time = sort.bubble(customSortArray);
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nBUBBLE sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nBUBBLE sort wasn't correct!" << std::endl;
-    }
+//    customSortArray = randomArray;
+//    time = sort.bubble(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nBUBBLE sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nBUBBLE sort wasn't correct!" << std::endl;
+//    }
 
 
-    customSortArray = randomArray;
-    time = sort.cocktail(customSortArray);
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nCOCKTAIL sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nCOCKTAIL sort wasn't correct!" << std::endl;
-    }
+//    customSortArray = randomArray;
+//    time = sort.cocktail(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nCOCKTAIL sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nCOCKTAIL sort wasn't correct!" << std::endl;
+//    }
 
     customSortArray = randomArray;
     time = sort.oddEven(customSortArray);
@@ -89,14 +89,25 @@ int main()
         std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
     }
 
+
     customSortArray = randomArray;
-    time = sort.comb(customSortArray);
+    time = sort.oddEven_1(customSortArray);
     if (stdSortArray == customSortArray) {
-        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
+        std::cout << "\nODD-EVEN sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
+        std::cout << "\nODD-EVEN sort wasn't correct!" << std::endl;
     }
+
+
+//    customSortArray = randomArray;
+//    time = sort.comb(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
+//    }
 
 
 

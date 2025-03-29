@@ -164,7 +164,6 @@ double my::Sort::oddEven(std::vector<int>& nums)
 
     mb_stopwatch.reset();
 
-    while (clearPass < 2) {
     for (int startIndex {0}; clearPass < 2; startIndex = (startIndex % 2) ? 0 : 1) {
         isSwapped = false;
         for (int ii {startIndex}; ii < size - 1; ii += 2) {
@@ -181,6 +180,49 @@ double my::Sort::oddEven(std::vector<int>& nums)
 
     mb_timeInterval = mb_stopwatch.elapsed();
     return mb_timeInterval;
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+double my::Sort::oddEven_1(std::vector<int>& nums)
+{
+    int     size        {static_cast<int>(nums.size())};
+    int     clearPass   {0};              // Num of passes through @nums without changes
+    bool    isSwapped   {false};
+
+    mb_stopwatch.reset();
+
+    for (int startIndex {0}; clearPass < 2; startIndex = (startIndex % 2) ? 0 : 1) {
+        isSwapped = false;
+        for (int ii {startIndex}; ii < size - 1; ii += 2) {
+            if (nums[ii] > nums[ii + 1]) {
+                this->swap(nums[ii], nums[ii+1]);
+                isSwapped = true;
+            }
+            else {}
+
+            int max = (nums[ii] > nums[ii +1]) ? nums[ii] : nums[ii + 1];
+            int min = (nums[ii] > nums[ii +1]) ? nums[ii + 1] : nums[ii];
+
+            nums[ii] = min;
+            nums[ii + 1] = max;
+
+        }
+
+        clearPass = (isSwapped == true) ? 0 : clearPass + 1;
+    }
+
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+
 }
 
 
