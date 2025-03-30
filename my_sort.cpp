@@ -15,8 +15,8 @@ my::Sort::Sort()
 
 
 //==================================================================================================
-//          TYPE:   Constructor
-//   DESCRIPTION:   ........
+//          TYPE:   Method
+//   DESCRIPTION:   Swap 2 elements
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
@@ -189,7 +189,7 @@ double my::Sort::oddEven(std::vector<int>& nums)
 //   DESCRIPTION:   Two loop version of oddEven sort algorithm.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   About 10% faster than base version (but need to compile with -O3 option)
+// COMMENTS/BUGS:   About 4-5% faster than base version (but need to compile with -O3 option)
 //==================================================================================================
 double my::Sort::oddEven_1(std::vector<int>& nums)
 {
@@ -243,38 +243,78 @@ double my::Sort::oddEven_1(std::vector<int>& nums)
 //   DESCRIPTION:   Two if-else version of oddEven sort algorithm.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+// COMMENTS/BUGS:   About 8-10% faster than base version, but with MUCH MORE difficult logic... And
+//                  I'm not sure, that is all correct.
 //==================================================================================================
 double my::Sort::oddEven_2(std::vector<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
     int     halfSize    {size / 2};
-    int     halfEdge    {(halfSize % 2 == 0) ? halfSize : halfSize + 1};
+
+    bool    sizeIsEven      {(size % 2) ? false : true};
+    bool    halfSizeIsEven  {(halfSize % 2) ? false : true};
+
+    int     oddEdge {};
+    int     evenEdge {};
+
+
+    // # Set the half edge in such way that the first part of the array has the SAME or FEWER elements,
+    // # than the second part. And then compare last part after the inner cycle.
+    if (sizeIsEven == true && halfSizeIsEven == true) {
+        oddEdge = halfSize - 1;
+        evenEdge = halfSize;
+    }
+    else if (sizeIsEven == false && halfSizeIsEven == true) {
+        oddEdge = halfSize + 1;
+        evenEdge = halfSize;
+    }
+    else {
+        oddEdge = halfSize;
+        evenEdge = halfSize - 1;
+    }
 
 
     mb_stopwatch.reset();
 
+    // # Main loop that switches the type of pass (odd or even) and check if the last two passes were
+    // # without swapping.
     for (int kk {1}; clearPass < 2; kk = (kk % 2) ? 0 : 1) {
 
-        int     edge            {halfEdge + kk};
+        int     edge            {(kk == 1) ? oddEdge : evenEdge};
         bool    firstPartSwap   {false};
         bool    secondPartSwap  {false};
+        int     jj              {0};
 
         for (int ii {kk}; ii < edge; ii += 2) {
+
+            // ## Handle the left part of the array
             if (nums[ii] > nums[ii + 1]) {
                 this->swap(nums[ii], nums[ii + 1]);
                 firstPartSwap = true;
             }
             else {}
 
-            // # УХОЖУ ЗА ГРАНИЦЫ!
-            if (nums[ii + edge] > nums[ii + edge + 1]) {
-                this->swap(nums[ii + edge], nums[ii + edge + 1]);
+            // ## Handle the right part
+            jj = ii + edge - kk;
+            if (nums[jj] > nums[jj + 1]) {
+                this->swap(nums[jj], nums[jj + 1]);
                 secondPartSwap = true;
             }
             else {}
         }
+
+        // ## Тут я должен учесть, было ли сравнение последней пары и, если не было - выполнить её.
+        // ## Расположение индекса левого эл-та последней пары зависит от чётности размера массива
+        // ## и типа прохода (чётный/нечётный).
+        jj += 2;
+        int lastEdge {sizeIsEven ? size - 1 - kk : size - 2 + kk};
+        if (sizeIsEven && jj < lastEdge && nums[jj] > nums[jj + 1]) {
+                this->swap(nums[jj], nums[jj + 1]);
+                secondPartSwap = true;
+        }
+        else {}
+
 
         clearPass = (firstPartSwap || secondPartSwap) ? 0 : clearPass + 1;
     }
