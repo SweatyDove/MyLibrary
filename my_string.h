@@ -27,12 +27,8 @@ public:
     String() = default;
 
 
-    //==========================================================================
-    // TYPE: Constructor from <const char*> type.
-    // GOAL: Didn't mark it is as explicit, because it is often used for the
-    //       implicit conversions (like [std::string] from <const char*>).
-    //==========================================================================
-    String(const char* string);
+
+    String(const char* line);
     ~String();
 
     String(const my::String& string);
@@ -59,8 +55,8 @@ public:
     my::String& operator=(const char* stringLiteral);
 
 
-    bool operator==(const char* stringLiteral);
-    bool operator==(const my::String& myString);
+    bool operator==(const char* stringLiteral) const;
+    bool operator==(const my::String& myString) const;
     bool operator!=(const char* stringLiteral);
     bool operator!=(const my::String& myString);
 

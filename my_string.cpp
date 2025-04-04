@@ -2,37 +2,39 @@
 #include "my_utilities.h"
 
 
-//==========================================================================
-// TYPE: Constructor from <const char*> type.
-// GOAL: Didn't mark it is as explicit, because it is often used for the
-//       implicit conversions (like [std::string] from <const char*>).
-//==========================================================================
-my::String::String(const char* bufferOfChars)
+//==================================================================================================
+//         TYPE:    Constructor
+//  DESCRIPTION:    Construct <my::String> object from <const char*>.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    Didn't mark it is as explicit, because it is often used for the implicit
+//                  conversions from <const char*>.
+//==================================================================================================
+my::String::String(const char* line)
 {
 
-    // #### Determine the length of the input buffer
-    const char* bufferPtr       {bufferOfChars};
-    int         bufferLength    {0};
-
-    while (*bufferPtr++ != '\0') {
-        ++bufferLength;
+    // # Determine the length of the input line
+    int length {0};
+    for (const char* p {line}; *p != '\0'; ++p) {
+        ++length;
     }
-    mb_length = bufferLength;
+    mb_length = length;
 
-    // #### Allocate memory in the heap (with a margin)
-    mb_capacity = (((mb_length + 1) / mb_allocationDataChunk) + 1) * mb_allocationDataChunk;
+    // #### Allocate memory in the heap
+    mb_capacity = mb_allocationDataChunk + ((mb_length - 1) / mb_allocationDataChunk) * mb_allocationDataChunk;
     mb_firstElementAdress = new char[mb_capacity];
 
-    // #### Copy source string @str into @this object
-    // #1 Reinitialize dynamic pointers
-    char* thisPtr {mb_firstElementAdress};
-    bufferPtr = bufferOfChars;
-
-    // #2 Fill @this string with data from @bufferOfChars. Remeining space fill
-    // ## with '\0'.
-    for (int ii {0}; ii < mb_capacity; ++ii) {
-        *thisPtr++ = (ii < mb_length) ? *bufferPtr++ : '\0';
+    // # Copy line into allocated memory
+    char* thisString {mb_firstElementAdress};
+    for (int ii {0}; ii < mb_length; ++ii) {
+        thisString[ii] = line[ii];
     }
+
+    // # Other space of the string fill with '\0' for the convenience purpose.
+    for (int ii {mb_length}; ii < mb_capacity; ++ii) {
+        thisString[ii] = '\0';
+    }
+
 }
 
 
@@ -316,41 +318,47 @@ my::String& my::String::operator=(const char* stringLiteral)
 
 
 //==================================================================================================
-//         TYPE:    Method
+//         TYPE:    Overloaded operator
+//  DESCRIPTION:    Compares <my::String> object and C-Style string (terminated with '\0'). Firstly,
+//                  String(const char*) constructor is called. Then, two <my::String> objects are
+//                  compared.
 //   PARAMETERS:    ........
-//  DESCRIPTION:    Overloaded operator==
 // RETURN VALUE:    ........
 //     COMMENTS:    ........
 //==================================================================================================
-bool my::String::operator==(const char* stringLiteral)
-{
-    for (int ii {0}; ii < mb_length; ++ii) {
-        if (*(mb_firstElementAdress + ii) != *(stringLiteral + ii)) {
-            return false;
-        }
-        else {} // Nothing to do
-    }
+//bool my::String::operator==(const char* stringLiteral) const
+//{
+//
+//}
 
-    // Check if both @this and @stringLiteral terminated with '\0'
-    if (*(mb_firstElementAdress + mb_length) == *(stringLiteral + mb_length) == '\0') {
-        return true;
-    }
-    else {
+
+//==================================================================================================
+//         TYPE:    Overloaded operator
+//  DESCRIPTION:    Compares two <my::String> objects, using their length as limit.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+bool my::String::operator==(const my::String& myString) const
+{
+    // # Check the length
+    if (mb_length != myString.getLength()) {
         return false;
     }
-}
+    else {
+        const char* leftStr {mb_firstElementAdress};
+        const char* rightStr {myString.getFirstElementAdress()};
 
+        // ## Compare two strings
+        for (int ii {0}; ii < mb_length; ++ii) {
+            if (leftStr[ii] != rightStr[ii]) {
+                return false;
+            }
+            else {}
+        }
+    }
 
-//==================================================================================================
-//         TYPE:    Method
-//   PARAMETERS:    ........
-//  DESCRIPTION:    ........
-// RETURN VALUE:    ........
-//     COMMENTS:    ........
-//==================================================================================================
-bool my::String::operator==(const my::String& myString)
-{
-    return (*this == myString.getFirstElementAdress());
+    return true;
 }
 
 
@@ -363,7 +371,7 @@ bool my::String::operator==(const my::String& myString)
 //==================================================================================================
 bool my::String::operator!=(const char* stringLiteral)
 {
-    return !(*this == stringLiteral);
+    return !(*this == my::String(stringLiteral));
 }
 
 
@@ -553,26 +561,37 @@ void my::String::setCapacity(int newCapacity)
 
 
 
-//==============================================================================
-//
-//==============================================================================
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 int my::String::getAllocationDataChunk() const
 {
     return mb_allocationDataChunk;
 }
 
-//==============================================================================
-//
-//==============================================================================
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 void my::String::setAllocationDataChunk(int bytes)
 {
     mb_allocationDataChunk = bytes;
 }
 
-//==============================================================================
-// TYPE:
-// GOAL:
-//==============================================================================
+//==================================================================================================
+//          TYPE:   Member function
+//   DESCRIPTION:   Returns address of the first (0-indexed) element of the <my::String> object.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 const char* my::String::getFirstElementAdress() const
 {
     return mb_firstElementAdress;
