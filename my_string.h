@@ -62,7 +62,7 @@ public:
 
 
 
-
+    const char* cStr() const;
 
 
 

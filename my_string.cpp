@@ -4,7 +4,9 @@
 
 //==================================================================================================
 //         TYPE:    Constructor
-//  DESCRIPTION:    Construct <my::String> object from <const char*>.
+//  DESCRIPTION:    Construct <my::String> object from <const char*>. Contructed object always ends
+//                  with '\0' symbol (for convenience), but this symbol isn't part of the string. It
+//                  is used, for example, when we return <my::String> as c-style string.
 //   PARAMETERS:    ........
 // RETURN VALUE:    ........
 //     COMMENTS:    Didn't mark it is as explicit, because it is often used for the implicit
@@ -20,8 +22,8 @@ my::String::String(const char* line)
     }
     mb_length = length;
 
-    // #### Allocate memory in the heap
-    mb_capacity = mb_allocationDataChunk + ((mb_length - 1) / mb_allocationDataChunk) * mb_allocationDataChunk;
+    // #### Allocate memory in the heap (data + at least one '\0' for convenience)
+    mb_capacity = mb_allocationDataChunk + (mb_length / mb_allocationDataChunk) * mb_allocationDataChunk;
     mb_firstElementAdress = new char[mb_capacity];
 
     // # Copy line into allocated memory
@@ -102,6 +104,21 @@ void my::String::clear()
     mb_length = 0;
 }
 
+
+
+
+
+//==================================================================================================
+//         TYPE:    Member function
+//  DESCRIPTION:    ........
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+const char* my::String::cStr() const
+{
+    return mb_firstElementAdress;
+}
 
 
 

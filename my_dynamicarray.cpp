@@ -504,11 +504,13 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Простой вариант вставки с использованием указателей в качестве итераторов.
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   @pos - position in *this object where is insertion of elements begin;
+//                  @copyFrom - start position (in other object?), where is copying of elements starts (inclusive)
+//                  @copyTo - end position (in OTHER object?), where is copying of elemets ends (exclusive)
+//  RETURN VALUE:   ........
+//      COMMENTS:   Простой вариант вставки с использованием указателей в качестве итераторов.
 //                  Ещё вопрос, какой алгоритм использовать при вставке элементов внутрь массива.
 //                  Пока сделаю в лоб, сперва сдвигаю на кол-во вставляемых эл-в, а там посмотрим.
 //==================================================================================================
@@ -517,27 +519,27 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
 {
     assert (copyFrom <= copyTo && "ERROR, begin-adress should be less than the end-adress");
 
-    // # Вычисляем кол-во эл-в, которые нужно вставить в массив *this
-    int len {0};
+    // # Calculate number of elements for copying
+    int copySize {0};
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
-        ++len;
+        ++copySize;
     }
 
 
     // # Check if the target (*this) can or can't fit new data
-    int newSize {mb_size + len};
+    int newSize {mb_size + copySize};
     if (newSize > mb_capacity) {
         this->reallocate(newSize + mb_capacityChunk);
     }
     else {} // Nothing to do
 
 
+
     // # Displace elements in *this array
-    auto ptr = this->end();
-    --ptr;
-    while (ptr >= pos) {
-        *(ptr + len) = *ptr;
-        --ptr;
+    Type* thisEnd {this->end()};
+    Type* thisLastElementAddr {thisEnd - 1};
+    for (Type* last {thisLastElementAddr}; last >= pos; --last) {
+        *(last + copySize) = *last;
     }
 
 
