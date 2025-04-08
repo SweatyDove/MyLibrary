@@ -63,30 +63,14 @@ public:
 
 int main()
 {
-    my::DynamicArray<Test> dynArr;
-    Test testA {5};
-    Test& testARef {testA};
+    my::DynamicArray<my::SmartPtr<int>> vec;
 
-    Test testB {6};
-    Test& testBRef {testB};
-    Test&& testBRRef {std::move(testBRef)};
+    my::SmartPtr<int> resA {new int {5}};
+    my::SmartPtr<int> resB {new int {7}};
 
-//    testARef = testBRRef;
-//    Test&& rValRef {std::move(testARef)};
+    vec.pushBack(std::move(resA));
+    vec.pushBack(std::move(resB));
 
-
-
-    dynArr.pushBack(std::move(testARef));
-    dynArr.pushBack(std::move(testBRef));
-
-
-
-
-
-    int* resPtr {new int {753}};
-    my::SmartPtr smartPtr {resPtr};
-
-    std::cout << *smartPtr << std::endl;
 
     return 0;
 }

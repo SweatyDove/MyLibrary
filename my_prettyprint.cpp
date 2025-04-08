@@ -163,6 +163,9 @@ void my::PrettyPrint::formLevel(Level level)
         case Level::ERROR:
             mb_header.append("ERROR");
             break;
+        case Level::TOTAL:
+            // Nothing to do
+            break;
         }
 
         mb_header.push_back(']');

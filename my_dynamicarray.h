@@ -161,6 +161,8 @@ public:
 template <typename Type>
 std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);
 
+template <typename Type>
+std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
 } // End of @my-namespace
 

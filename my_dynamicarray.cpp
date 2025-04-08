@@ -324,11 +324,11 @@ int my::DynamicArray<Type>::getCapacityChunk() const
 
 
 //==================================================================================================
-//          TYPE:    General function
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    Overloaded operator
+//   DESCRIPTION:    Prints const *this array to <std::ostream&>
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 std::ostream& my::operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr)
@@ -344,6 +344,30 @@ std::ostream& my::operator<<(std::ostream& out, const my::DynamicArray<Type>& dy
 
     return out;
 }
+
+
+//==================================================================================================
+//          TYPE:    Overloaded operator
+//   DESCRIPTION:    Prints non-const *this array to <std::ostream&>
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
+//==================================================================================================
+template <typename Type>
+std::ostream& my::operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr)
+{
+    out << '[';
+
+    int ii {0};
+    while (ii < dynArr.getSize() - 1) {
+        out << dynArr[ii] << ", ";
+        ++ii;
+    }
+    out << dynArr[ii] << ']';
+
+    return out;
+}
+
 
 
 
@@ -526,10 +550,14 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
     }
 
 
-    // # Check if the target (*this) can or can't fit new data
+    // # Check if the target (*this) can or can't fit new data (после реаллокации меняется фактический pos!)
     int newSize {mb_size + copySize};
     if (newSize > mb_capacity) {
+
+        // ## Save @pos index, because @pos will change after reallocation
+        int posIndex = static_cast<int>(pos - mb_dataPtr);
         this->reallocate(newSize + mb_capacityChunk);
+        pos = &mb_dataPtr[posIndex];
     }
     else {} // Nothing to do
 
