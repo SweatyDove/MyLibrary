@@ -6,7 +6,7 @@
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 my::Sort::Sort()
 {
@@ -19,7 +19,7 @@ my::Sort::Sort()
 //   DESCRIPTION:   Swap 2 elements
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 inline void my::Sort::swap(int& a, int& b)
 {
@@ -35,7 +35,7 @@ inline void my::Sort::swap(int& a, int& b)
 //   DESCRIPTION:   Realization of "stupid sort" algorithm
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   1) Replacing @temp variable with XOR is NOT faster!
+//      COMMENTS:   1) Replacing @temp variable with XOR is NOT faster!
 //                  2) Usage of pointers versus indexes is NOT faster!
 //                  3) Taking expression "size - 1" outside the for-loop is NOT faster!
 //==================================================================================================
@@ -63,7 +63,7 @@ double my::Sort::stupid(std::vector<int>& nums)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 double my::Sort::bubble(std::vector<int>& nums)
 {
@@ -91,7 +91,7 @@ double my::Sort::bubble(std::vector<int>& nums)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 double my::Sort::cocktail(std::vector<int>& nums)
 {
@@ -145,7 +145,7 @@ double my::Sort::cocktail(std::vector<int>& nums)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   There is a version from wiki, that works a little bit faster:
+//      COMMENTS:   There is a version from wiki, that works a little bit faster:
 //
 //                  for (int ii {0}; ii < size - 1; ++ii) {
 //                      for (int jj {(ii % 2) ? 1 : 0}; jj < size - 1; jj += 2) {
@@ -189,7 +189,7 @@ double my::Sort::oddEven(std::vector<int>& nums)
 //   DESCRIPTION:   Two loop version of oddEven sort algorithm.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   About 4-5% faster than base version (but need to compile with -O3 option)
+//      COMMENTS:   About 4-5% faster than base version (but need to compile with -O3 option)
 //==================================================================================================
 double my::Sort::oddEven_1(std::vector<int>& nums)
 {
@@ -243,7 +243,7 @@ double my::Sort::oddEven_1(std::vector<int>& nums)
 //   DESCRIPTION:   Two if-else version of oddEven sort algorithm.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   About 8-10% faster than base version, but with MUCH MORE difficult logic... And
+//      COMMENTS:   About 8-10% faster than base version, but with MUCH MORE difficult logic... And
 //                  I'm not sure, that is all correct.
 //==================================================================================================
 double my::Sort::oddEven_2(std::vector<int>& nums)
@@ -333,7 +333,7 @@ double my::Sort::oddEven_2(std::vector<int>& nums)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 double my::Sort::comb(std::vector<int>& nums)
 {
@@ -362,6 +362,79 @@ double my::Sort::comb(std::vector<int>& nums)
     return mb_timeInterval;
 
 }
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+void my::Sort::quick(std::vector<int>& a, int start, int end)
+{
+    if (end <= start) {
+        return;
+    }
+    else {
+
+        int pivot {a[start]};
+        int ii {start};
+        int jj {end};
+        bool isSwapped {false};
+        while (true) {
+
+            // ## Left part
+            while (ii < jj && a[ii] < pivot) {
+                ++ii;
+            }
+
+            // ## Right part
+            while (ii < jj && a[jj] >= pivot) {
+                --jj;
+            }
+
+            if (ii < jj && a[ii] > a[jj]) {
+                this->swap(a[ii], a[jj]);
+                isSwapped = true;
+                ++ii;
+                --jj;
+            }
+            else {
+                break;
+            }
+        }
+
+
+        if (isSwapped == false) {
+            return;
+        }
+        else {
+            // ## If a[ii] < pivot => a[ii] is in the left part of subarray;
+            // ## if a[ii] >= pivot => a[ii] is part of the right subarray.
+            int edge {(a[ii] < pivot) ? ii : ii - 1};
+
+            this->quick(a, start, edge);
+            this->quick(a, edge + 1, end);
+
+            return;
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
