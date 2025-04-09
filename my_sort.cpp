@@ -373,53 +373,47 @@ double my::Sort::comb(std::vector<int>& nums)
 //==================================================================================================
 void my::Sort::quick(std::vector<int>& a, int start, int end)
 {
-    if (end <= start) {
+    if (end - start <= 1) {
         return;
     }
-    else {
+    else {} // Nothing to do
 
-        int pivot {a[start]};
-        int ii {start};
-        int jj {end};
-        bool isSwapped {false};
-        while (true) {
-
-            // ## Left part
-            while (ii < jj && a[ii] < pivot) {
-                ++ii;
-            }
-
-            // ## Right part
-            while (ii < jj && a[jj] >= pivot) {
-                --jj;
-            }
-
-            if (ii < jj && a[ii] > a[jj]) {
-                this->swap(a[ii], a[jj]);
-                isSwapped = true;
-                ++ii;
-                --jj;
-            }
-            else {
-                break;
-            }
-        }
+    int pivot {a[start]};
 
 
-        if (isSwapped == false) {
-            return;
-        }
-        else {
-            // ## If a[ii] < pivot => a[ii] is in the left part of subarray;
-            // ## if a[ii] >= pivot => a[ii] is part of the right subarray.
-            int edge {(a[ii] < pivot) ? ii : ii - 1};
-
-            this->quick(a, start, edge);
-            this->quick(a, edge + 1, end);
-
-            return;
-        }
+    int ii {start};
+    for (int ii {start}; ii < jj; ++ii) {
+        a[ii] < pivot;
+        ++ii;
     }
+
+
+    int jj {end};
+    while (a[jj] >= pivot) {
+        --jj;
+    }
+
+
+
+    int leftEdge {0};
+    int rightEdge {0};
+    if (a[ii] < pivot) {
+        leftEdge = ii;
+        rightEdge = ii + 1;
+    }
+    else if (a[ii] == pivot) {
+        leftEdge = ii - 1;
+        rightEdge = ii + 1;
+    }
+    else {
+        leftEdge = ii - 1;
+        rightEdge = ii;
+    }
+
+    this->quick(a, start, leftEdge);
+    this->quick(a, rightEdge, end);
+
+    return;
 
 }
 

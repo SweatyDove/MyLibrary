@@ -37,7 +37,7 @@ int main()
 
 
 
-    std::vector<int> testArray = {1, 4, 7, 0, 5, 2, 2, 6, 3, 2};                // size = 10
+    std::vector<int> testArray = {1, 4, 7, 0, 5, 9, 2, 6, 3, 8};                // size = 10
 //    int k = 3;
 //    Solution sol {};
 //    std::vector<int> res {sol.getAverages(testArray, k)};
@@ -124,7 +124,7 @@ int main()
 
 
 
-    customSortArray = randomArray;
+    customSortArray = testArray;
     sort.quick(customSortArray, 0, customSortArray.size() - 1);
     if (stdSortArray == customSortArray) {
         std::cout << "\nQUICK sort is OK" << std::endl;
