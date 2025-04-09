@@ -6,6 +6,8 @@
 
 #include "my_prettyprint.h"
 
+//extern my::PrettyPrint output;
+
 
 //==================================================================================================
 //          TYPE:    Namespace
@@ -18,18 +20,29 @@ namespace my {
 
 
 //==================================================================================================
-//          TYPE:    Class
-//   DESCRIPTION:    This class is my analog to std::unique_ptr from STL
-//    PARAMETERS:    ........
-//  RETURN VALUE:    ........
-// COMMENTS/BUGS:    ........
+//          TYPE:   Class
+//   DESCRIPTION:   This class is my analog to std::unique_ptr from STL
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Should I use PrettyPrint here? It is an additional resource, that I should move
+//                  with <Type*> resource. Moreover, I'm not sure, that I need instances of <PrettyPrint>
+//                  in every object of <SmartPtr>. I will exclude it for now... But what kind of options
+//                  I have here?
+//
+//                  1) Per object basis (like now)
+//                  2) Per class basis (make static or declare/define in the h/cpp files).
+//                  3) Per library basis (delcare in main.h and define in main.cpp?)
+//                  4) Add a pointer to <my::SmartPtr> (and others classes). And pass this pointer
+//                     in call time (if nullptr - then use std::cout, if not - use <my::SmartPtr)
 //==================================================================================================
 template <typename Type>
 class SmartPtr {
 private:
     Type* mb_ptr {nullptr};
 
-    my::PrettyPrint mb_output {{ENABLE_DEBUG_MES, ENABLE_INFO_MES, ENABLE_WARN_MES, ENABLE_ERROR_MES}, true, false, true, 100};
+    inline static int mb_count {0};
+
+//    my::PrettyPrint mb_output {{ENABLE_DEBUG_MES, ENABLE_INFO_MES, ENABLE_WARN_MES, ENABLE_ERROR_MES}, true, false, true, 100};
 
 public:
     SmartPtr(Type* resource);

@@ -66,11 +66,18 @@ int main()
     my::DynamicArray<my::SmartPtr<int>> vec;
 
     my::SmartPtr<int> resA {new int {5}};
-    my::SmartPtr<int> resB {new int {7}};
 
     vec.pushBack(std::move(resA));
-    vec.pushBack(std::move(resB));
 
+//    my::DynamicArray<int> a;
+
+//    for (int ii {0}; ii < 7; ++ii) {
+//        a[ii] = ii;
+//    }
+
+//    for (int ii {0}; ii < 7; ++ii) {
+//        std::cout << a[ii] << std::endl;
+//    }
 
     return 0;
 }

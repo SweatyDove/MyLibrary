@@ -2,11 +2,11 @@
 
 
 //==================================================================================================
-//          TYPE:    Default constructor
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:   Default constructor
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//   DESCRIPTION:   ........
+//      COMMENTS:   It seems to be that I allocate incorrect amount of memory
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray():
@@ -14,7 +14,8 @@ my::DynamicArray<Type>::DynamicArray():
     mb_size {0},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
-    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
+//    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
+//    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
 }
 
@@ -31,7 +32,8 @@ my::DynamicArray<Type>::DynamicArray():
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 {
-    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
+//    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
+//    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
     // Allocate memory for the list's objects of type <Type>
     // Остановился здесь: а что мне использовать? operator new/new[] или new/new[] оператор? Первый
@@ -93,9 +95,11 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 template <typename Type>
 my::DynamicArray<Type>::~DynamicArray()
 {
-    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
+//    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
+//    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
-    delete[] mb_dataPtr;
+
+    operator delete[](mb_dataPtr);
     mb_dataPtr = nullptr;
 
 }
@@ -259,7 +263,7 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
         *(newDataPtr + ii) = my::move(*(mb_dataPtr + ii));
     }
     // ## Удаляем старые данные
-    delete[] mb_dataPtr;
+    operator delete[] (mb_dataPtr);
 
     mb_dataPtr = newDataPtr;
 }
@@ -496,7 +500,7 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 //    PARAMETERS:   --------
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Perhaps, there are some situations, where I should/shouldn't call delete[].
+// COMMENTS/BUGS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
 //                  For example, if this->mb_size == 100500 and dynArr->mb_size == 10, it is better
 //                  to free the memory in the heap. Otherwise, I can reuse already allocated memory...
 //==================================================================================================
@@ -510,7 +514,7 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
     else {} // Nothing to do
 
     // # Clear the content of *this array.
-    delete[] mb_dataPtr;
+    operator delete[] (mb_dataPtr);
     mb_dataPtr = nullptr;
 
     mb_capacity = dynArr.getCapacity();

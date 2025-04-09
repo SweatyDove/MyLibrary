@@ -12,7 +12,8 @@ template <typename Type>
 my::SmartPtr<Type>::SmartPtr(Type* resource) :
     mb_ptr {resource}
 {
-    mb_output.debug("Smart pointer has been created!");
+//    mb_output.debug("Smart pointer has been created!");
+//    std::cout << "[DEBUG]: Smart pointer has been created!" << std::endl;
 }
 
 
@@ -28,7 +29,9 @@ my::SmartPtr<Type>::SmartPtr(Type* resource) :
 template <typename Type>
 my::SmartPtr<Type>::SmartPtr(my::SmartPtr<Type>&& smartPtr)
 {
-    mb_output.debug("Move-constructor has been called");
+//    mb_output.debug("Move-constructor has been called");
+//    std::cout << "[DEBUG]: Move-constructor has been called!" << std::endl;
+
 
     // # Can access private member because "private" is on per-class basis, not per-object
     mb_ptr = smartPtr.mb_ptr;
@@ -50,7 +53,10 @@ my::SmartPtr<Type>::SmartPtr(my::SmartPtr<Type>&& smartPtr)
 template <typename Type>
 my::SmartPtr<Type>::~SmartPtr()
 {
-    mb_output.debug("Destructor of the smart pointer has been called!");
+//    mb_output.debug("Destructor of the smart pointer has been called!");
+//    std::cout << "[DEBUG]: Destructor of the smart pointer has been called!" << std::endl;
+
+    mb_count = mb_count + 1;
 
     if (mb_ptr != nullptr) {
         delete mb_ptr;
