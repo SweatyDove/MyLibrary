@@ -3,6 +3,7 @@
 
 #include "my_smartptr.hpp"
 #include "my_dynamicarray.hpp"
+#include <sys/resource.h>
 
 
 
@@ -68,6 +69,17 @@ int main()
     my::SmartPtr<int> resA {new int {5}};
 
     vec.pushBack(std::move(resA));
+
+
+    struct rlimit64 sl;
+    int retVal = getrlimit64(RLIMIT_STACK, &sl);
+    if (retVal != 0) {
+        std::cout << "Error: " << std::strerror(errno) << std::endl;
+    }
+    else {
+        std::cout << "Current: " << sl.rlim_cur << std::endl;
+        std::cout << "Max: " << sl.rlim_max << std::endl;
+    }
 
 //    my::DynamicArray<int> a;
 

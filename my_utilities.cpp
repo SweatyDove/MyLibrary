@@ -94,32 +94,34 @@ int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
 
 
 
-//==============================================================================
-// Convert integer number @intNumber into the set of chars, that represent all
-// number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
-//==============================================================================
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    Convert integer number @intNumber into the set of chars, that represent all
+//                  number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
+//                  Also add '\0' at the end of buffer, or return error.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
 int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
 {
-    int quotient    {intNumber};
+    int quotient    {intNumber};                    //
     int base        {10};
     char* bufferPtr {buffer};
 
     int ii {0};
 
-    // #### Have to reserve two positions in the @buffer (for the last "remainder"
-    // #### and '\0').
+    // # Have to reserve two positions in the @buffer (for the last "remainder" and '\0').
     while ((ii < sizeOfBuffer - 2) && (quotient >= base)) {
-        *bufferPtr++ = static_cast<char>((quotient % base) + '0');
-
+        bufferPtr[ii] = static_cast<char>((quotient % base) + '0');
         quotient /= base;
         ++ii;
     }
 
-    // #### It's OK if we exit for-loop by second condition.
-    if (quotient < base) {
-        *bufferPtr++ = static_cast<char>(quotient + '0');
-        *bufferPtr = '\0';
-
+    // # It's OK if we exit for-loop by 2-nd condition and have 2 free space in buffer.
+    if ((ii < sizeOfBuffer - 1) && quotient < base) {
+        bufferPtr[ii] = static_cast<char>(quotient + '0');
+        bufferPtr[ii + 1] = '\0';
         invertBuffer(buffer, 0, ii);
         return 0;
     }
@@ -132,15 +134,21 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
 }
 
 
-
-//==============================================================================
-// Function just invert elements of C-buffer @buffer.
-// Buffer has least one element: '\0'.
-//==============================================================================
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    Invert elements of C-style-buffer @buffer. Buffer has at least one element '\0'.
+//                  Both edges are included.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
 int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 {
     char* a {buffer + fromIndex};
     char* b {buffer + toIndex};
+
+    char temp {'\0'};
+    for (int ii {fromIndex}; ii <= toIndex)
 
     while (a < b) {
         *a ^= *b;
