@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <iostream>
+#include <sys/resource.h>
 #include "my_utilities.h"
+
 
 
 namespace my {
@@ -28,6 +30,11 @@ public:
     double oddEven_2(std::vector<int>& nums);
     double comb(std::vector<int>& nums);
     void quick(std::vector<int>& a, int start, int end);
+    void quick_1(std::vector<int>& a, int start, int end);
+    void quick_2(std::vector<int>& a, int start, int end);
+    void quick_3(std::vector<int>& a, int start, int end);
+
+
 
 
 };
