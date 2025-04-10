@@ -369,49 +369,56 @@ double my::Sort::comb(std::vector<int>& nums)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   1) Падает в случае массива, отсортированного в обратном порядке, размера 100'000
+//                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
+//                  2) Не работает с pivot = a[(start + end) / 2];
 //==================================================================================================
 void my::Sort::quick(std::vector<int>& a, int start, int end)
 {
-    if (end - start <= 1) {
+    // Exit if subarray has 1 element or 0
+    if (start >= end) {
         return;
     }
     else {} // Nothing to do
 
-    int pivot {a[start]};
+//    int     pivot       {a[(start + end) / 2]};
+    int     pivot       {a[start]};
+    int     ii          {start};
+    int     jj          {end};
+    bool    isSwapped   {false};                 // Used, when all elements in subarray are higher than @pivot
+                                            // and there aren't any swaps.
 
+    while (true) {
 
-    int ii {start};
-    for (int ii {start}; ii < jj; ++ii) {
-        a[ii] < pivot;
-        ++ii;
+        // ## Find element, that is equal or higher, than @pivot
+        while (ii < jj && a[ii] < pivot) {
+            ++ii;
+        }
+
+        // ## Find element, that is less than @pivot
+        while (ii < jj && a[jj] >= pivot) {
+            --jj;
+        }
+
+        // ## Swap elements
+        if (ii < jj) {
+            this->swap(a[ii], a[jj]);
+            ++ii;
+            --jj;
+            isSwapped = true;
+        }
+        else {
+            break;
+        }
     }
 
-
-    int jj {end};
-    while (a[jj] >= pivot) {
-        --jj;
-    }
-
-
-
-    int leftEdge {0};
-    int rightEdge {0};
-    if (a[ii] < pivot) {
-        leftEdge = ii;
-        rightEdge = ii + 1;
-    }
-    else if (a[ii] == pivot) {
-        leftEdge = ii - 1;
-        rightEdge = ii + 1;
-    }
-    else {
-        leftEdge = ii - 1;
-        rightEdge = ii;
-    }
-
-    this->quick(a, start, leftEdge);
-    this->quick(a, rightEdge, end);
+    // # Choose which subarray a[ii] should be part of:
+    // #    If a[ii] less, than pivot (obviosly)
+    // #    If there are NOT any swap in array (for example [2, 3, 2]) and we need to 'take' one
+    // #    element to left part.
+    int edge = (a[ii] < pivot || isSwapped == false) ? ii : ii - 1;
+    this->quick(a, start, edge);
+    this->quick(a, edge + 1, end);
 
     return;
 
@@ -421,13 +428,148 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+void my::Sort::quick_1(std::vector<int>& a, int start, int end)
+{
+    if (start > end) {
+        return;
+    }
+    else {}
+
+//    int pivot = a[(start + end) / 2];
+    int pivot = a[start];
+    int ii = start;
+    int jj = end;
+
+    while (ii <= jj) {
+        while (a[ii] < pivot) {
+            ++ii;
+        }
+
+        while (a[jj] > pivot) {
+            --jj;
+        }
+
+        if (ii <= jj) {
+            this->swap(a[ii], a[jj]);
+            ++ii;
+            --jj;
+        }
+        else {}
+    }
+
+    this->quick_1(a, start, jj);
+    this->quick_1(a, ii, end);
+
+    return;
+
+}
 
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+void my::Sort::quick_2(std::vector<int>& a, int start, int end)
+{
+    // Exit if subarray has 1 element or 0
+    if (start >= end) {
+        return;
+    }
+    else {} // Nothing to do
+
+    int     pivot       {a[start]};
+    int     ii          {start};
+    int     jj          {end};
+    int     last_ii     {ii};
+    int     last_jj     {jj};
 
 
+    // Упрощённая версия цикла
+    while (ii < jj) {
+        last_ii = ii;
+        last_jj = jj;
 
+        // # Ищем элемент, находящийся не на своём месте
+        ii = (a[ii] < pivot) ? ii + 1 : ii;
+        jj = (a[jj] >= pivot) ? jj - 1 : jj;
+
+        // # Поиск остановился - нашли элемент
+        if (ii == last_ii && jj == last_jj && ii < jj) {
+            this->swap(a[ii], a[jj]);
+        }
+        else {} // Nothing to do
+    }
+
+    this->quick(a, start, ii);
+    this->quick(a, jj, end);
+
+    return;
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Падает в случае массива, отсортированного в обратном порядке, размера 100'000
+//                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
+//==================================================================================================
+void my::Sort::quick_3(std::vector<int>& a, int start, int end)
+{
+    // Exit if subarray has 1 element or 0
+    if (start >= end) {
+        return;
+    }
+    else {} // Nothing to do
+
+    int     pivot       {a[start]};
+    int     ii          {start};
+    int     jj          {end};
+
+    while (true) {
+
+        // ## Find element, that is equal or higher, than @pivot
+        while (ii < jj && a[ii] < pivot) {
+            ++ii;
+        }
+
+        // ## Find element, that is less than @pivot
+        while (ii < jj && a[jj] >= pivot) {
+            --jj;
+        }
+
+        // ## Swap elements
+        if (ii < jj) {
+            this->swap(a[ii], a[jj]);
+            ++ii;
+            --jj;
+        }
+        else {
+            break;
+        }
+    }
+
+
+    this->quick(a, start, ii);
+    this->quick(a, jj, end);
+
+    return;
+
+}
 
 
 
