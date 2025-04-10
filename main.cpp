@@ -38,7 +38,12 @@ int main()
 
 
     std::vector<int> testArray = {1, 4, 7, 0, 5, 9, 2, 6, 3, 8};                // size = 10
-//    int k = 3;
+    std::vector<int> testArray_2 = {2, 3, 2};
+//    std::vector<int> reverseArray(randArrSize);
+//    for (int ii {0}; ii < randArrSize; ++ii) {
+//        stdSortArray[ii] = reverseArray[ii] = randArrSize - ii;
+//    }
+    //    int k = 3;
 //    Solution sol {};
 //    std::vector<int> res {sol.getAverages(testArray, k)};
 
@@ -124,14 +129,58 @@ int main()
 
 
 
-    customSortArray = testArray;
+
+
+    customSortArray = randomArray;
+    t.reset();
     sort.quick(customSortArray, 0, customSortArray.size() - 1);
+    time = t.elapsed();
     if (stdSortArray == customSortArray) {
-        std::cout << "\nQUICK sort is OK" << std::endl;
+        std::cout << "\nQUICK sort time: " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << "\nQUICK sort wasn't correct!" << std::endl;
     }
+
+
+    customSortArray = randomArray;
+    t.reset();
+    sort.quick_1(customSortArray, 0, customSortArray.size() - 1);
+    time = t.elapsed();
+    if (stdSortArray == customSortArray) {
+        std::cout << "\nQUICK_1 sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nQUICK_1 sort wasn't correct!" << std::endl;
+    }
+
+
+//    customSortArray = randomArray;
+//    t.reset();
+//    sort.quick_2(customSortArray, 0, customSortArray.size() - 1);
+//    time = t.elapsed();
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nQUICK_2 sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nQUICK_2 sort wasn't correct!" << std::endl;
+//    }
+
+
+
+//    customSortArray = randomArray;
+//    t.reset();
+//    sort.quick_3(customSortArray, 0, customSortArray.size() - 1);
+//    time = t.elapsed();
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nQUICK_3 sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nQUICK_3 sort wasn't correct!" << std::endl;
+//    }
+
+
+
 
 
     return 0;
