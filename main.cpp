@@ -22,13 +22,13 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {1000};
+    int randArrSize {1000'000};
     std::vector<int> randomArray(randArrSize);
     std::vector<int> stdSortArray(randArrSize);
     std::vector<int> customSortArray(randArrSize);
 
     for (int ii {0}; ii < randArrSize - 1; ++ii) {
-        stdSortArray[ii] = randomArray[ii] = my::getRandomNumber(-randArrSize, randArrSize);
+        randomArray[ii] = my::getRandomNumber(-randArrSize, randArrSize);
     }
 
 
@@ -37,7 +37,7 @@ int main()
 
 
 
-    std::vector<int> testArray = {1, 4, 7, 0, 5, 9, 2, 6, 3, 8};                // size = 10
+    std::vector<int> testArray = {1, 4, 7, 0, 5, 9, 2, 3, 2, 8};                // size = 10
     std::vector<int> testArray_2 = {2, 3, 2};
 //    std::vector<int> reverseArray(randArrSize);
 //    for (int ii {0}; ii < randArrSize; ++ii) {
@@ -58,6 +58,7 @@ int main()
 
 
     my::Timer t;
+    stdSortArray = randomArray;
     std::sort(stdSortArray.begin(), stdSortArray.end());
     time = t.elapsed();
     std::cout << "\nstd::sort time: " << time << " milliseconds" << std::endl;
