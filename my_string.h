@@ -42,33 +42,14 @@ public:
     // ################################### Constructors and Destructors  ###########################
     String() = default;
 
-
-
     String(const char* line);
     String(const my::String& string);
     ~String();
 
     // ################################### Overloaded Operators ####################################
 
-    //==========================================================================
-    // TYPE: Copy assignment via overloaded [operator=].
-    // GOAL: We don't need to create a new object. Just assign to the existing
-    //       one, doing a deep copy.
-    //==========================================================================
     my::String& operator=(const my::String& lString);
-
-
-    //==========================================================================
-    // TYPE: Move assignment via overloaded [operator=].
-    // GOAL: Transfer ownership.
-    //==========================================================================
     my::String& operator=(my::String&& rString) noexcept;
-
-
-    //==========================================================================
-    // TYPE: Assignment overloaded [operator=] for <const char*> type.
-    // GOAL:
-    //==========================================================================
     my::String& operator=(const char* stringLiteral);
 
 
@@ -83,11 +64,7 @@ public:
     friend my::String& operator<<(my::String& string, const my::String& inputString);
 
     friend my::String& operator+(const my::String& lStr, const my::String& rStr);
-//    friend my::String&& operator+(const my::String& lStr, const my::String& rStr);        // delete
 
-
-
-    /* Here we declare overloaded operators as friend functions */
     friend std::ostream& operator<<(std::ostream& out, const my::String& string);
     friend std::istream& operator>>(std::istream& in, my::String& string);
 
@@ -97,40 +74,32 @@ public:
     // ################################### Interface  ##############################################
 
 
-    const char* cStr() const;
+    void clear();
+    void reallocate(int newCapacity);
 
-
-
-    void      clear();
-    //void    softClear();
-    //void    hardClear();
 
     [[nodiscard]]   int     getLength() const;
                     void    setLength(int length);
-
     [[nodiscard]]   int     getCapacity() const;
                     void    setCapacity(int newCapacity);
-
     [[nodiscard]]   int     getAllocationDataChunk() const;
                     void    setAllocationDataChunk(int bytes);
 
     [[nodiscard]]   const char* getFirstElementAdress() const;
+    [[nodiscard]]   const char* cStr() const;
 
 
 
 };
 
+// Prototypes of the friend functions
 my::String& operator<<(my::String& string, int intNumber);
 my::String& operator<<(my::String& string, const char* charDataBuffer);
 my::String& operator<<(my::String& string, char symbol);
 my::String& operator<<(my::String& string, const my::String& inputString);
 
-
 my::String& operator+(const my::String& lStr, const my::String& rStr);
-//my::String&& operator+(const my::String& lStr, const my::String& rStr);       // delete
 
-
-/* And here is just a PROTOTYPES */
 std::ostream& operator<<(std::ostream& out, const my::String& string);
 std::istream& operator>>(std::istream& in, my::String& string);
 

@@ -8,6 +8,13 @@
 
 
 
+//==================================================================================================
+//          TYPE:   Namespace
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
 namespace my {
 
 enum class RetCode {
@@ -22,7 +29,7 @@ enum class RetCode {
 //   DESCRIPTION:   Cast l-value reference into the r-value reference
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   Couldn't place definition in cpp file because, in such case need to create new
+//      COMMENTS:   Couldn't place definition in cpp file because, in such case need to create new
 //                  file (my_utilities.hpp) and place h/cpp-defines in it. But it causes errors with
 //                  multiple definitions.
 //==================================================================================================
@@ -40,26 +47,14 @@ Type&& move(Type& value)
 int readLineToBuffer(char* buffer, int sizeOfBuffer);
 
 
-//===============================================================================
-// Convert integer number @intNumber into the set of chars, that represent all
-// number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
-//===============================================================================
-int intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 
-//===============================================================================
-// Function just invert @buffer of size @sizeOfBuffer
-//===============================================================================
-int invertBuffer(char* buffer, int fromElement, int toElement);
+int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
+void    invertBuffer(char* buffer, int fromElement, int toElement);
+int     copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols);
 
-//===============================================================================
-// TYPE:
-// GOAL: Copy string (substring) from @sourceAdress into the string (substring)
-//       @destinationAdress.
-//       If (@numberOfSymbols == 0) -> copy symbols till met '\0' in the source.
-//       Else -> copy @numberOfSymbols symbols.
-//===============================================================================
-int copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols);
 
-}
+} // End of 'my' namespace
+
+
 
 #endif // MY_UTILITIES_H

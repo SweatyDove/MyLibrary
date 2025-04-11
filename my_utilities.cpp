@@ -1,26 +1,4 @@
-
-
-/******************************************************************************
- * This file describes general utilities for different things.
- ******************************************************************************/
 #include "my_utilities.h"
-
-
-
-
-
-//==================================================================================================
-//          TYPE:   ........
-//   DESCRIPTION:   Cast l-value reference into the r-value reference
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
-//==================================================================================================
-//template <typename Type>
-//Type&& my::move(Type& value)
-//{
-//    return static_cast<Type&&>(value);
-//}
 
 
 
@@ -98,10 +76,11 @@ int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
 //         TYPE:    General function
 //  DESCRIPTION:    Convert integer number @intNumber into the set of chars, that represent all
 //                  number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
-//                  Also add '\0' at the end of buffer, or return error.
+//                  Also add '\0' at the end of buffer.
 //   PARAMETERS:    ........
-// RETURN VALUE:    ........
-//     COMMENTS:    ........
+// RETURN VALUE:    Number of digits or -1.
+//     COMMENTS:    There is a question... Should I add '\0' at the end of buffer? Should I add 1
+//                  to the return value (number of digits + '\0')?
 //==================================================================================================
 int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
 {
@@ -123,82 +102,87 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
         bufferPtr[ii] = static_cast<char>(quotient + '0');
         bufferPtr[ii + 1] = '\0';
         invertBuffer(buffer, 0, ii);
-        return 0;
+        return ii;
     }
     else {
         std::cerr << "\n[ERROR]::[my::intToChar()]:"
                   << "\nBuffer can't fit all digits of the number."
                   << std::endl;
-        return 1;
+        return -1;
     }
 }
 
 
 //==================================================================================================
 //         TYPE:    General function
-//  DESCRIPTION:    Invert elements of C-style-buffer @buffer. Buffer has at least one element '\0'.
-//                  Both edges are included.
+//  DESCRIPTION:    Invert elements of <char*> @buffer. Both edges are included. It is up to user to
+//                  pass correct indexes.
 //   PARAMETERS:    ........
 // RETURN VALUE:    ........
 //     COMMENTS:    ........
 //==================================================================================================
-int my::invertBuffer(char* buffer, int fromIndex, int toIndex)
+void my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 {
-    char* a {buffer + fromIndex};
-    char* b {buffer + toIndex};
-
     char temp {'\0'};
-    for (int ii {fromIndex}; ii <= toIndex)
-
-    while (a < b) {
-        *a ^= *b;
-        *b ^= *a;
-        *a ^= *b;
-
-        ++a;
-        --b;
+    for (int ii {fromIndex}, jj {toIndex}; ii < jj; ++ii, --jj) {
+        temp = buffer[ii];
+        buffer[ii] = buffer[jj];
+        buffer[jj] = temp;
     }
 
-    return 0;
 }
 
-//==============================================================================
-// What: Global function
-// Why:  Copy string (substring) from the [sourceAdress] into the string
-//       (substring) at the [destinationAdress].
-//
-//       1) If [numberOfSymbols] == 0, then copy all symbols untill  the meeting
-//       '\0' in the source string.
-//       2) If [numberOfSymbols] > 0, then copy specified number of symbols plus
-//          null-terminator '\0'.
-//
-// TRAP: If specified incorrect pointer to destination - this funnction can
-//       override "title" of the block of memory, that is needed for delete[]
-//       operator. In this case - delete[] will cause an error.
-//==============================================================================
-int my::copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols)
-{
-    const char* srcPtr   {sourceAdress};
-    char*       destPtr  {destinationAdress};
 
-    // #### Copy given number of symbols
-    if (numberOfSymbols > 0) {
-        for (int ii {0}; ii < numberOfSymbols; ++ii) {
-            *destPtr = *srcPtr;
-            ++destPtr;
-            ++srcPtr;
-        }
-        *destPtr = '\0';
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    Copy string (substring) from the [sourceAdress] into the string
+//                  (substring) at the [destinationAdress].
+//
+//                  1) If [numberOfSymbols] == 0, then copy all symbols untill  the meeting
+//                      '\0' in the source string.
+//                  2) If [numberOfSymbols] > 0, then copy specified number of symbols plus
+//                      null-terminator '\0'.
+//   PARAMETERS:    @from   - address of 'copy from' data;
+//                  @to     - address of 'copy to' data;
+//                  @num    - number of chars to copy;
+// RETURN VALUE:    ........
+//     COMMENTS:    If specified incorrect pointer to destination - this funnction can override
+//                  "title" of the block of memory, that is needed for delete[] operator.
+//                  In this case - delete[] will cause an error.
+//==================================================================================================
+int my::copyString(const char *from, char *to, int num)
+{
+
+//    bool condition = (num > 0) ? (ii < num) : from[ii] != '\0';
+    // # Lambda definition
+    int ii {0};
+
+    auto condition
+    {
+        [num, &ii, &from]() {return (num > 0) ? (ii < num) : (from[ii] != '\0');}
+    };
+
+    // #### Copy @num number of symbols
+    while(condition) {
+        to[ii] = from[ii];
+        ++ii;
     }
-    // #### Copy all symbols till '\0'
-    else {
-        *destPtr = *srcPtr;
-        while (*destPtr != '\0') {
-            ++destPtr;
-            ++srcPtr;
-            *destPtr = *srcPtr;
-        }
-    }
+    to[ii] = '\0';
+
+//    // #### Copy @num number of symbols
+//    if (num > 0) {
+//        for (int ii {0}; ii < num; ++ii) {
+//            to[ii] = from[ii];
+//        }
+//        to[ii] = '\0';
+//    }
+//    // #### Copy all symbols till '\0'
+//    else {
+//        for (int ii {0}; from[ii] != '\0'; ++ii) {
+//            to[ii] = from[ii];
+//        }
+//        to[ii] = '\0';
+//    }
 
     // #### Old version
 //    if (numberOfSymbols == 0) {

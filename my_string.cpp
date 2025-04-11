@@ -179,6 +179,35 @@ void my::String::clear()
 }
 
 
+//==================================================================================================
+//         TYPE:    Member function
+//  DESCRIPTION:    Reallocate string to a new place in the heap to fit new capacity.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+void my::String::reallocate(int newCapacity)
+{
+    assert(newCapacity > mb_capacity && "New capacity must be higher than the old one");
+
+    char* newData = new char[newCapacity];
+    mb_capacity = newCapacity;
+
+    // # MOVE data from the old string to the new one
+    for (int ii {0}; ii < mb_length; ++ii) {
+        newData[ii] = my::move(mb_data[ii]);
+    }
+
+    // # Fill other space with '\0'
+    for (int ii {mb_length}; ii < mb_capacity; ++ii) {
+        newData[ii] = '\0';
+    }
+
+    // ## Free old memory
+    delete[] mb_data;
+    mb_data = newData;
+}
+
 
 
 
@@ -223,28 +252,23 @@ my::String& my::operator<<(my::String& string, int intNumber)
         buffer[ii++] = '-';
     }
     else {} // Nothing to do
-    my::intToChar(positiveNumber, &buffer[ii], (isNegative) ? (bufSize - 1) : bufSize);
 
-    // #### Calculate number of digits (or signs) in the buffer
-    int numberOfSymbols {0};
-    for (ii = 0; ii < bufSize; ++ii) {
-        if (buffer[ii] != '\0') {
-            ++numberOfSymbols;
-        }
-        else {
-            break;
-        }
+    int numberOfSymbols = my::intToChar(positiveNumber, &buffer[ii], (isNegative) ? (bufSize - 1) : bufSize);
+    if (isNegative) {
+        ++numberOfSymbols;
     }
+    else {} // Nothing to do
 
-    // #### If my::String object has enough space for the new data
-    // #1 Set new string's length.
-    string.setLength(string.getLength() + numberOfSymbols);
 
-    // #2 Allocate memory if the new string length is higher than
-    // ## string's capacity.
-    if (string.getCapacity() < string.getLength() + 1) {
-        int newCapacity {(((string.getLength() + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
-        string.setCapacity(newCapacity);
+
+    // # Set new string's length.
+    int newLength {string.getLength() + numberOfSymbols};
+//    string.setLength(newLength);
+
+    // # Allocate memory for string and at least 1 '\0' symbol
+    if (string.getCapacity() < newLength + 1) {
+        int newCapacity {(((newLength + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+        string.reallocate(newCapacity);
     }
     else {} // Nothing to do
 
