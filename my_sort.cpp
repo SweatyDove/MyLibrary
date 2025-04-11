@@ -191,7 +191,7 @@ double my::Sort::oddEven(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   About 4-5% faster than base version (but need to compile with -O3 option)
 //==================================================================================================
-double my::Sort::oddEven_1(std::vector<int>& nums)
+double my::Sort::oddEvenVer1(std::vector<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
@@ -246,7 +246,7 @@ double my::Sort::oddEven_1(std::vector<int>& nums)
 //      COMMENTS:   About 8-10% faster than base version, but with MUCH MORE difficult logic... And
 //                  I'm not sure, that is all correct.
 //==================================================================================================
-double my::Sort::oddEven_2(std::vector<int>& nums)
+double my::Sort::oddEvenVer2(std::vector<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
@@ -371,7 +371,9 @@ double my::Sort::comb(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   1) Падает в случае массива, отсортированного в обратном порядке, размера 100'000
 //                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
-//                  2) Не работает с pivot = a[(start + end) / 2];
+//                  2) Не работает с pivot = a[(start + end) / 2] из-за неверного выставления
+//                  параметра 'edge' для такого случая.
+//                  3) Работает быстрее 'классического' исполнения (quickClassic())
 //==================================================================================================
 void my::Sort::quick(std::vector<int>& a, int start, int end)
 {
@@ -417,8 +419,8 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
     // #    If there are NOT any swap in array (for example [2, 3, 2]) and we need to 'take' one
     // #    element to left part.
     int edge = (a[ii] < pivot || isSwapped == false) ? ii : ii - 1;
-    this->quick(a, start, edge);
-    this->quick(a, edge + 1, end);
+    this->quick_1(a, start, edge);
+    this->quick_1(a, edge + 1, end);
 
     return;
 
@@ -435,15 +437,14 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-void my::Sort::quick_1(std::vector<int>& a, int start, int end)
+void my::Sort::quickClassic(std::vector<int>& a, int start, int end)
 {
     if (start > end) {
         return;
     }
     else {}
 
-//    int pivot = a[(start + end) / 2];
-    int pivot = a[start];
+    int pivot = a[(start + end) / 2];
     int ii = start;
     int jj = end;
 
@@ -464,108 +465,8 @@ void my::Sort::quick_1(std::vector<int>& a, int start, int end)
         else {}
     }
 
-    this->quick_1(a, start, jj);
-    this->quick_1(a, ii, end);
-
-    return;
-
-}
-
-
-
-
-//==================================================================================================
-//          TYPE:   Method
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   ........
-//==================================================================================================
-void my::Sort::quick_2(std::vector<int>& a, int start, int end)
-{
-    // Exit if subarray has 1 element or 0
-    if (start >= end) {
-        return;
-    }
-    else {} // Nothing to do
-
-    int     pivot       {a[start]};
-    int     ii          {start};
-    int     jj          {end};
-    int     last_ii     {ii};
-    int     last_jj     {jj};
-
-
-    // Упрощённая версия цикла
-    while (ii < jj) {
-        last_ii = ii;
-        last_jj = jj;
-
-        // # Ищем элемент, находящийся не на своём месте
-        ii = (a[ii] < pivot) ? ii + 1 : ii;
-        jj = (a[jj] >= pivot) ? jj - 1 : jj;
-
-        // # Поиск остановился - нашли элемент
-        if (ii == last_ii && jj == last_jj && ii < jj) {
-            this->swap(a[ii], a[jj]);
-        }
-        else {} // Nothing to do
-    }
-
-    this->quick(a, start, ii);
-    this->quick(a, jj, end);
-
-    return;
-
-}
-
-
-//==================================================================================================
-//          TYPE:   Method
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   Падает в случае массива, отсортированного в обратном порядке, размера 100'000
-//                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
-//==================================================================================================
-void my::Sort::quick_3(std::vector<int>& a, int start, int end)
-{
-    // Exit if subarray has 1 element or 0
-    if (start >= end) {
-        return;
-    }
-    else {} // Nothing to do
-
-    int     pivot       {a[start]};
-    int     ii          {start};
-    int     jj          {end};
-
-    while (true) {
-
-        // ## Find element, that is equal or higher, than @pivot
-        while (ii < jj && a[ii] < pivot) {
-            ++ii;
-        }
-
-        // ## Find element, that is less than @pivot
-        while (ii < jj && a[jj] >= pivot) {
-            --jj;
-        }
-
-        // ## Swap elements
-        if (ii < jj) {
-            this->swap(a[ii], a[jj]);
-            ++ii;
-            --jj;
-        }
-        else {
-            break;
-        }
-    }
-
-
-    this->quick(a, start, ii);
-    this->quick(a, jj, end);
+    this->quickClassic(a, start, jj);
+    this->quickClassic(a, ii, end);
 
     return;
 
