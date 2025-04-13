@@ -22,7 +22,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {1000'000};
+    int randArrSize {10'000};
     std::vector<int> randomArray(randArrSize);
     std::vector<int> stdSortArray(randArrSize);
     std::vector<int> customSortArray(randArrSize);
@@ -51,6 +51,7 @@ int main()
 
     my::Sort    sort;
     double      time;
+
 
 //    time = sort.stupid(stupidArray);
 //    std::cout << "\nSTUPID sort time: " << time << " seconds" << std::endl;
@@ -119,67 +120,53 @@ int main()
 
 
 
-//    customSortArray = randomArray;
-//    time = sort.comb(customSortArray);
-//    if (stdSortArray == customSortArray) {
-//        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
-//    }
-
-
-
-
-
     customSortArray = randomArray;
-    t.reset();
-    sort.quick(customSortArray, 0, customSortArray.size() - 1);
-    time = t.elapsed();
+    time = sort.comb(customSortArray);
     if (stdSortArray == customSortArray) {
-        std::cout << "\nQUICK sort time: " << time << " milliseconds" << std::endl;
+        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nQUICK sort wasn't correct!" << std::endl;
+        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
     }
 
 
-    customSortArray = randomArray;
-    t.reset();
-    sort.quick_1(customSortArray, 0, customSortArray.size() - 1);
-    time = t.elapsed();
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nQUICK_1 sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nQUICK_1 sort wasn't correct!" << std::endl;
-    }
-
-
-//    customSortArray = randomArray;
-//    t.reset();
-//    sort.quick_2(customSortArray, 0, customSortArray.size() - 1);
-//    time = t.elapsed();
-//    if (stdSortArray == customSortArray) {
-//        std::cout << "\nQUICK_2 sort time: " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "\nQUICK_2 sort wasn't correct!" << std::endl;
-//    }
 
 
 
 //    customSortArray = randomArray;
 //    t.reset();
-//    sort.quick_3(customSortArray, 0, customSortArray.size() - 1);
+//    sort.quick(customSortArray, 0, customSortArray.size() - 1);
 //    time = t.elapsed();
 //    if (stdSortArray == customSortArray) {
-//        std::cout << "\nQUICK_3 sort time: " << time << " milliseconds" << std::endl;
+//        std::cout << "\nQUICK sort time: " << time << " milliseconds" << std::endl;
 //    }
 //    else {
-//        std::cout << "\nQUICK_3 sort wasn't correct!" << std::endl;
+//        std::cout << "\nQUICK sort wasn't correct!" << std::endl;
 //    }
 
+
+    customSortArray = randomArray;
+    t.reset();
+    sort.quickClassic(customSortArray, 0, customSortArray.size() - 1);
+    time = t.elapsed();
+    if (stdSortArray == customSortArray) {
+        std::cout << "\nQUICK CLASSIC sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nQUICK CLASSIC sort wasn't correct!" << std::endl;
+    }
+
+
+    customSortArray = randomArray;
+    t.reset();
+    sort.selection(customSortArray);
+    time = t.elapsed();
+    if (stdSortArray == customSortArray) {
+        std::cout << "\nSELECTION sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "\nSELECTION sort wasn't correct!" << std::endl;
+    }
 
 
 
