@@ -4,6 +4,7 @@
 #include "my_smartptr.hpp"
 #include "my_dynamicarray.hpp"
 #include <sys/resource.h>
+#include <functional>               // For: std::function()
 
 
 
@@ -58,38 +59,43 @@ public:
     }
 };
 
+void foo(const std::function<int(int, int)>& fn) {
+    std::cout << fn(5, 6) << std::endl;
 
+}
 
 
 
 int main()
 {
-    my::DynamicArray<my::SmartPtr<int>> vec;
+    // A regular function pointer. Only works with an empty capture clause (empty []).
+    double (*addNumbers1)(double, double){
+        [](double a, double b) {
+            return a + b;
+        }
+    };
 
-    my::SmartPtr<int> resA {new int {5}};
+    std::cout << addNumbers1(1, 2) << std::endl;
 
-    vec.pushBack(std::move(resA));
+    // Using std::function. The lambda could have a non-empty capture clause (discussed next lesson).
+    std::function addNumbers2{ // note: pre-C++17, use std::function<double(double, double)> instead
+        [](double a, double b) {
+            return a + b;
+        }
+    };
 
+    std::cout << addNumbers2(3, 4) << std::endl;
 
-    struct rlimit64 sl;
-    int retVal = getrlimit64(RLIMIT_STACK, &sl);
-    if (retVal != 0) {
-        std::cout << "Error: " << std::strerror(errno) << std::endl;
-    }
-    else {
-        std::cout << "Current: " << sl.rlim_cur << std::endl;
-        std::cout << "Max: " << sl.rlim_max << std::endl;
-    }
+    // Using auto. Stores the lambda with its real type.
+    auto addNumbers3{
+        [](double a, double b) {
+            return a + b;
+        }
+    };
 
-//    my::DynamicArray<int> a;
+    foo(addNumbers1);
 
-//    for (int ii {0}; ii < 7; ++ii) {
-//        a[ii] = ii;
-//    }
-
-//    for (int ii {0}; ii < 7; ++ii) {
-//        std::cout << a[ii] << std::endl;
-//    }
+    std::cout << addNumbers3(5, 6) << std::endl;
 
     return 0;
 }

@@ -261,19 +261,21 @@ my::String& my::operator<<(my::String& string, int intNumber)
 
 
 
-    // # Set new string's length.
-    int newLength {string.getLength() + numberOfSymbols};
-//    string.setLength(newLength);
+    // # Allocate memory for the string and at least 1 '\0' symbol
+    int curLength {string.getLength()};
+    int newLength {curLength + numberOfSymbols};
 
-    // # Allocate memory for string and at least 1 '\0' symbol
     if (string.getCapacity() < newLength + 1) {
-        int newCapacity {(((newLength + 1) / string.getAllocationDataChunk()) + 1) * string.getAllocationDataChunk()};
+        int     dataChunk   {string.getAllocationDataChunk()};
+        int     newCapacity {dataChunk + (newLength / dataChunk) * dataChunk};      // Exact allocation, thats why (newLength) instead of (newLength + 1)
+
         string.reallocate(newCapacity);
     }
     else {} // Nothing to do
 
-    // #3 Copy digits in string
-    my::copyString(tempBuffer, (string.mb_data + string.mb_length - numberOfSymbols), numberOfSymbols);
+    // Copy digits in string
+    my::copyString(buffer, &string[curLength], numberOfSymbols);
+    string.setLength(newLength);
 
     return string;
 

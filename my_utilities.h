@@ -50,7 +50,7 @@ int readLineToBuffer(char* buffer, int sizeOfBuffer);
 
 int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 void    invertBuffer(char* buffer, int fromElement, int toElement);
-int     copyString(const char *sourceAdress, char *destinationAdress, int numberOfSymbols);
+int     copyString(const char *sourceAdress, char *destinationAdress, const int numberOfSymbols);
 
 
 } // End of 'my' namespace

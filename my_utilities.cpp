@@ -78,7 +78,8 @@ int my::readLineToBuffer(char* buffer, int sizeOfBuffer)
 //                  number's digits. That set is placed into the @buffer of size @sizeOfBuffer.
 //                  Also add '\0' at the end of buffer.
 //   PARAMETERS:    ........
-// RETURN VALUE:    Number of digits or -1.
+// RETURN VALUE:    Number of digits of the @intNumber or -1, if there isn't enough space in buffer
+//                  (including null-terminator).
 //     COMMENTS:    There is a question... Should I add '\0' at the end of buffer? Should I add 1
 //                  to the return value (number of digits + '\0')?
 //==================================================================================================
@@ -106,7 +107,7 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
     }
     else {
         std::cerr << "\n[ERROR]::[my::intToChar()]:"
-                  << "\nBuffer can't fit all digits of the number."
+                  << "\nBuffer can't fit all number's digits and null-terminator."
                   << std::endl;
         return -1;
     }
@@ -135,13 +136,11 @@ void my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 
 //==================================================================================================
 //         TYPE:    General function
-//  DESCRIPTION:    Copy string (substring) from the [sourceAdress] into the string
-//                  (substring) at the [destinationAdress].
+//  DESCRIPTION:    Copy string (substring) from the @from address into the string (substring) at
+//                  the @to address.
 //
-//                  1) If [numberOfSymbols] == 0, then copy all symbols untill  the meeting
-//                      '\0' in the source string.
-//                  2) If [numberOfSymbols] > 0, then copy specified number of symbols plus
-//                      null-terminator '\0'.
+//                  1) If nums <= 0, then copy all symbols untill the meeting '\0' in the @from string.
+//                  2) If nums > 0, then copy @nums of symbols plus null-terminator '\0'.
 //   PARAMETERS:    @from   - address of 'copy from' data;
 //                  @to     - address of 'copy to' data;
 //                  @num    - number of chars to copy;
@@ -150,52 +149,25 @@ void my::invertBuffer(char* buffer, int fromIndex, int toIndex)
 //                  "title" of the block of memory, that is needed for delete[] operator.
 //                  In this case - delete[] will cause an error.
 //==================================================================================================
-int my::copyString(const char *from, char *to, int num)
+int my::copyString(const char *from, char *to, const int num)
 {
 
-//    bool condition = (num > 0) ? (ii < num) : from[ii] != '\0';
-    // # Lambda definition
     int ii {0};
 
+
+    // # Lambda definition, that equivalent to that: (num > 0 && ii < num) || (num <= 0 && from[ii] != '\0').
+    // # Decided to use lambda for practice, but instead may use macro or just expression above.
     auto condition
     {
-        [num, &ii, &from]() {return (num > 0) ? (ii < num) : (from[ii] != '\0');}
+        [=, &ii]() {return ((num > 0) ? (ii < num) : (from[ii] != '\0'));}
     };
 
     // #### Copy @num number of symbols
-    while(condition) {
+    while(condition()) {
         to[ii] = from[ii];
         ++ii;
     }
     to[ii] = '\0';
-
-//    // #### Copy @num number of symbols
-//    if (num > 0) {
-//        for (int ii {0}; ii < num; ++ii) {
-//            to[ii] = from[ii];
-//        }
-//        to[ii] = '\0';
-//    }
-//    // #### Copy all symbols till '\0'
-//    else {
-//        for (int ii {0}; from[ii] != '\0'; ++ii) {
-//            to[ii] = from[ii];
-//        }
-//        to[ii] = '\0';
-//    }
-
-    // #### Old version
-//    if (numberOfSymbols == 0) {
-//        while (*destinationAdress++ = *sourceAdress++) {
-//            ; // Nothing to do
-//        }
-//    }
-//    // #### Copy @numberOfSymbols symbols
-//    else {
-//        while ((*destinationAdress++ = *sourceAdress++) && numberOfSymbols-- > 0 ) {
-//            ;
-//        }
-//    }
 
     return 0;
 }
