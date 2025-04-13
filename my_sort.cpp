@@ -419,8 +419,8 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
     // #    If there are NOT any swap in array (for example [2, 3, 2]) and we need to 'take' one
     // #    element to left part.
     int edge = (a[ii] < pivot || isSwapped == false) ? ii : ii - 1;
-    this->quick_1(a, start, edge);
-    this->quick_1(a, edge + 1, end);
+    this->quick(a, start, edge);
+    this->quick(a, edge + 1, end);
 
     return;
 
@@ -435,7 +435,7 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   'Classic' realization
 //==================================================================================================
 void my::Sort::quickClassic(std::vector<int>& a, int start, int end)
 {
@@ -471,6 +471,53 @@ void my::Sort::quickClassic(std::vector<int>& a, int start, int end)
     return;
 
 }
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+double my::Sort::selection(std::vector<int>& a)
+{
+    int size {a.size()};
+
+    mb_stopwatch.reset();
+
+    for (int jj {size - 1}; jj > 0; --jj) {
+
+        int ii {1};
+        int kk {0};
+
+        while (ii <= jj) {
+            kk = (a[ii] > a[kk]) ? ii : kk;
+            ++ii;
+        }
+
+        this->swap(a[kk], a[jj]);
+    }
+
+
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
