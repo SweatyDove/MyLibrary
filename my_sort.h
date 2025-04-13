@@ -32,6 +32,9 @@ public:
     void quick(std::vector<int>& a, int start, int end);
     void quickClassic(std::vector<int>& a, int start, int end);
 
+    // # Сортировки выбором
+    double selection(std::vector<int>& nums);
+
 
 
 
