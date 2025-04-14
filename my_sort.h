@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sys/resource.h>
 #include "my_utilities.h"
+#include <functional>               // Fot std::function
 
 
 
@@ -34,6 +35,7 @@ public:
 
     // # Сортировки выбором
     double selection(std::vector<int>& nums);
+    double heap(std::vector<int>& nums);
 
 
 

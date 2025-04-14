@@ -508,7 +508,63 @@ double my::Sort::selection(std::vector<int>& a)
 }
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+double my::Sort::heap(std::vector<int>& a)
+{
+    int n {a.size() - 1};           // Last element index
 
+
+    // # Лямбда-функция просейки
+    std::function<void(int)> sift {
+              [&, n](int parentIndex)
+        {
+            int leftChildIndex {2 * parentIndex + 1};
+            int rightChildIndex {2 * parentIndex + 2};
+            int maxChildIndex {-1};
+
+
+            // ## Определяем индекс большего из потомков
+            if ((leftChildIndex > n) && (rightChildIndex <= n)) {
+                maxChildIndex = rightChildIndex;
+            }
+            else if ((leftChildIndex <= n) && (rightChildIndex > n)) {
+                maxChildIndex = leftChildIndex;
+            }
+            else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
+                maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
+            }
+            else {}
+
+
+            // ## Свапаем элементы
+            if (a[parentIndex] < a[maxChildIndex]) {
+                this->swap(a[parentIndex], a[maxChildIndex]);
+                parentIndex = maxChildIndex;
+                sift(parentIndex);
+            }
+            else {}
+        }
+    };
+
+
+    // # Сделать дерево сортирующим (через просейку), тут пробегаем по всем элементам
+    for (int parentIndex {n}; parentIndex >= 0; --parentIndex) {
+        sift(parentIndex);
+    }
+
+    // # Корень дерева свапнуть с последним эл-м и провести просейку для корня.
+    for (int ii {n}; ii > 0; --ii) {
+        this->swap(a[0], a[ii]);
+        sift(0);
+    }
+
+}
 
 
 

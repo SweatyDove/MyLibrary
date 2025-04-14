@@ -145,21 +145,34 @@ int main()
 //    }
 
 
-    customSortArray = randomArray;
-    t.reset();
-    sort.quickClassic(customSortArray, 0, customSortArray.size() - 1);
-    time = t.elapsed();
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nQUICK CLASSIC sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nQUICK CLASSIC sort wasn't correct!" << std::endl;
-    }
+//    customSortArray = randomArray;
+//    t.reset();
+//    sort.quickClassic(customSortArray, 0, customSortArray.size() - 1);
+//    time = t.elapsed();
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nQUICK CLASSIC sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nQUICK CLASSIC sort wasn't correct!" << std::endl;
+//    }
 
 
-    customSortArray = randomArray;
+//    customSortArray = randomArray;
+//    t.reset();
+//    sort.selection(customSortArray);
+//    time = t.elapsed();
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nSELECTION sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nSELECTION sort wasn't correct!" << std::endl;
+//    }
+
+
+
+    customSortArray = testArray;
     t.reset();
-    sort.selection(customSortArray);
+    sort.heap(customSortArray);
     time = t.elapsed();
     if (stdSortArray == customSortArray) {
         std::cout << "\nSELECTION sort time: " << time << " milliseconds" << std::endl;
