@@ -515,17 +515,17 @@ double my::Sort::selection(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::heap(std::vector<int>& a)
+void my::Sort::heap(std::vector<int>& a)
 {
     int n {a.size() - 1};           // Last element index
 
 
     // # Лямбда-функция просейки
     std::function<void(int)> sift {
-              [&, n](int parentIndex)
+              [&](int parentIndex)
         {
             int leftChildIndex {2 * parentIndex + 1};
-            int rightChildIndex {2 * parentIndex + 2};
+            int rightChildIndex {leftChildIndex + 1};
             int maxChildIndex {-1};
 
 
@@ -539,28 +539,35 @@ double my::Sort::heap(std::vector<int>& a)
             else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
                 maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
             }
-            else {}
+            // ## Нет детей - выходим
+            else {
+                return;
+            }
 
 
-            // ## Свапаем элементы
+            // ## Свапаем элементы и осуществляем просейку для @maxChildIndex (куда переместили родительский элемент)
             if (a[parentIndex] < a[maxChildIndex]) {
                 this->swap(a[parentIndex], a[maxChildIndex]);
                 parentIndex = maxChildIndex;
                 sift(parentIndex);
             }
             else {}
+
+            return;
         }
     };
 
 
-    // # Сделать дерево сортирующим (через просейку), тут пробегаем по всем элементам
-    for (int parentIndex {n}; parentIndex >= 0; --parentIndex) {
-        sift(parentIndex);
+    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
+    for (int ii {n}; ii >= 0; --ii) {
+        sift(ii);
     }
 
-    // # Корень дерева свапнуть с последним эл-м и провести просейку для корня.
+    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
+    // # провести просейку для элемента в корне.
     for (int ii {n}; ii > 0; --ii) {
         this->swap(a[0], a[ii]);
+        --n;
         sift(0);
     }
 
@@ -568,6 +575,68 @@ double my::Sort::heap(std::vector<int>& a)
 
 
 
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+void my::Sort::heapV1(std::vector<int>& a)
+{
+    int lastUnsortedIndex {a.size() - 1};           // Last element index
+
+
+    // # Лямбда-функция просейки
+    std::function<void(int)> sift {
+        [&](int root)
+        {
+            while (true) {
+
+                // ## Предполагаем только 1-го потомка (и считаем его наибольшим пока что)
+                int child {root * 2 + 1};
+
+                // ## Левого потомка не существует (следовательно и правого тоже, а потому выходим)
+                if (child > lastUnsortedIndex) {
+                    break;
+                }
+                // ## Существуют оба потомка и правый больше левого
+                else if (child + 1 <= lastUnsortedIndex && a[child] < a[child + 1]) {
+                    child += 1;
+                }
+                else {}
+
+                // ## Свапаем родителя и потомка и устанавливаем новый индекс родителя
+                if (a[root] < a[child]) {
+                    this->swap(a[root], a[child]);
+                    root = child;
+                }
+                else {
+                    break;
+                }
+
+            } // while
+
+            return;
+        }
+    };
+
+
+    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
+    for (int ii {lastUnsortedIndex}; ii >= 0; --ii) {
+        sift(ii);
+    }
+
+    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
+    // # провести просейку для элемента в корне.
+    for (int ii {lastUnsortedIndex}; ii > 0; --ii) {
+        this->swap(a[0], a[ii]);
+        --lastUnsortedIndex;
+        sift(0);
+    }
+
+}
 
 
 
