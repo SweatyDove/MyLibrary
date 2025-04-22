@@ -35,7 +35,8 @@ public:
 
     // # Сортировки выбором
     double selection(std::vector<int>& nums);
-    double heap(std::vector<int>& nums);
+    void heap(std::vector<int>& nums);
+    void heapV1(std::vector<int>& nums);
 
 
 
