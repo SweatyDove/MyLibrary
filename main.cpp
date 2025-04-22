@@ -22,7 +22,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {10'000};
+    int randArrSize {100'000};
     std::vector<int> randomArray(randArrSize);
     std::vector<int> stdSortArray(randArrSize);
     std::vector<int> customSortArray(randArrSize);
@@ -120,14 +120,14 @@ int main()
 
 
 
-    customSortArray = randomArray;
-    time = sort.comb(customSortArray);
-    if (stdSortArray == customSortArray) {
-        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
-    }
+//    customSortArray = randomArray;
+//    time = sort.comb(customSortArray);
+//    if (stdSortArray == customSortArray) {
+//        std::cout << "\nCOMB sort time: " << time << " milliseconds" << std::endl;
+//    }
+//    else {
+//        std::cout << "\nCOMB sort wasn't correct!" << std::endl;
+//    }
 
 
 
@@ -170,18 +170,29 @@ int main()
 
 
 
-    customSortArray = testArray;
+    customSortArray = randomArray;
     t.reset();
     sort.heap(customSortArray);
     time = t.elapsed();
     if (stdSortArray == customSortArray) {
-        std::cout << "\nSELECTION sort time: " << time << " milliseconds" << std::endl;
+        std::cout << "HEAP sort time: " << time << " milliseconds" << std::endl;
     }
     else {
-        std::cout << "\nSELECTION sort wasn't correct!" << std::endl;
+        std::cout << "HEAP sort wasn't correct!" << std::endl;
     }
 
 
+
+    customSortArray = randomArray;
+    t.reset();
+    sort.heapV1(customSortArray);
+    time = t.elapsed();
+    if (stdSortArray == customSortArray) {
+        std::cout << "HEAP_V1 sort time: " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << "HEAP_V1 sort wasn't correct!" << std::endl;
+    }
 
 
     return 0;
