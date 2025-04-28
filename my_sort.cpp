@@ -515,63 +515,63 @@ double my::Sort::selection(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-void my::Sort::heap(std::vector<int>& a)
-{
-    int n {a.size() - 1};           // Last element index
+//void my::Sort::heap(std::vector<int>& a)
+//{
+//    int n {a.size() - 1};           // Last element index
 
 
-    // # Лямбда-функция просейки
-    std::function<void(int)> sift {
-              [&](int parentIndex)
-        {
-            int leftChildIndex {2 * parentIndex + 1};
-            int rightChildIndex {leftChildIndex + 1};
-            int maxChildIndex {-1};
+//    // # Лямбда-функция просейки
+//    std::function<void(int)> sift {
+//              [&](int parentIndex)
+//        {
+//            int leftChildIndex {2 * parentIndex + 1};
+//            int rightChildIndex {leftChildIndex + 1};
+//            int maxChildIndex {-1};
 
 
-            // ## Определяем индекс большего из потомков
-            if ((leftChildIndex > n) && (rightChildIndex <= n)) {
-                maxChildIndex = rightChildIndex;
-            }
-            else if ((leftChildIndex <= n) && (rightChildIndex > n)) {
-                maxChildIndex = leftChildIndex;
-            }
-            else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
-                maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
-            }
-            // ## Нет детей - выходим
-            else {
-                return;
-            }
+//            // ## Определяем индекс большего из потомков
+//            if ((leftChildIndex > n) && (rightChildIndex <= n)) {
+//                maxChildIndex = rightChildIndex;
+//            }
+//            else if ((leftChildIndex <= n) && (rightChildIndex > n)) {
+//                maxChildIndex = leftChildIndex;
+//            }
+//            else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
+//                maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
+//            }
+//            // ## Нет детей - выходим
+//            else {
+//                return;
+//            }
 
 
-            // ## Свапаем элементы и осуществляем просейку для @maxChildIndex (куда переместили родительский элемент)
-            if (a[parentIndex] < a[maxChildIndex]) {
-                this->swap(a[parentIndex], a[maxChildIndex]);
-                parentIndex = maxChildIndex;
-                sift(parentIndex);
-            }
-            else {}
+//            // ## Свапаем элементы и осуществляем просейку для @maxChildIndex (куда переместили родительский элемент)
+//            if (a[parentIndex] < a[maxChildIndex]) {
+//                this->swap(a[parentIndex], a[maxChildIndex]);
+//                parentIndex = maxChildIndex;
+//                sift(parentIndex);
+//            }
+//            else {}
 
-            return;
-        }
-    };
+//            return;
+//        }
+//    };
 
 
-    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
-    for (int ii {n}; ii >= 0; --ii) {
-        sift(ii);
-    }
+//    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
+//    for (int ii {n}; ii >= 0; --ii) {
+//        sift(ii);
+//    }
 
-    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
-    // # провести просейку для элемента в корне.
-    for (int ii {n}; ii > 0; --ii) {
-        this->swap(a[0], a[ii]);
-        --n;
-        sift(0);
-    }
+//    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
+//    // # провести просейку для элемента в корне.
+//    for (int ii {n}; ii > 0; --ii) {
+//        this->swap(a[0], a[ii]);
+//        --n;
+//        sift(0);
+//    }
 
-}
+//}
 
 
 
@@ -583,15 +583,15 @@ void my::Sort::heap(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-void my::Sort::heapV1(std::vector<int>& a)
+double my::Sort::heap(std::vector<int>& a)
 {
     int lastUnsortedIndex {a.size() - 1};           // Last element index
-
 
     // # Лямбда-функция просейки
     std::function<void(int)> sift {
         [&](int root)
         {
+            // ## Спускаемся по дереву
             while (true) {
 
                 // ## Предполагаем только 1-го потомка (и считаем его наибольшим пока что)
@@ -622,6 +622,7 @@ void my::Sort::heapV1(std::vector<int>& a)
         }
     };
 
+    mb_stopwatch.reset();
 
     // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
     for (int ii {lastUnsortedIndex}; ii >= 0; --ii) {
@@ -636,13 +637,56 @@ void my::Sort::heapV1(std::vector<int>& a)
         sift(0);
     }
 
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+double my::Sort::insertion(std::vector<int>& a)
+{
+    mb_stopwatch.reset();
+
+    for (int ii {0}; ii < a.size(); ++ii) {
+        for (int kk {ii}; kk > 0; --kk) {
+            if (a[kk] < a[kk - 1]) {
+                this->swap(a[kk], a[kk - 1]);
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
 }
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+double my::Sort::shell(std::vector<int>& a)
+{
+    mb_stopwatch.reset();
 
 
 
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+}
 
 
 
