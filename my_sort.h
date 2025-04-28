@@ -15,12 +15,15 @@ namespace my {
 class Sort {
 public:
 
-    my::Timer mb_stopwatch;
-    double mb_timeInterval {};
+    my::Timer   mb_stopwatch;
+    double      mb_timeInterval {};
 
     Sort();
 
+
     inline void swap(int& a, int& b);
+
+    //
 
     // # Сортировки обменом
     double stupid(std::vector<int>& nums);
@@ -34,9 +37,12 @@ public:
     void quickClassic(std::vector<int>& a, int start, int end);
 
     // # Сортировки выбором
-    double selection(std::vector<int>& nums);
-    void heap(std::vector<int>& nums);
-    void heapV1(std::vector<int>& nums);
+    double selection(std::vector<int>& a);
+    double heap(std::vector<int>& a);
+
+    // # Сортировки вставками
+    double insertion(std::vector<int>& a);
+    double shell(std::vector<int>& a);
 
 
 
