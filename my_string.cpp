@@ -260,20 +260,21 @@ my::String& my::operator<<(my::String& string, int intNumber)
     else {} // Nothing to do
 
 
-
     // # Allocate memory for the string and at least 1 '\0' symbol
     int curLength {string.getLength()};
     int newLength {curLength + numberOfSymbols};
 
     if (string.getCapacity() < newLength + 1) {
+
         int     dataChunk   {string.getAllocationDataChunk()};
         int     newCapacity {dataChunk + (newLength / dataChunk) * dataChunk};      // Exact allocation, thats why (newLength) instead of (newLength + 1)
 
         string.reallocate(newCapacity);
     }
-    else {} // Nothing to do
+    else {}
 
-    // Copy digits in string
+
+    // # Copy @buffer into @string
     my::copyString(buffer, &string[curLength], numberOfSymbols);
     string.setLength(newLength);
 
@@ -282,6 +283,19 @@ my::String& my::operator<<(my::String& string, int intNumber)
 }
 
 
+
+
+//==================================================================================================
+//         TYPE:    Overloaded operator
+//  DESCRIPTION:    ........
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+char& my::String::operator[](int index)
+{
+    return mb_data[index];
+}
 
 
 

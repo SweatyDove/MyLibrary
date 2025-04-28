@@ -58,6 +58,9 @@ public:
     bool operator!=(const char* stringLiteral);
     bool operator!=(const my::String& myString);
 
+    char& operator[](int index);
+//    const char& operator[](int index) const;
+
     friend my::String& operator<<(my::String& string, int intNumber);
     friend my::String& operator<<(my::String& string, const char* charDataBuffer);
     friend my::String& operator<<(my::String& string, char symbol);

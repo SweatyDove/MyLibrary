@@ -13,7 +13,7 @@ my::SmartPtr<Type>::SmartPtr(Type* resource) :
     mb_ptr {resource}
 {
 //    mb_output.debug("Smart pointer has been created!");
-//    std::cout << "[DEBUG]: Smart pointer has been created!" << std::endl;
+    std::cout << "[DEBUG]: Smart pointer has been created!" << std::endl;
 }
 
 
@@ -83,13 +83,17 @@ my::SmartPtr<Type>& my::SmartPtr<Type>::operator=(my::SmartPtr<Type>&& smartPtr)
     if (this == &smartPtr) {
         return *this;
     }
-    else {} // Nothing to do
+    else {}
 
-
+    /*
+     * Тут выскакивает ошибка сегментации, т.к. я пытаюсь вызвать delete с указателем на ненулевую
+     * память. Но, видимо, эта память либо выделена статически, либо я использую не тот delete (т.е.
+     * может нужно использовать delete[])?
+     */
     if (mb_ptr != nullptr) {
         delete mb_ptr;
     }
-    else {} // Nothing to do
+    else {}
 
 
     mb_ptr = smartPtr.mb_ptr;

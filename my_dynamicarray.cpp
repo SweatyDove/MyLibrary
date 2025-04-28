@@ -13,6 +13,7 @@ my::DynamicArray<Type>::DynamicArray():
     mb_capacity {mb_capacityChunk},
     mb_size {0},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
+//    mb_dataPtr {new Type {}}
 {
 //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
 //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
