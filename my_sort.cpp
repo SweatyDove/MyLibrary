@@ -648,22 +648,28 @@ double my::Sort::heap(std::vector<int>& a)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   Не ОБМЕНЫ, а СДВИГ!
 //==================================================================================================
 double my::Sort::insertion(std::vector<int>& a)
 {
+    int n {a.size()};
+
     mb_stopwatch.reset();
 
-    for (int ii {0}; ii < a.size(); ++ii) {
-        for (int kk {ii}; kk > 0; --kk) {
-            if (a[kk] < a[kk - 1]) {
-                this->swap(a[kk], a[kk - 1]);
-            }
-            else {
-                break;
-            }
-        }
-    }
+    for (int ii {0}; ii < n; ++ii) {
+
+        int temp {a[ii]};
+        int kk {ii};
+        while (kk > 0 && temp < a[kk - 1]) {
+            a[kk] = a[kk - 1];                      // Здесь СДВИГ! Не нужно использовать swap()
+            --kk;
+        } // O(n)
+
+        a[kk] = temp;       // O(3) -> O(1)
+
+    } // O(n)
+
+    // # Сложность: O(n) * [O(1) + O(n)] -> O(n) * O(n) = O(n^2)
 
     mb_timeInterval = mb_stopwatch.elapsed();
     return mb_timeInterval;
@@ -680,13 +686,46 @@ double my::Sort::insertion(std::vector<int>& a)
 //==================================================================================================
 double my::Sort::shell(std::vector<int>& a)
 {
+    int size    {   a.size()    };
+//    int gap     {   size / 2    };
+
+
+
+
     mb_stopwatch.reset();
+
+    for (int gap {size / 2}; gap >= 1; gap /= 2) {              // O(log n), т.к. в 2 раза уменьшаем каждый раз
+
+        // # Этот цикл отвечает за разбиение исходного массива на "подмассивы" (каждый эл-т которого
+        // # отстоит от следующего на @gap позиций)
+        for (int ii {0}; ii < gap; ++ii) {                      // O(gap) = O(n/2) в худшем случае (1-ая итерация)
+
+            // # Тут уже сортируем непосредственно "подмассив"
+            for (int jj {ii}; jj < size; jj += gap) {           // O(n/gap + 1), где единица за счёт холостого 0-го эл-та
+
+                for (int kk {jj}; kk - gap >= 0; kk -= gap) {   // O(n/gap)
+                    if (a[kk] < a[kk - gap]) {
+                        this->swap(a[kk], a[kk - gap]);
+                    }
+                    else {}
+                }
+            }
+        }
+    }
 
 
 
     mb_timeInterval = mb_stopwatch.elapsed();
     return mb_timeInterval;
 }
+
+
+
+
+
+
+
+
 
 
 
