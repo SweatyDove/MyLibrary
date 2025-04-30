@@ -15,6 +15,10 @@ namespace my {
 class Sort {
 public:
 
+//    const std::vector<int>& mb_randomArray;
+//    const std::vector<int>& mb_sortedArray;
+//    const std::vector<int>& mb_reversedArray;
+
     my::Timer   mb_stopwatch;
     double      mb_timeInterval {};
 
@@ -23,7 +27,11 @@ public:
 
     inline void swap(int& a, int& b);
 
-    //
+    void test(const std::vector<int>& randomArray,
+              const std::vector<int>& sortedArray,
+              const std::vector<int>& reversedArray,
+              double (*fn)(std::vector<int>& nums),
+              const char* algoName);
 
     // # Сортировки обменом
     double stupid(std::vector<int>& nums);
@@ -43,6 +51,8 @@ public:
     // # Сортировки вставками
     double insertion(std::vector<int>& a);
     double shell(std::vector<int>& a);
+    double shellClassic(std::vector<int>& a);
+
 
 
 
