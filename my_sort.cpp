@@ -14,6 +14,23 @@ my::Sort::Sort()
 }
 
 
+
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+//my::Sort::Sort(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& reversedArray) :
+//    mb_randomArray {randomArray},
+//    mb_sortedArray {sortedArray},
+//    mb_reversedArray {reversedArray}
+//{
+
+//}
+
 //==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Swap 2 elements
@@ -28,6 +45,49 @@ inline void my::Sort::swap(int& a, int& b)
     b = temp;
 }
 
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Test specified algo on different arrays
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+void test(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& reversedArray, double (*fn)(std::vector<int>& nums), const char* algoName)
+{
+    std::vector<int> testArray;
+    double time;
+
+    testArray = randomArray;
+    time = fn(testArray);
+    if (testArray == sortedArray) {
+        std::cout << '\n' << algoName << " sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << '\n' << algoName << " sort of RANDOM array wasn't correct!" << std::endl;
+    }
+
+    testArray = sortedArray;
+    time = fn(testArray);
+    if (testArray == sortedArray) {
+        std::cout << algoName << " sort time of SORTED array:    " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << algoName << " sort of SORTED array wasn't correct!" << std::endl;
+    }
+
+    testArray = reversedArray;
+    time = fn(testArray);
+    if (testArray == sortedArray) {
+        std::cout << algoName << " sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << algoName << " sort of REVERSED array wasn't correct!" << std::endl;
+    }
+
+}
 
 
 //==================================================================================================
@@ -682,36 +742,44 @@ double my::Sort::insertion(std::vector<int>& a)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   1) Замена вызова функции swap() (что изначально было 'некорректно') на сдвиг решило
+//                  проблему со скоростью работы.
+//                  2) Можно улучшить работу, если не прыгать между подмассивами, а идти линейно
+//                  по каждому элементу, начиная с gap и дальше запускать цикл сравнения с элементами,
+//                  отстающими от текущего на gap, 2gap и т.д. Так сделано в shellClassic().
 //==================================================================================================
 double my::Sort::shell(std::vector<int>& a)
 {
     int size    {   a.size()    };
-//    int gap     {   size / 2    };
-
-
-
 
     mb_stopwatch.reset();
 
-    for (int gap {size / 2}; gap >= 1; gap /= 2) {              // O(log n), т.к. в 2 раза уменьшаем каждый раз
 
-        // # Этот цикл отвечает за разбиение исходного массива на "подмассивы" (каждый эл-т которого
-        // # отстоит от следующего на @gap позиций)
-        for (int ii {0}; ii < gap; ++ii) {                      // O(gap) = O(n/2) в худшем случае (1-ая итерация)
+    // # Тут определяем дистанцию между соседними элементами 'подмассива'
+    for (int gap {size / 2}; gap >= 1; gap /= 2) {
 
-            // # Тут уже сортируем непосредственно "подмассив"
-            for (int jj {ii}; jj < size; jj += gap) {           // O(n/gap + 1), где единица за счёт холостого 0-го эл-та
+        // ## Тут уже проходимся по полученным 'подмассивам'
+        for (int ii {0}; ii < gap; ++ii) {
 
-                for (int kk {jj}; kk - gap >= 0; kk -= gap) {   // O(n/gap)
-                    if (a[kk] < a[kk - gap]) {
-                        this->swap(a[kk], a[kk - gap]);
-                    }
-                    else {}
-                }
-            }
-        }
-    }
+            // #### Тут уже сортируем непосредственно "подмассив" методом сортировки вставками
+            for (int jj {ii}; jj < size; jj += gap) {
+
+                int temp = a[jj];
+                int kk = jj;
+
+                while (kk - gap >= 0 && temp < a[kk - gap]) {
+                    a[kk] = a[kk - gap];
+                    kk -= gap;
+                } // O(n/gap) -> O(n)
+
+                a[kk] = temp;
+
+
+            } // O(n/gap + 1), где единица за счёт холостого 0-го эл-та
+
+        } // O(gap) -> O(n/2) в худшем случае (1-ая итерация), т.е. этот член убывает для каждого следующего gap, т.е. как бы можно gap сократить будет при расчёте общего O-большого
+
+    } // O(log n), т.к. в 2 раза уменьшаем каждый раз
 
 
 
@@ -721,8 +789,38 @@ double my::Sort::shell(std::vector<int>& a)
 
 
 
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   From https://www.programiz.com/dsa/shell-sort
+//                  Принцип работы для данной реализации смотри выше в описании my::Sort::shell()
+//==================================================================================================
+double my::Sort::shellClassic(std::vector<int>& array) {
+
+    int n = array.size();
+
+    mb_stopwatch.reset();
 
 
+    // Rearrange elements at each n/2, n/4, n/8, ... gaps
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int ii = gap; ii < n; ii += 1) {
+            int temp = array[ii];
+            int jj = ii;
+            while (jj >= gap && array[jj - gap] > temp) {
+                array[jj] = array[jj - gap];
+                jj -= gap;
+            }
+            array[jj] = temp;
+        }
+    }
+
+
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
+}
 
 
 
