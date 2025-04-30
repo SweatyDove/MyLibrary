@@ -6,14 +6,15 @@
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 //   DESCRIPTION:   ........
-//      COMMENTS:   It seems to be that I allocate incorrect amount of memory
+//      COMMENTS:   Here I allocate memory for @mb_capacity elements of type <Type>, but I don't
+//                  construct them - that is why I can't, for example, push_back(Type&&), cause
+//                  there isn't <Type> object on the left side. I need to construct object first!
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray():
     mb_capacity {mb_capacityChunk},
     mb_size {0},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
-//    mb_dataPtr {new Type {}}
 {
 //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
 //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
@@ -48,7 +49,7 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
     mb_capacity = listSize + mb_capacityChunk;
     mb_dataPtr = static_cast<Type*>(operator new[] (sizeof(Type) * mb_capacity));
 
-    // # Затем я конструирую на этой памяти объекты данного типа и копирую/перемещаю туда объекты из
+    // # Затем я конструирую (разве?) на этой памяти объекты данного типа и копирую/перемещаю туда объекты из
     // # списка инициализации
     int ii {0};
     while (ii < listSize) {
@@ -188,7 +189,8 @@ void my::DynamicArray<Type>::push_back(const Type& value)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+// COMMENTS/BUGS:   Тут проблема связанная с тем, что если элемента слева нет (есть только область
+//                  памяти под него), то вызывать нужно не move-assignment, a move-constructor.
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::pushBack(Type&& value)
