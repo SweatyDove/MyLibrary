@@ -55,33 +55,46 @@ inline void my::Sort::swap(int& a, int& b)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-void test(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& reversedArray, double (*fn)(std::vector<int>& nums), const char* algoName)
+void my::Sort::test(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& almostSortedArray, const std::vector<int>& reversedArray, double (my::Sort::*fn)(std::vector<int>& nums), const char* algoName)
 {
     std::vector<int> testArray;
     double time;
 
     testArray = randomArray;
-    time = fn(testArray);
+    // fn - это АДРЕС функции сортировки, поэтому *fn - сама функция. А ещё нужен объект для её вызова
+    // и поэтому перед *fn стоит this-> (можно (*this).)
+    time = ((*this).*fn)(testArray);
     if (testArray == sortedArray) {
-        std::cout << '\n' << algoName << " sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
+        std::cout << '\n' << algoName << " sort time of RANDOM array:         " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << '\n' << algoName << " sort of RANDOM array wasn't correct!" << std::endl;
     }
 
     testArray = sortedArray;
-    time = fn(testArray);
+    time = (this->*fn)(testArray);
     if (testArray == sortedArray) {
-        std::cout << algoName << " sort time of SORTED array:    " << time << " milliseconds" << std::endl;
+        std::cout << algoName << " sort time of SORTED array:         " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << algoName << " sort of SORTED array wasn't correct!" << std::endl;
     }
 
-    testArray = reversedArray;
-    time = fn(testArray);
+
+    testArray = almostSortedArray;
+    time = (this->*fn)(testArray);
     if (testArray == sortedArray) {
-        std::cout << algoName << " sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
+        std::cout << algoName << " sort time of ALMOST sorted array:  " << time << " milliseconds" << std::endl;
+    }
+    else {
+        std::cout << algoName << " sort of ALMOST sorted array wasn't correct!" << std::endl;
+    }
+
+
+    testArray = reversedArray;
+    time = (this->*fn)(testArray);
+    if (testArray == sortedArray) {
+        std::cout << algoName << " sort time of REVERSED array:       " << time << " milliseconds" << std::endl;
     }
     else {
         std::cout << algoName << " sort of REVERSED array wasn't correct!" << std::endl;
