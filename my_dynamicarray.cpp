@@ -6,9 +6,25 @@
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 //   DESCRIPTION:   ........
-//      COMMENTS:   Here I allocate memory for @mb_capacity elements of type <Type>, but I don't
-//                  construct them - that is why I can't, for example, push_back(Type&&), cause
-//                  there isn't <Type> object on the left side. I need to construct object first!
+//      COMMENTS:   Преимущество создания объекта на сырой памяти - это отсутствие ошибки выделения
+//                  этой самой памяти (она уже есть). Но есть дальше сложность с созданием объектов
+//                  кастомных классов на этой памяти.
+//                  Как я понимаю, есть два пути создания объекта на сырой памяти (не обязательно
+//                  выделенной в куче, можно и в стеке (а в BSS/Data сегментах?)):
+//                  1) Использовать "placement new()", синтаксис такой:
+//                      Type* ptr = new(rawMemoryPtr) Type();
+//                      Кроме того, я должен ещё заботиться о должном выравнивании элементов класса
+//                      в памяти. И ручками вызывать деструктор класса потом. Одна сплошная головная
+//                      боль. Лучше использовать new operator сразу...
+//                  2) Работать с сырой памятью в явном виде, то есть самому присваивать какие-то
+//                      значения элементам из памяти. То есть если у нас есть класс Base и в нём
+//                      имеется несколько переменных-членов класса, например int mb_a, double mb_b,
+//                      то инициализировать эти переменные НЕ через конструктор, а в явном виде.
+//                      Если мы ранее привели сырую память к указанному типу, то обращаться к элементам
+//                      можно будет по именам, а не по адресам. Методы не влияют на размер класса,
+//                      за исключением виртуальных функций (там есть доп. указатель на v_table) -
+//                      возможно, это где-то может вылезти.
+//
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray():
@@ -18,6 +34,22 @@ my::DynamicArray<Type>::DynamicArray():
 {
 //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
 //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
+
+    // # Конструирование объекта через 'placement new()' (но надо потом вызывать деструктор для типа
+    // # в явном виде).
+//    for (int ii {0}; ii < mb_capacity; ++ii) {
+//        new(mb_dataPtr + ii) Type();
+//    }
+
+    // # 'Конструирование' (ака зануление) объекта ручками. Тут я вызываю специальный метод для этого
+    // # дела (тогда придётся этот метод пихать во все мои классы), т.к. в классическом варианте
+    // # используется конструктор класса
+//    for (int ii {0}; ii < mb_capacity; ++ii) {
+//        (mb_dataPtr + ii)->nullify();
+//    }
+
+    // # Зануление по-жёсткому
+    this->nullify();
 
 }
 
@@ -49,8 +81,12 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
     mb_capacity = listSize + mb_capacityChunk;
     mb_dataPtr = static_cast<Type*>(operator new[] (sizeof(Type) * mb_capacity));
 
-    // # Затем я конструирую (разве?) на этой памяти объекты данного типа и копирую/перемещаю туда объекты из
-    // # списка инициализации
+
+    // # Зануление выделенной памяти
+    this->nullify();
+
+    // # Затем я как бы 'конструирую' на этой памяти объекты данного типа и копирую/перемещаю туда
+    // # объекты из списка инициализации
     int ii {0};
     while (ii < listSize) {
         *(mb_dataPtr + ii) = list.begin()[ii];
@@ -79,6 +115,9 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
     mb_capacityChunk {dynArr.getCapacityChunk()},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
+    // # Зануление выделенной памяти
+    this->nullify();
+
     for (int ii {0}; ii < mb_size; ++ii) {
         *(mb_dataPtr + ii) = dynArr[ii];
     }
@@ -88,11 +127,13 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 
 
 //==================================================================================================
-//          TYPE:    Destructor
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    Не уверен, что здесь имеет смысл присваивать nullptr после освобождения памяти
+//          TYPE:   Destructor
+//    PARAMETERS:   ........
+//   DESCRIPTION:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Нужно в явном виде вызывать деструктор для типа, наверное. То есть я же создал
+//                  память и сконструировал на ней объект ручками.
+//
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::~DynamicArray()
@@ -100,7 +141,11 @@ my::DynamicArray<Type>::~DynamicArray()
 //    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
 //    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
+//    for (int ii {0}; ii < mb_capacity; ++ii) {
+//        new(mb_dataPtr + ii) Type();
+//    }
 
+    // Не уверен, что здесь имеет смысл присваивать nullptr после освобождения памяти.
     operator delete[](mb_dataPtr);
     mb_dataPtr = nullptr;
 
@@ -251,7 +296,7 @@ Type my::DynamicArray<Type>::popBack()
 //   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+// COMMENTS/BUGS:   Здесь также нужно в явном виде вызывать оператор 'placement new()'
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::reallocate(int newCapacity)
@@ -260,6 +305,12 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
 
     Type* newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
     mb_capacity = newCapacity;
+
+    /***********************************************************************************************
+     * Добавить конструирование классов в каком-то виде на новой памяти, иначе возникнет ошибка
+     * при работе с умными указателями и move-семантикой, когда те будут пытаться удалить старые
+     * данные, которых нет в принципе.
+     **********************************************************************************************/
 
     // # Перемещаем данные из старой области в новую, используя move-семантику
     for (int ii {0}; ii < mb_size; ++ii) {
@@ -586,6 +637,24 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
 
     // # Set new size
     mb_size = newSize;
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Member function
+//   DESCRIPTION:   Зануление выделенной памяти в стиле Си
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::nullify()
+{
+    char* singleByte = (char*) mb_dataPtr;
+    for (int ii {0}; ii < sizeof(Type) * mb_capacity; ++ii) {
+        *(singleByte + ii) = '\0';
+    }
 
 }
 

@@ -98,6 +98,8 @@ public:
 
     void extend(const my::DynamicArray<Type>& dynArr);
 
+    void nullify();
+
 
 
 //    template <int size>

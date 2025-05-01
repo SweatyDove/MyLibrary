@@ -39,6 +39,7 @@ template <typename Type>
 class SmartPtr {
 private:
     Type* mb_ptr {nullptr};
+    Type* anotherPtr {nullptr};                     // Debug: delete any time
 
     inline static int mb_count {0};                 // For debugging purpose?
 
@@ -67,6 +68,8 @@ public:
 
     // # Access to the class member operator
     Type* operator->();
+
+    void nullify();
 
 
     operator bool() const;

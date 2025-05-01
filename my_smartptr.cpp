@@ -76,6 +76,7 @@ my::SmartPtr<Type>::~SmartPtr()
 
     mb_count = mb_count + 1;
 
+    // Вызывать delete над nullptr можно, и здесь, наверное, избыточно
     if (mb_ptr != nullptr) {
         delete mb_ptr;
         mb_ptr = nullptr;
@@ -197,5 +198,29 @@ Type* my::SmartPtr<Type>::release()
     return retVal;
 
 }
+
+
+
+//==================================================================================================
+//          TYPE:   Member function
+//   DESCRIPTION:   It makes null-initialization of raw memory, that is destined for the using as
+//                  <my::SmartPtr<Type>> memory.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+void my::SmartPtr<Type>::nullify()
+{
+    mb_ptr = nullptr;
+}
+
+
+
+
+
+
+
+
 
 
