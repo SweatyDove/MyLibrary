@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <random>
 #include <iomanip>
 
 
@@ -32,23 +33,24 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int randArrSize {100'000};
-    std::vector<int> testArray(randArrSize);
-    std::vector<int> randomArray(randArrSize);
-    std::vector<int> sortedArray(randArrSize);
-    std::vector<int> reversedArray(randArrSize);
+    int size {10'000};
+    std::vector<int> testArray(size);
+    std::vector<int> randomArray(size);
+    std::vector<int> sortedArray(size);
+    std::vector<int> reversedArray(size);
+    std::vector<int> almostSortedArray(size);
 
     std::vector<int> simpleArray = {1, 4, 7, 0, 5, 9, 2, 3, 2, 8};                // size = 10
 
-//    std::vector<int> stdSortArray(randArrSize);
-//    std::vector<int> customSortArray(randArrSize);
+//    std::vector<int> stdSortArray(size);
+//    std::vector<int> customSortArray(size);
 
-    for (int ii {0}; ii < randArrSize - 1; ++ii) {
-        randomArray[ii] = my::getRandomNumber(-randArrSize, randArrSize);
+    for (int ii {0}; ii < size - 1; ++ii) {
+        randomArray[ii] = my::getRandomNumber(-size, size);
     }
 
 
-    std::cout << "\nArray size:  " << randArrSize << std::endl;
+    std::cout << "\nArray size:  " << size << std::endl;
 
     //##############################################################################################
     //################################        std::sort()       ####################################
@@ -59,7 +61,9 @@ int main()
     timer.reset();
     std::sort(testArray.begin(), testArray.end());
     time = timer.elapsed();
-    std::cout << "\nstd::sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
+    std::cout << "\nstd::sort time of RANDOM array:         " << time << " milliseconds" << std::endl;
+
+
 
     // # Формируем отсортированный массив
     sortedArray = testArray;
@@ -69,11 +73,31 @@ int main()
     timer.reset();
     std::sort(testArray.begin(), testArray.end());
     time = timer.elapsed();
-    std::cout << "std::sort time of SORTED array:    " << time << " milliseconds" << std::endl;
+    std::cout << "std::sort time of SORTED array:         " << time << " milliseconds" << std::endl;
+
+
+
+    // # Формируем ПОЧТИ отсортированный массив
+    int interval {(size / 25) > 1 ? size / 25 : 1};
+    auto rng = std::default_random_engine {};
+    almostSortedArray = sortedArray;
+    for (int ii {interval}; ii < size; ii += interval) {
+        std::ranges::shuffle(&almostSortedArray[ii - interval], &almostSortedArray[ii], rng);
+    }
+
+    // # Подсчёт времени сортировки ПОЧТИ отсортированного массива
+    testArray = almostSortedArray;
+    timer.reset();
+    std::sort(testArray.begin(), testArray.end());
+    time = timer.elapsed();
+    std::cout << "std::sort time of ALMOST sorted array:  " << time << " milliseconds" << std::endl;
+
+
+
 
     // # Формируем массив, отсортированный в ОБРАТНОМ порядке
-    for (int ii {0}; ii < randArrSize; ++ii) {
-        reversedArray[ii] = sortedArray[randArrSize - 1 - ii];
+    for (int ii {0}; ii < size; ++ii) {
+        reversedArray[ii] = sortedArray[size - 1 - ii];
     }
 
     // # Подсчёт времени сортировки ОБРАТНОГО массива (вырожденный случай)
@@ -81,144 +105,26 @@ int main()
     timer.reset();
     std::sort(testArray.begin(), testArray.end());
     time = timer.elapsed();
-    std::cout << "std::sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
+    std::cout << "std::sort time of REVERSED array:       " << time << " milliseconds" << std::endl;
 
 
 
     //##############################################################################################
-    //################################        my::Sort::comb()       ###############################
-    //##############################################################################################
-//    testArray = randomArray;
-//    time = sort.comb(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "\nCOMB sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "COMB sort of RANDOM array wasn't correct!" << std::endl;
-//    }
-
-//    testArray = sortedArray;
-//    time = sort.comb(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "COMB sort time of SORTED array:    " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "COMB sort of SORTED array wasn't correct!" << std::endl;
-//    }
-
-//    testArray = reversedArray;
-//    time = sort.comb(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "COMB sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "COMB sort of REVERSED array wasn't correct!" << std::endl;
-//    }
-
-    //##############################################################################################
-    //################################        my::Sort::insertion()       ##########################
+    //###################################        my::Sort       ####################################
     //##############################################################################################
 
-//    testArray = randomArray;
-//    time = sort.insertion(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "\nINSERTION sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "INSERTION sort of RANDOM array wasn't correct!" << std::endl;
-//    }
-//    testArray = sortedArray;
-//    time = sort.insertion(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "INSERTION sort time of SORTED array:    " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "INSERTION sort of SORTED array wasn't correct!" << std::endl;
-//    }
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::bubble, "BUBBLE");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::cocktail, "COCKTAIL");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::oddEven, "ODD_EVEN");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
 
-//    testArray = reversedArray;
-//    time = sort.insertion(testArray);
-//    if (testArray == sortedArray) {
-//        std::cout << "INSERTION sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
-//    }
-//    else {
-//        std::cout << "INSERTION sort of REVERSED array wasn't correct!" << std::endl;
-//    }
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
 
 
-
-    //##############################################################################################
-    //################################        my::Sort::shell()           ##########################
-    //##############################################################################################
-
-
-
-    testArray = randomArray;
-    time = sort.shell(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "\nSHELL sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nSHELL sort of RANDOM array wasn't correct!" << std::endl;
-    }
-
-    testArray = sortedArray;
-    time = sort.shell(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "SHELL sort time of SORTED array:    " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "SHELL sort of SORTED array wasn't correct!" << std::endl;
-    }
-
-    testArray = reversedArray;
-    time = sort.shell(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "SHELL sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "SHELL sort of REVERSED array wasn't correct!" << std::endl;
-    }
-
-
-
-    //##############################################################################################
-    //################################        my::Sort::shellClassic()           ##########################
-    //##############################################################################################
-
-
-
-    testArray = randomArray;
-    time = sort.shellClassic(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "\nSHELL CLASSIC sort time of RANDOM array:    " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "\nSHELL CLASSIC sort of RANDOM array wasn't correct!" << std::endl;
-    }
-
-    testArray = sortedArray;
-    time = sort.shellClassic(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "SHELL CLASSIC sort time of SORTED array:    " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "SHELL CLASSIC sort of SORTED array wasn't correct!" << std::endl;
-    }
-
-    testArray = reversedArray;
-    time = sort.shellClassic(testArray);
-    if (testArray == sortedArray) {
-        std::cout << "SHELL CLASSIC sort time of REVERSED array:  " << time << " milliseconds" << std::endl;
-    }
-    else {
-        std::cout << "SHELL CLASSIC sort of REVERSED array wasn't correct!" << std::endl;
-    }
-
-
-
-
-    sort.test(randomArray, sortedArray, reversedArray, sort.comb);
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
 
 
     return 0;

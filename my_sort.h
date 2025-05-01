@@ -29,8 +29,9 @@ public:
 
     void test(const std::vector<int>& randomArray,
               const std::vector<int>& sortedArray,
+              const std::vector<int>& almostSortedArray,
               const std::vector<int>& reversedArray,
-              double (*fn)(std::vector<int>& nums),
+              double (my::Sort::*fn)(std::vector<int>& nums),
               const char* algoName);
 
     // # Сортировки обменом
