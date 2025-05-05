@@ -185,8 +185,8 @@ Type& my::DynamicArray<Type>::operator[](int ii)
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
+//          TYPE:   Member function
+//    PARAMETERS:   Add a new element at the end of the array, using COPY-semantic
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
 // COMMENTS/BUGS:   Добавить обработку исключений при ошибке выделения памяти оператором new[].
@@ -206,17 +206,15 @@ void my::DynamicArray<Type>::pushBack(const Type& value)
     }
     else {} // Nothing to do
 
-    // # Добавляем новый элемент в массив и увеличиваем его размер. Тут должна использоваться или
-    // # move-семантика, или copy-семантика, в зависимости от того, предоставлена ли она классом <Type>.
-    // # my::DynamicArray этим НЕ должен заниматься.
+    // # Добавляем новый элемент в массив и увеличиваем его размер.
     *(mb_dataPtr + mb_size) = value;
     mb_size++;
 }
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
+//          TYPE:   Member function
+//    PARAMETERS:   Add a new element at the end of the array, using COPY-semantic
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
 // COMMENTS/BUGS:   For interchangeability with std::vector
@@ -230,12 +228,11 @@ void my::DynamicArray<Type>::push_back(const Type& value)
 
 
 //==================================================================================================
-//          TYPE:   ........
-//   DESCRIPTION:   ........
+//          TYPE:   Member function
+//   DESCRIPTION:   Add a new element at the end of the array, using MOVE-semantic
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   Тут проблема связанная с тем, что если элемента слева нет (есть только область
-//                  памяти под него), то вызывать нужно не move-assignment, a move-constructor.
+// COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::pushBack(Type&& value)
@@ -257,8 +254,8 @@ void my::DynamicArray<Type>::pushBack(Type&& value)
 
 
 //==================================================================================================
-//          TYPE:   ........
-//   DESCRIPTION:   ........
+//          TYPE:   Member function
+//   DESCRIPTION:   Add a new element at the end of the array, using MOVE-semantic
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
@@ -296,7 +293,7 @@ Type my::DynamicArray<Type>::popBack()
 //   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   Здесь также нужно в явном виде вызывать оператор 'placement new()'
+// COMMENTS/BUGS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::reallocate(int newCapacity)
@@ -311,12 +308,16 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
      * при работе с умными указателями и move-семантикой, когда те будут пытаться удалить старые
      * данные, которых нет в принципе.
      **********************************************************************************************/
+    char* singleByte = (char*) newDataPtr;
+    for (int ii {0}; ii < sizeof(Type) * newCapacity; ++ii) {
+        *(singleByte + ii) = '\0';
+    }
 
     // # Перемещаем данные из старой области в новую, используя move-семантику
     for (int ii {0}; ii < mb_size; ++ii) {
         *(newDataPtr + ii) = my::move(*(mb_dataPtr + ii));
     }
-    // ## Удаляем старые данные
+    // # Free old memory
     operator delete[] (mb_dataPtr);
 
     mb_dataPtr = newDataPtr;
@@ -326,8 +327,8 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
 
 
 //==================================================================================================
-//          TYPE:    Getter
-//    PARAMETERS:    --------
+//          TYPE:    Member function
+//    PARAMETERS:    Returns size of the array
 //   DESCRIPTION:    --------
 //  RETURN VALUE:    --------
 // COMMENTS/BUGS:    --------
@@ -414,16 +415,19 @@ std::ostream& my::operator<<(std::ostream& out, const my::DynamicArray<Type>& dy
 template <typename Type>
 std::ostream& my::operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr)
 {
-    out << '[';
-
-    int ii {0};
-    while (ii < dynArr.getSize() - 1) {
-        out << dynArr[ii] << ", ";
-        ++ii;
-    }
-    out << dynArr[ii] << ']';
-
+    const my::DynamicArray<Type>& arr {dynArr};
+    out << arr;
     return out;
+//    out << '[';
+
+//    int ii {0};
+//    while (ii < dynArr.getSize() - 1) {
+//        out << dynArr[ii] << ", ";
+//        ++ii;
+//    }
+//    out << dynArr[ii] << ']';
+
+//    return out;
 }
 
 
@@ -492,9 +496,9 @@ const Type* my::DynamicArray<Type>::cend() const
 //          TYPE:   --------
 //    PARAMETERS:   --------
 //   DESCRIPTION:   Функция расширяет текущий массив с использованием данных из аргумента такого же
-//                  типа (my::DynamicArray<Type>)
+//                  типа (my::DynamicArray<Type>). Используется copy-семантика.
 //  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+// COMMENTS/BUGS:   Возможно, стоит добавить аналог для move-семантики.
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
@@ -507,9 +511,10 @@ void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
     if (mb_capacity < newSize) {
         this->reallocate(newSize + mb_capacityChunk);
     }
-    else {} // Nothing to do
+    else {}
 
-    // # Copy (or move) elements from rh-operand to *this object
+
+    // # Copy elements from rh-operand to *this object
     for (auto& element: dynArr) {
         // (mb_dataPtr + mb_size++) = element;
         mb_dataPtr[mb_size++] = element;
@@ -536,7 +541,7 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
     if (newSize < mb_capacity) {
         this->reallocate(newSize + mb_capacityChunk);
     }
-    else {} // Nothing to do
+    else {}
 
     // # Copy data from @staticArray to *this array
     for (const auto& element: staticArr) {
@@ -551,7 +556,7 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 
 //==================================================================================================
 //          TYPE:   Copy assignment
-//    PARAMETERS:   --------
+//    PARAMETERS:   Clear @this array and copy data from @dynArray in it.
 //   DESCRIPTION:   --------
 //  RETURN VALUE:   --------
 // COMMENTS/BUGS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
@@ -567,15 +572,19 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
     }
     else {} // Nothing to do
 
-    // # Clear the content of *this array.
-    operator delete[] (mb_dataPtr);
-    mb_dataPtr = nullptr;
 
-    mb_capacity = dynArr.getCapacity();
+    // # Reallocate @this array (with new capacity) or only clear it (leave the old capacity)
+    if (mb_capacity < dynArr.mb_capacity) {
+        this->reallocate(dynArr.mb_capacity);
+    }
+    else {
+        this->nullify();
+    }
+
+
     mb_capacityChunk = dynArr.getCapacityChunk();
     mb_size = dynArr.getSize();
 
-    mb_dataPtr = static_cast<Type*>(mb_capacity);
     for (int ii {0}; ii < mb_size; ++ii) {
         *(mb_dataPtr + ii) = dynArr[ii];
     }
@@ -617,8 +626,7 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
         this->reallocate(newSize + mb_capacityChunk);
         pos = &mb_dataPtr[posIndex];
     }
-    else {} // Nothing to do
-
+    else {}
 
 
     // # Displace elements in *this array

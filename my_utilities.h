@@ -40,14 +40,11 @@ Type&& move(Type& value)
 }
 
 
-
-//==============================================================================
-// Function reads an input line (till '\n' inclusively) into the buffer @buffer.
-//==============================================================================
-int readLineToBuffer(char* buffer, int sizeOfBuffer);
+int     getRandomNumber(int min, int max);
 
 
 
+int     readLineToBuffer(char* buffer, int sizeOfBuffer);
 int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 void    invertBuffer(char* buffer, int fromElement, int toElement);
 int     copyString(const char *sourceAdress, char *destinationAdress, const int numberOfSymbols);

@@ -103,7 +103,7 @@ int my::intToChar(int intNumber, char* buffer, int sizeOfBuffer)
         bufferPtr[ii] = static_cast<char>(quotient + '0');
         bufferPtr[ii + 1] = '\0';
         invertBuffer(buffer, 0, ii);
-        return ii;
+        return ii + 1;
     }
     else {
         std::cerr << "\n[ERROR]::[my::intToChar()]:"
@@ -170,6 +170,15 @@ int my::copyString(const char *from, char *to, const int num)
     to[ii] = '\0';
 
     return 0;
+}
+
+
+
+int getRandomNumber(int min, int max)
+{
+    static constexpr double fraction {1.0 / (RAND_MAX + 1.0)};
+
+    return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
 }
 
 

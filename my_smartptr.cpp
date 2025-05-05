@@ -31,7 +31,7 @@ my::SmartPtr<Type>::SmartPtr(Type* resource) :
     mb_ptr {resource}
 {
 //    mb_output.debug("Smart pointer has been created!");
-    std::cout << "[DEBUG]: Smart pointer has been created!" << std::endl;
+//    std::cout << "[DEBUG]: Smart pointer has been created!" << std::endl;
 }
 
 
@@ -74,7 +74,7 @@ my::SmartPtr<Type>::~SmartPtr()
 //    mb_output.debug("Destructor of the smart pointer has been called!");
 //    std::cout << "[DEBUG]: Destructor of the smart pointer has been called!" << std::endl;
 
-    mb_count = mb_count + 1;
+//    mb_count = mb_count + 1;              // Debug
 
     // Вызывать delete над nullptr можно, и здесь, наверное, избыточно
     if (mb_ptr != nullptr) {
@@ -178,8 +178,8 @@ Type* my::SmartPtr<Type>::operator->()
     else {
         assert(false && "[ERROR]: can't get access to the class member, when class addr is nullptr. Abort.");
     }
-}
 
+}
 
 
 //==================================================================================================

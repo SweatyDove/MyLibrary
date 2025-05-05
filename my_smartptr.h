@@ -41,7 +41,7 @@ private:
     Type* mb_ptr {nullptr};
     Type* anotherPtr {nullptr};                     // Debug: delete any time
 
-    inline static int mb_count {0};                 // For debugging purpose?
+//    inline static int mb_count {0};                 // For debugging purpose?
 
 //    my::PrettyPrint mb_output {{ENABLE_DEBUG_MES, ENABLE_INFO_MES, ENABLE_WARN_MES, ENABLE_ERROR_MES}, true, false, true, 100};
 
