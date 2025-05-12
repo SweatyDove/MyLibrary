@@ -10,7 +10,6 @@
 #include "my_utilities.h"
 
 
-int getRandomNumber(int min, int max);
 //void foo(std::vector<int>& randomArray,
 //         std::vector<int>& sortedArray,
 //         std::vector<int>& reversedArray,
@@ -33,7 +32,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int size {10'000};
+    int size {100'000};
     std::vector<int> testArray(size);
     std::vector<int> randomArray(size);
     std::vector<int> sortedArray(size);
