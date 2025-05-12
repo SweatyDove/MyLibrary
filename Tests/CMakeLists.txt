@@ -30,17 +30,22 @@ add_executable(MyLibrary
 
 #    test_exception.cpp
     test_general.cpp
+    ../Sources/my_sort.cpp
+    ../Include/my_sort.h
 #    test_array.cpp
 #    test_dynamicarray.cpp
 #    test_smartptr.cpp
 #    test_string.cpp
 #    test_utilities.cpp
-
 )
 
 target_include_directories(MyLibrary PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../Include")
 
 #target_link_libraries(MyLibrary "${CMAKE_CURRENT_SOURCE_DIR}/../Library/MyLib.a")
+
+# Compiler optimization level
+target_compile_options(MyLibrary PRIVATE -O0)
+
 
 
 install(TARGETS MyLibrary

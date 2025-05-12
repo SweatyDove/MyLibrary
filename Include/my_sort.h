@@ -1,12 +1,12 @@
-#ifndef SORT_H
-#define SORT_H
+#ifndef MY_SORT_H
+#define MY_SORT_H
 
 #include <vector>
 #include <iostream>
 #include <sys/resource.h>
-#include "my_utilities.h"
 #include <functional>               // Fot std::function
 
+#include "my_utilities.h"
 
 
 namespace my {
@@ -68,4 +68,4 @@ public:
 
 } // End of 'my' namespace
 
-#endif // SORT_H
+#endif // MY_SORT_H
