@@ -1,11 +1,19 @@
-#include "my_dynamicarray.h"
+/***************************************************************************************************
+ * This file contains definitions for the TEMPLATED part of the <my::DynamicArray> class
+ **************************************************************************************************/
+#ifndef MY_DYNAMIC_ARRAY_HPP
+#define MY_DYNAMIC_ARRAY_HPP
+
+#include "my_dynamicarray.h"            // For IDE visibility
+
+
 
 
 //==================================================================================================
 //          TYPE:   Default constructor
+//   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//   DESCRIPTION:   ........
 //      COMMENTS:   Преимущество создания объекта на сырой памяти - это отсутствие ошибки выделения
 //                  этой самой памяти (она уже есть). Но есть дальше сложность с созданием объектов
 //                  кастомных классов на этой памяти.
@@ -32,21 +40,21 @@ my::DynamicArray<Type>::DynamicArray():
     mb_size {0},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
-//    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
-//    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
+    //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
+    //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
     // # Конструирование объекта через 'placement new()' (но надо потом вызывать деструктор для типа
     // # в явном виде).
-//    for (int ii {0}; ii < mb_capacity; ++ii) {
-//        new(mb_dataPtr + ii) Type();
-//    }
+    //    for (int ii {0}; ii < mb_capacity; ++ii) {
+    //        new(mb_dataPtr + ii) Type();
+    //    }
 
     // # 'Конструирование' (ака зануление) объекта ручками. Тут я вызываю специальный метод для этого
     // # дела (тогда придётся этот метод пихать во все мои классы), т.к. в классическом варианте
     // # используется конструктор класса
-//    for (int ii {0}; ii < mb_capacity; ++ii) {
-//        (mb_dataPtr + ii)->nullify();
-//    }
+    //    for (int ii {0}; ii < mb_capacity; ++ii) {
+    //        (mb_dataPtr + ii)->nullify();
+    //    }
 
     // # Зануление по-жёсткому
     this->nullify();
@@ -56,18 +64,18 @@ my::DynamicArray<Type>::DynamicArray():
 
 //==================================================================================================
 //          TYPE:   List-initialized constructor
-//    PARAMETERS:   --------
-//  RETURN VALUE:   --------
-//   DESCRIPTION:   --------
-// COMMENTS/BUGS:   1) <std::initializer_list> doesn't have overloaded subscription operator "[]"
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   1) <std::initializer_list> doesn't have overloaded subscription operator "[]"
 //                      -- that is why need to use initializer_list::begin() function.
 //                  2) Добавить обработку исключений при ошибке выделения памяти оператором new[]
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 {
-//    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
-//    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
+    //    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
+    //    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
     // Allocate memory for the list's objects of type <Type>
     // Остановился здесь: а что мне использовать? operator new/new[] или new/new[] оператор? Первый
@@ -99,10 +107,10 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 
 //==================================================================================================
 //          TYPE:   Copy constructor
-//    PARAMETERS:   --------
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Такой вопрос. А нужно ли мне в данном случае выделять память в куче? Или же
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Такой вопрос. А нужно ли мне в данном случае выделять память в куче? Или же
 //                  можно "украсть" указатель на данные из аргумента? Тут тогда такой вопрос
 //                  возникает, а является ли аргумент "временным обектом"?
 //                  Ещё вопрос, можно ли выделять память в куче не в фигурных скобках? Наверное,
@@ -128,8 +136,8 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 
 //==================================================================================================
 //          TYPE:   Destructor
-//    PARAMETERS:   ........
 //   DESCRIPTION:   ........
+//    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 //      COMMENTS:   Нужно в явном виде вызывать деструктор для типа, наверное. То есть я же создал
 //                  память и сконструировал на ней объект ручками.
@@ -138,12 +146,12 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
 template <typename Type>
 my::DynamicArray<Type>::~DynamicArray()
 {
-//    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
-//    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
+    //    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
+    //    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
-//    for (int ii {0}; ii < mb_capacity; ++ii) {
-//        new(mb_dataPtr + ii) Type();
-//    }
+    //    for (int ii {0}; ii < mb_capacity; ++ii) {
+    //        new(mb_dataPtr + ii) Type();
+    //    }
 
     // Не уверен, что здесь имеет смысл присваивать nullptr после освобождения памяти.
     operator delete[](mb_dataPtr);
@@ -156,11 +164,11 @@ my::DynamicArray<Type>::~DynamicArray()
 
 //==================================================================================================
 //          TYPE:   Method
-//    PARAMETERS:   --------
 //   DESCRIPTION:   Overloaded subscription operator that returns "const reference" (aka "reference
 //                  to const")
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 const Type& my::DynamicArray<Type>::operator[](int ii) const
@@ -171,10 +179,10 @@ const Type& my::DynamicArray<Type>::operator[](int ii) const
 
 //==================================================================================================
 //          TYPE:   Method
-//    PARAMETERS:   --------
 //   DESCRIPTION:   Overloaded subscription operator that returns reference to specified element
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 Type& my::DynamicArray<Type>::operator[](int ii)
@@ -186,10 +194,10 @@ Type& my::DynamicArray<Type>::operator[](int ii)
 
 //==================================================================================================
 //          TYPE:   Member function
+//   DESCRIPTION:   ........
 //    PARAMETERS:   Add a new element at the end of the array, using COPY-semantic
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Добавить обработку исключений при ошибке выделения памяти оператором new[].
+//  RETURN VALUE:   ........
+//      COMMENTS:   Добавить обработку исключений при ошибке выделения памяти оператором new[].
 //                  Кроме того, а может стоит передавать в качестве аргумента <const Type&>,
 //                  а не передавать по значению...
 //==================================================================================================
@@ -214,10 +222,10 @@ void my::DynamicArray<Type>::pushBack(const Type& value)
 
 //==================================================================================================
 //          TYPE:   Member function
-//    PARAMETERS:   Add a new element at the end of the array, using COPY-semantic
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   For interchangeability with std::vector
+//   DESCRIPTION:   Add a new element at the end of the array, using COPY-semantic
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   For interchangeability with std::vector
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::push_back(const Type& value)
@@ -232,7 +240,7 @@ void my::DynamicArray<Type>::push_back(const Type& value)
 //   DESCRIPTION:   Add a new element at the end of the array, using MOVE-semantic
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::pushBack(Type&& value)
@@ -258,7 +266,7 @@ void my::DynamicArray<Type>::pushBack(Type&& value)
 //   DESCRIPTION:   Add a new element at the end of the array, using MOVE-semantic
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::push_back(Type&& value)
@@ -269,11 +277,11 @@ void my::DynamicArray<Type>::push_back(Type&& value)
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   What should I do with the extracted element? Should I pop it via
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   What should I do with the extracted element? Should I pop it via
 //                  reference? - NOPE, cause the memory, where it is storing can be rewrited by the
 //                  *this object.
 //==================================================================================================
@@ -293,7 +301,7 @@ Type my::DynamicArray<Type>::popBack()
 //   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::reallocate(int newCapacity)
@@ -328,10 +336,10 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
 
 //==================================================================================================
 //          TYPE:    Member function
+//   DESCRIPTION:    ........
 //    PARAMETERS:    Returns size of the array
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 int my::DynamicArray<Type>::getSize() const
@@ -342,10 +350,10 @@ int my::DynamicArray<Type>::getSize() const
 
 //==================================================================================================
 //          TYPE:    Getter
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    For interchangeability with std::vector
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    For interchangeability with std::vector
 //==================================================================================================
 template <typename Type>
 int my::DynamicArray<Type>::size() const
@@ -357,10 +365,10 @@ int my::DynamicArray<Type>::size() const
 
 //==================================================================================================
 //          TYPE:    Getter
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 int my::DynamicArray<Type>::getCapacity() const
@@ -370,10 +378,10 @@ int my::DynamicArray<Type>::getCapacity() const
 
 //==================================================================================================
 //          TYPE:    Getter
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 int my::DynamicArray<Type>::getCapacityChunk() const
@@ -418,27 +426,27 @@ std::ostream& my::operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr)
     const my::DynamicArray<Type>& arr {dynArr};
     out << arr;
     return out;
-//    out << '[';
+    //    out << '[';
 
-//    int ii {0};
-//    while (ii < dynArr.getSize() - 1) {
-//        out << dynArr[ii] << ", ";
-//        ++ii;
-//    }
-//    out << dynArr[ii] << ']';
+    //    int ii {0};
+    //    while (ii < dynArr.getSize() - 1) {
+    //        out << dynArr[ii] << ", ";
+    //        ++ii;
+    //    }
+    //    out << dynArr[ii] << ']';
 
-//    return out;
+    //    return out;
 }
 
 
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 const Type* my::DynamicArray<Type>::cbegin() const
@@ -448,11 +456,11 @@ const Type* my::DynamicArray<Type>::cbegin() const
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 Type* my::DynamicArray<Type>::begin()
@@ -463,11 +471,11 @@ Type* my::DynamicArray<Type>::begin()
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 Type* my::DynamicArray<Type>::end()
@@ -478,11 +486,11 @@ Type* my::DynamicArray<Type>::end()
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//   DESCRIPTION:    --------
-//  RETURN VALUE:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type>
 const Type* my::DynamicArray<Type>::cend() const
@@ -493,12 +501,12 @@ const Type* my::DynamicArray<Type>::cend() const
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
+//          TYPE:   ........
 //   DESCRIPTION:   Функция расширяет текущий массив с использованием данных из аргумента такого же
 //                  типа (my::DynamicArray<Type>). Используется copy-семантика.
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Возможно, стоит добавить аналог для move-семантики.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Возможно, стоит добавить аналог для move-семантики.
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
@@ -525,12 +533,12 @@ void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
+//          TYPE:   ........
 //   DESCRIPTION:   Функция расширяет текущий массив с использованием данных из аргумента типа
 //                  (my::Array<Type, size>)
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 template <int length>
@@ -556,10 +564,10 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 
 //==================================================================================================
 //          TYPE:   Copy assignment
+//   DESCRIPTION:   ........
 //    PARAMETERS:   Clear @this array and copy data from @dynArray in it.
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
+//  RETURN VALUE:   ........
+//      COMMENTS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
 //                  For example, if this->mb_size == 100500 and dynArr->mb_size == 10, it is better
 //                  to free the memory in the heap. Otherwise, I can reuse already allocated memory...
 //==================================================================================================
@@ -669,13 +677,13 @@ void my::DynamicArray<Type>::nullify()
 
 
 //==================================================================================================
-//          TYPE:   --------
-//    PARAMETERS:   --------
+//          TYPE:   ........
 //   DESCRIPTION:   Функция смещает элементы массива, начиная с @position на @shift элементов вправо.
 //                  Если для смещения не хватает места в массиве - будет выделена дополнительная
 //                  память.
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 //template <typename Type>
 //void my::DynamicArray<Type>::displace(int position, int shift)
@@ -699,3 +707,4 @@ void my::DynamicArray<Type>::nullify()
 
 
 
+#endif

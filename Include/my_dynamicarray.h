@@ -3,7 +3,6 @@
 
 #include "my_array.h"
 #include "my_utilities.h"
-#include "my_prettyprint.h"
 
 #include <initializer_list>
 #include <iostream>
@@ -167,6 +166,10 @@ template <typename Type>
 std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
 } // End of @my-namespace
+
+
+// # Add templated part
+#include "Implementations/my_dynamicarray.hpp"
 
 
 #endif // DYNAMICARRAY_H

@@ -1,3 +1,7 @@
+/***************************************************************************************************
+ * This file contains definitions for the NON-TEMPLATED part of the <my::String> class
+ **************************************************************************************************/
+
 #include "my_string.h"
 #include "my_utilities.h"
 

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "my_prettyprint.h"
+//#include "my_prettyprint.h"
 
 //extern my::PrettyPrint output;
 
@@ -82,8 +82,11 @@ public:
 };
 
 
-
-
 } // End of "my" namespace
+
+
+// # Definitions of the TEMPLATED part
+#include "Implementations/my_smartptr.hpp"
+
 
 #endif // SMARTPTR_H

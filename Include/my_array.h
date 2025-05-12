@@ -96,4 +96,8 @@ std::ostream& operator<<(std::ostream& out, const Array<Type, size>& array);
 } // End of "my" namespace
 
 
+// # Definitions for the templates
+#include "Implementations/my_array.hpp"
+
+
 #endif // MY_ARRAY_H

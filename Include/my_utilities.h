@@ -24,26 +24,11 @@ enum class RetCode {
 
 
 
-//==================================================================================================
-//          TYPE:   ........
-//   DESCRIPTION:   Cast l-value reference into the r-value reference
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   Couldn't place definition in cpp file because, in such case need to create new
-//                  file (my_utilities.hpp) and place h/cpp-defines in it. But it causes errors with
-//                  multiple definitions.
-//==================================================================================================
 template <typename Type>
-Type&& move(Type& value)
-{
-    return static_cast<Type&&>(value);
-}
+Type&&  move(Type& value);
 
 
 int     getRandomNumber(int min, int max);
-
-
-
 int     readLineToBuffer(char* buffer, int sizeOfBuffer);
 int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 void    invertBuffer(char* buffer, int fromElement, int toElement);
@@ -52,6 +37,10 @@ int     copyString(const char *sourceAdress, char *destinationAdress, const int 
 
 } // End of 'my' namespace
 
+
+
+
+#include "Implementations/my_utilities.hpp"
 
 
 #endif // MY_UTILITIES_H

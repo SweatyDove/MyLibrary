@@ -1,3 +1,8 @@
+/***************************************************************************************************
+ * This file contains definitions for the NON-TEMPLATED part of 'my utilities'
+ **************************************************************************************************/
+
+
 #include "my_utilities.h"
 
 
@@ -174,7 +179,14 @@ int my::copyString(const char *from, char *to, const int num)
 
 
 
-int getRandomNumber(int min, int max)
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    ........
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+int my::getRandomNumber(int min, int max)
 {
     static constexpr double fraction {1.0 / (RAND_MAX + 1.0)};
 
@@ -200,6 +212,4 @@ int getRandomNumber(int min, int max)
 
 //	return 0;
 //}
-
-
 

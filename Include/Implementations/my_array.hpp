@@ -1,19 +1,25 @@
-#include "my_array.h"
+/***************************************************************************************************
+ * This file contains definitions for the templated part of class <my::Array>
+ **************************************************************************************************/
+#ifndef MY_ARRAY_HPP
+#define MY_ARRAY_HPP
+
+#include "my_array.h"            // For IDE visibility
 
 
 
 //==================================================================================================
 //          TYPE:    Default constructor
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 my::Array<Type, size>::Array()
 {
     static_assert(size > 0, "Array's size must be more than 0");
-//    std::cout << "[DEBUG]: default constructor of <my::Array> has been called." << std::endl;
+    //    std::cout << "[DEBUG]: default constructor of <my::Array> has been called." << std::endl;
 }
 
 
@@ -22,10 +28,10 @@ my::Array<Type, size>::Array()
 
 //==================================================================================================
 //          TYPE:    Constructor
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    1) <std::initializer_list> doesn't have overloaded subscription operator "[]" --
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    1) <std::initializer_list> doesn't have overloaded subscription operator "[]" --
 //                      that is why need to use initializer_list::begin() function.
 //                   2)
 //==================================================================================================
@@ -37,7 +43,7 @@ my::Array<Type, size>::Array(std::initializer_list<Type> list)
     static_assert(size > 0, "Array's size must be more than 0");
     assert((listSize == size || (listSize == 1)) && "[ERROR]: incorrect initializer list's size");
 
-//    std::cout << "[DEBUG]: array constructor with initializer_list has been called" << std::endl;
+    //    std::cout << "[DEBUG]: array constructor with initializer_list has been called" << std::endl;
 
     int ii {0};
     int kk {(listSize == 1) ? 0 : ii};
@@ -51,25 +57,25 @@ my::Array<Type, size>::Array(std::initializer_list<Type> list)
 
 //==================================================================================================
 //          TYPE:    Destructor
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 my::Array<Type, size>::~Array()
 {
-//    std::cout << "[DEBUG]: array destructor has been called" << std::endl;
+    //    std::cout << "[DEBUG]: array destructor has been called" << std::endl;
 }
 
 
 
 //==================================================================================================
 //          TYPE:    NON-CONST version of subscription operator
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 Type& my::Array<Type, size>::operator[](int index)
@@ -88,10 +94,10 @@ Type& my::Array<Type, size>::operator[](int index)
 
 //==================================================================================================
 //          TYPE:    CONST version of subscription operator
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 const Type& my::Array<Type, size>::operator[](int index) const
@@ -111,10 +117,10 @@ const Type& my::Array<Type, size>::operator[](int index) const
 
 //==================================================================================================
 //          TYPE:    General function
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 std::ostream& my::operator<<(std::ostream& out, const my::Array<Type, size>& array)
@@ -135,16 +141,16 @@ std::ostream& my::operator<<(std::ostream& out, const my::Array<Type, size>& arr
 
 //==================================================================================================
 //          TYPE:   Copy assignment operator with argument of the SAME @size as *this array
-//   DESCRIPTION:   --------
-//    PARAMETERS:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type, int size>
 my::Array<Type, size>& my::Array<Type, size>::operator=(const my::Array<Type, size>& otherArray)
 {
-//    std::cout << "[my::Array]:[DEBUG]: copy assignment operator for the arrays of the SAME sizes"
-//              << " has been called" << std::endl;
+    //    std::cout << "[my::Array]:[DEBUG]: copy assignment operator for the arrays of the SAME sizes"
+    //              << " has been called" << std::endl;
 
     // # Self-assignment checking
     if (this == &otherArray) {
@@ -166,10 +172,10 @@ my::Array<Type, size>& my::Array<Type, size>::operator=(const my::Array<Type, si
 
 //==================================================================================================
 //          TYPE:   Copy assignment operator with argument of OTHER size
-//    PARAMETERS:   ********
-//   DESCRIPTION:   ********
-//  RETURN VALUE:   ********
-// COMMENTS/BUGS:   It will be a good idea to generate compile-time warning if size != argSize, but
+//   DESCRIPTION:   ........
+//  RETURN VALUE:   ........
+//    PARAMETERS:   ........
+//      COMMENTS:   It will be a good idea to generate compile-time warning if size != argSize, but
 //                  as far as I know, without some tricks (using unused variables: https://stackoverflow.com/questions/77549920/conditional-compile-time-warning-in-c)
 //                  I couldn't do this...
 //==================================================================================================
@@ -177,10 +183,10 @@ template <typename Type, int size>
 template <int otherSize>
 my::Array<Type, size>& my::Array<Type, size>::operator=(const Array<Type, otherSize>& other)
 {
-//    std::cout << "[my::Array]:[DEBUG]: copy assignment operator for the arrays of DIFFERENT sizes"
-//              << " has been called" << std::endl;
+    //    std::cout << "[my::Array]:[DEBUG]: copy assignment operator for the arrays of DIFFERENT sizes"
+    //              << " has been called" << std::endl;
 
-    // ######## Just an info message (see the COMMENTS/BUGS section in the description above)
+    // ######## Just an info message (see the      COMMENTS section in the description above)
     if (size != otherSize) {
         std::cout << "[WARNING]: operator= is invoked with arrays of diferent sizes. Be carefull!"
                   << std::endl;
@@ -206,10 +212,10 @@ my::Array<Type, size>& my::Array<Type, size>::operator=(const Array<Type, otherS
 
 //==================================================================================================
 //          TYPE:    Copy constructor
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 //template <int otherSize>
@@ -217,8 +223,8 @@ my::Array<Type, size>::Array(const my::Array<Type, size>& otherArray)
 {
     // ######## Here *this array already created - constructor doesn't create or allocate
     // ######## space (in stack?) for the object - only initialize it's data
-//    int maxSize {(size < otherSize) ? size : otherSize};
-//    std::cout << "[DEBUG]: copy constructor of <my::Array> has been called." << std::endl;
+    //    int maxSize {(size < otherSize) ? size : otherSize};
+    //    std::cout << "[DEBUG]: copy constructor of <my::Array> has been called." << std::endl;
 
     for (int ii {0}; ii < size; ++ii) {
         (*this)[ii] = otherArray[ii];
@@ -227,11 +233,11 @@ my::Array<Type, size>::Array(const my::Array<Type, size>& otherArray)
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 const Type* my::Array<Type, size>::begin() const
@@ -241,11 +247,11 @@ const Type* my::Array<Type, size>::begin() const
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 Type* my::Array<Type, size>::begin()
@@ -255,11 +261,11 @@ Type* my::Array<Type, size>::begin()
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 const Type* my::Array<Type, size>::end() const
@@ -268,11 +274,11 @@ const Type* my::Array<Type, size>::end() const
 }
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 Type* my::Array<Type, size>::end()
@@ -283,11 +289,11 @@ Type* my::Array<Type, size>::end()
 
 
 //==================================================================================================
-//          TYPE:    --------
-//    PARAMETERS:    --------
-//  RETURN VALUE:    --------
-//   DESCRIPTION:    --------
-// COMMENTS/BUGS:    --------
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
 //==================================================================================================
 template <typename Type, int size>
 int my::Array<Type, size>::getSize() const
@@ -299,3 +305,4 @@ int my::Array<Type, size>::getSize() const
 
 
 
+#endif
