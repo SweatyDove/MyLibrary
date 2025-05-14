@@ -33,16 +33,16 @@ OBJECTS= my_array.o my_dynamicarray.o my_prettyprint.o my_smartptr.o my_string.o
 TARGET= MyLib.a
 
 # Directory for the library itself
-TARGET_DIR= Library
+#TARGET_DIR= Library
 
 # Directory for the objects files (*.o)
-OBJECTS_DIR= Library
+#OBJECTS_DIR= Library
 
 # Directory for headers (*.h) - it should be "included" when using library
-INCLUDE_DIR= Include
+INCLUDE_DIR= ../Include
 
 # Directory for sources (*.cpp and *.hpp)
-SOURCES_DIR= Sources
+SOURCES_DIR= ../Sources
 
 
 
@@ -56,13 +56,12 @@ SOURCES_DIR= Sources
 
 all: $(TARGET)
 
-# Here we gather all *.o files into library (*.a file) and then remove *.o files (in a future need to move *.o files in
-# other directory)
+# Here we gather all *.o files into library (*.a file) and then remove *.o files
 $(TARGET): $(OBJECTS)
-	$(ARCH) $(ARCHFLAGS) $(TARGET_DIR)/$(TARGET) $(OBJECTS)
+	$(ARCH) $(ARCHFLAGS) $(TARGET) $(OBJECTS)
 	rm $(OBJECTS)
 	
-# Below we compile sources into objects
+# Below we compile sources into the objects (*.o)
 my_array.o: $(SOURCES_DIR)/my_array.cpp $(INCLUDE_DIR)/my_array.h
 	$(CC) $(CXXFLAGS) $(SOURCES_DIR)/my_array.cpp -I $(INCLUDE_DIR)
 
@@ -84,5 +83,5 @@ my_utilities.o: $(SOURCES_DIR)/my_utilities.cpp $(INCLUDE_DIR)/my_utilities.h
 
 # Recursively (-r) and without asking (-f) delete previous stuff
 clean:
-	rm -rf $(TARGET_DIR)/$(TARGET)
+	rm -rf $(TARGET)
 

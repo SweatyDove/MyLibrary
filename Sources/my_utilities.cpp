@@ -213,3 +213,355 @@ int my::getRandomNumber(int min, int max)
 //	return 0;
 //}
 
+#define BIT_MANT				24
+#define OFFSET_FLOAT			127
+#define BIT_ORDER				8
+#define	FLOAT_LENGTH			32
+#define SIZE					100
+
+int BigEndian(char line[], char bin[]);
+
+
+
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    Программа переводит число, записанное в двоичном виде, в число типа float
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    К сожалению, даже здесь используются расчеты с использованием типа float.
+//                  А я бы хотел полностью в двоичном виде представить число типа float с использованием только целочисленной арифметики.
+//                  Возможно, для эти целей нужно изменить функцию power(), которая дает тип float в результат, если исходная степень отрицательна.
+//
+//
+//                  11000000 10100100 00000000 00000000	=	5.125
+//                  01000101 11000101 10100010 01000111	=	6324.2845
+//
+//==================================================================================================
+float my::binToFloat(char str)
+{
+    int i, j;
+    char c;
+    int sign = 1;
+    int normalize_e;
+    int E = 0;
+    float number;
+    char str[SIZE] = {'0'};
+    char binary_form[FLOAT_LENGTH] = {'0'};
+    float test_number = 6324.2845;
+    float *fp;
+
+    fp = &test_number;
+    // Запись строки
+    printf("\nEnter binary form of the float number>\t");
+    ReadString(str, SIZE);
+    BigEndian(str, binary_form);
+
+    /*printf("\nChoose the form of the entered number>\t");
+    printf("\n\tPress \"B\" - if Big-endian");
+    printf("\n\tPress \"L\" - if Little-endian\n");
+    c = getchar();
+    switch(c) {
+        case 'b':
+            BigEndian(str, binary_form);
+            break;
+        default:
+            break;
+    }*/
+
+
+
+    // Чтение знака
+    sign = ((binary_form[0] == '0') ? 1 : -1);
+
+    // Чение порядка
+    for (i = BIT_ORDER, j = 0; i > 0; --i, j++)
+        if (binary_form[i] == '1')
+            E = E + 1 * (int) power(2, j);
+    normalize_e = E - OFFSET_FLOAT;
+
+    // Расчет числа через мантиссу и порядок
+    number = 1 * power(2, normalize_e--);						// Учитываем неявный бит мантиссы
+    for (i = BIT_ORDER + 1; i < FLOAT_LENGTH; ++i, normalize_e--)
+        if (binary_form[i] == '1')
+            number = number + 1 * power(2, normalize_e);
+
+    printf("\n\nnumber = %f", number * sign);
+
+    printf("n\nEnter any key to continue. . .");
+    getchar();
+    return;
+}
+
+
+
+
+
+
+
+
+// BigEndian(): ф-ция приводит строку line к соответствующему виду. Если все нормально - возвращает 0. В противном случае -1.
+int BigEndian(char line[], char bin[])
+{
+    int i, j;
+
+    for (i = 0, j = 0; j < FLOAT_LENGTH; ++i) {
+        if (line[i] == '0' || line[i] == '1')
+            bin[j++] = line[i];
+        else if (line[i] == '\n' || line[i] == '\0')
+            while (j < FLOAT_LENGTH)
+                bin[j++] = '0';
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+//==================================================================================================
+//         TYPE:    General function
+//  DESCRIPTION:    Возводит @base в целую степень @exp (но exp > -128)
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+float my::power(int base, int exp)
+{
+    assert(exp > -128 && "Exponent should be higher than -128. Abort.");
+
+    float temp {1.0};
+
+    if (n >= 0) {
+        for (n; n > 0; --n)
+            temp *= base;
+    }
+    else {
+        for (n = -n; n > 0; --n)
+            temp *= base;
+        temp = 1 / temp;
+    }
+
+    return temp;
+}
+
+
+
+
+
+/* Программа переводит вещественное число типа float в его научную нотацию (экспоненциальную запись),
+ * то есть представляет его в виде набора битов.
+ */
+
+//#include <stdio.h>
+//#define BIT_MANT				24
+//#define OFFSET_FLOAT			127
+//#define BIT_ORDER				8
+//#define	FLOAT_LENGTH			32
+
+//void reverse(char s[], int size);
+//int BinToHex(char bin[], char hex[]);
+//int power(int base, int n);
+
+
+
+
+
+//int main(void)
+//{
+//    int i, j, m, n, k;
+//    int high_bit = 0;
+//    float *fp;
+//    float number = -525.0625;
+//    int e = -1;
+//    int normalize_e = 0;
+//    int shifted_order = OFFSET_FLOAT + normalize_e;
+//    int sign = 1;
+
+//    char mantissa[BIT_MANT] = {'0'};
+//    char order[BIT_ORDER]	= {'0'};
+//    char binary_float[FLOAT_LENGTH] = {'0'};
+//    char hex_float[FLOAT_LENGTH / 4] = {'0'};
+
+//    int	integer_part = 0;
+//    float fractional_part = 0.0;
+//    int d;
+
+//    fp = &number;
+//    //######## Записываем знак (тут я не уверен вот в чем. Для целых чисел НЕЛЬЗЯ делать так: если number = -128, то -number = 128 и оно не помещается в
+//    //######## знаковый тип и расширяется до беззнакового. А во float это так не работает. Там берется модуль числа и добавляется знак, т.е. нет расширения
+//    //######## до беззнакового.
+//    sign = ((number >= 0) ? 1 : -1);
+
+//    integer_part = (int) (number * sign);
+//    fractional_part = (number * sign)  - (float) integer_part;
+
+//    //######## Костыль на правильное значение порядка
+//    e = ((integer_part == 0) ? 0 : -1);
+
+//    //######## Представление целой части числа в двоичном виде
+//    for (i = BIT_MANT - 1; (integer_part > 0) && (i >= 0); --i, integer_part /= 2) {
+//        mantissa[i] = integer_part % 2 + '0';
+//        high_bit = i;
+//        ++e;
+//    }
+//    while (i >= 0)
+//        mantissa[i--] = '0';
+
+
+//    //#### Перемещаем двоичное представление целой части в начало мантиссы.
+//    //#### Если же high_bit == 0, то либо целая часть равна нулю, либо целая часть заполнила всю мантиссу. Тогда перемещать ничего не нужно.
+//    for (i = high_bit, j = 0; (i != 0) && (i < BIT_MANT); ++i, ++j) {
+//        mantissa[j] = mantissa[i];
+//        mantissa[i] = '0';
+//    }
+
+//    //######## Представление дробной части числа в двоичном виде
+//    for (j; (fractional_part != 0.0) && (j < BIT_MANT); ++j) {
+//        fractional_part *= 2.0;
+//        d = (int) fractional_part;
+//        mantissa[j] = d + '0';
+//        fractional_part -= d;
+//    }
+
+//    //######## Находим нормализованный порядок
+//    for (i = 0, normalize_e = e; i < BIT_MANT; ++i) {
+//        if (mantissa[i] != '1')
+//            normalize_e = e - 1;
+//        else
+//            break;
+//    }
+//    if (i == BIT_MANT)
+//        printf("\ntype:\t\tWarning\nsource:\t\tFloatToBin()\nmessage:\t\t The initial number is too small and can't be represent by \"float\" type");
+
+//    //######## Находим смещенный порядок и записываем его в двоичном представлении
+//    shifted_order = OFFSET_FLOAT + normalize_e;
+//    for (i = BIT_ORDER - 1; (shifted_order > 0) && (i >= 0); --i, shifted_order /= 2)
+//        order[i] = shifted_order % 2 + '0';
+//    while (i >= 0)
+//        order[i--] = '0';
+
+//    //######## Записываем исходное вещ. число в двоичной форме
+//    binary_float[0] = ((sign == 1) ? '0': '1');
+//    for (i = 1, j = 0, m = 0; i < FLOAT_LENGTH; ++i) {
+//        binary_float[i] = ((m == 0) ? order[j] : mantissa[j]);
+//        ++j;
+//        // Переход от записи порядка к записе мантиссы (не забываем про то, что имеем спрятанную "1", то есть записываем мантиссу без единички)
+//        if (m == 0 && j == BIT_ORDER) {
+//            j = 1;							// Так как мантисса начинается с единицы, то эту единицу не записываем
+//            m = 1;
+//        }
+//    }
+//    //######## Записываем исходное число в шестнадцатиричной форме
+//    BinToHex(binary_float, hex_float);
+
+//    //######## Вывод в представлениях Little-Endian и Big-Endian
+//    printf("\nBig-Endian:");
+//    printf("\n\tbin:\t");
+//    for (i = 0, n = 8; i < FLOAT_LENGTH; ++i) {
+//        printf("%c", binary_float[i]);
+//        --n;
+//        if (n == 0) {
+//            printf("  ");
+//            n = 8;
+//        }
+//    }
+//    printf("\n\thex:\t");
+//    for (i = 0, n = 2; i < FLOAT_LENGTH / 4; ++i) {
+//        printf("%c", hex_float[i]);
+//        --n;
+//        if (n == 0) {
+//            printf("        ");
+//            n = 2;
+//        }
+//    }
+//    printf("\n\nLittle-Endian:");
+//    printf("\n\tbin:\t");
+//    for (n = 8, k = 1, i = FLOAT_LENGTH - n * k; i >= 0;) {
+//        printf("%c", binary_float[i]);
+//        ++i;
+//        --n;
+//        // Если вывели байт, переходим к выводу следующего
+//        if (n == 0) {
+//            printf("  ");
+//            n = 8;
+//            ++k;
+//            i = FLOAT_LENGTH - n * k;
+//        }
+//    }
+//    printf("\n\thex:\t");
+//    for (n = 2, k = 1, i = (FLOAT_LENGTH / 4) - n * k; i >= 0;) {
+//        printf("%c", hex_float[i]);
+//        ++i;
+//        --n;
+//        // Если вывели байт, переходим к выводу следующего
+//        if (n == 0) {
+//            printf("        ");
+//            n = 2;
+//            ++k;
+//            i = (FLOAT_LENGTH / 4) - n * k;
+//        }
+//    }
+
+//    printf("\n\nEnter any key to continue. . .");
+//    getchar();
+//    return;
+//}
+
+
+
+
+
+
+
+
+
+//int BinToHex(char bin[], char hex[])
+//{
+//    int i = FLOAT_LENGTH - 1;
+//    int j = 0;
+//    int k = 0;
+//    int width_of_hex_field = 4;
+//    int hex_digit = 0;
+
+//    while (i >= 0) {
+//        hex_digit = hex_digit + (bin[i] - '0') * power(2, j++);
+//        if (j == width_of_hex_field) {
+//            hex[k++] = ((hex_digit > 9) ? hex_digit - 10 + 'A' : hex_digit + '0');
+//            hex_digit = 0;
+//            j = 0;
+//        }
+//        --i;
+//    }
+//    reverse(hex, FLOAT_LENGTH / 4);
+
+//    return 0;
+//}
+
+
+
+//void reverse(char s[], int size)
+//{
+//    int i, j;
+//    int temp;
+
+//    for (i = 0, j = size - 1; i < j ; ++i, --j) {
+//        temp = s[i];
+//        s[i] = s[j];
+//        s[j] = temp;
+//    }
+//    return;
+//}
+
+//// Функция power() возводит "base" в целую неотрицательную "n"-ую степень
+//int power(int base, int n)
+//{
+//    int temp = 1;
+//    for (n; n > 0; --n)
+//        temp *= base;
+
+//    return temp;
+//}

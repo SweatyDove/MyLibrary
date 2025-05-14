@@ -4,7 +4,7 @@
 
 
 #include <iostream>
-
+#include <cassert>
 
 
 
@@ -33,6 +33,9 @@ int     readLineToBuffer(char* buffer, int sizeOfBuffer);
 int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
 void    invertBuffer(char* buffer, int fromElement, int toElement);
 int     copyString(const char *sourceAdress, char *destinationAdress, const int numberOfSymbols);
+
+float   power(int base, int exp);
+float   binToFloat(char str);
 
 
 } // End of 'my' namespace
