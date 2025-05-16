@@ -852,14 +852,49 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 //                      каждый из которых отсортирован, мерджит их в какой-то дополнительный буффер
 //                      (выделять в стеке или статическим сделать?) и возвращает результат наверх.
 //==================================================================================================
-//void my::Sort::mergeUpDown(std::vector<int>& a)
-//{
+std::vector<int> my::Sort::mergeUpDown(std::vector<int>& a, int left, int right)
+{
+    // # If only 1 element in array - then array is sorted
+    if (a.size() == 1) {
+        return a;
+    }
+    else {}
 
-//}
+
+    // # Get sorted subarray
+    std::vector<int> aLeft = this->mergeUpDown(a, left, (left + right) / 2);
+    std::vector<int> aRight = this->mergeUpDown(a, (left + right) / 2, right);
 
 
+    // # Form new array from 2 sorted subarrays (can use reference on proto-array as buffer)
+    int ii {0};         // Left subarray iterator
+    int jj {0};         // Right subarray iterator
+    int kk {0};         // Target array iterator
+
+    while ((ii < aLeft.size()) && (jj < aRight.size())) {
+        if (aLeft[ii] <= aRight[jj]) {
+            a[kk] = aLeft[ii];
+            ++ii;
+        }
+        else {
+            a[kk] = aRight[jj];
+            ++jj;
+        }
+        ++kk;
+    }
+
+    // # Only one of below loops will work
+    while (ii < aLeft.size()) {
+        a[kk++] = aLeft[ii++];
+    }
+    while (jj < aLeft.size()) {
+        a[kk++] = aRight[jj++];
+    }
 
 
+    return a;
+
+}
 
 
 
