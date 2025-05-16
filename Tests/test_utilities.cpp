@@ -23,8 +23,6 @@ int main()
 //    int     copyString(const char *sourceAdress, char *destinationAdress, const int numberOfSymbols);
 
 
-
-
     return 0;
 }
 

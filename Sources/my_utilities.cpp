@@ -213,107 +213,84 @@ int my::getRandomNumber(int min, int max)
 //	return 0;
 //}
 
-#define BIT_MANT				24
-#define OFFSET_FLOAT			127
-#define BIT_ORDER				8
-#define	FLOAT_LENGTH			32
-#define SIZE					100
+//#define BIT_MANT				24
+//#define OFFSET_FLOAT			127
+//#define BIT_ORDER				8
+//#define	FLOAT_LENGTH			32
+//#define SIZE					100
 
-int BigEndian(char line[], char bin[]);
-
-
-
-//==================================================================================================
-//         TYPE:    General function
-//  DESCRIPTION:    Программа переводит число, записанное в двоичном виде, в число типа float
-//   PARAMETERS:    ........
-// RETURN VALUE:    ........
-//     COMMENTS:    К сожалению, даже здесь используются расчеты с использованием типа float.
-//                  А я бы хотел полностью в двоичном виде представить число типа float с использованием только целочисленной арифметики.
-//                  Возможно, для эти целей нужно изменить функцию power(), которая дает тип float в результат, если исходная степень отрицательна.
-//
-//
-//                  11000000 10100100 00000000 00000000	=	5.125
-//                  01000101 11000101 10100010 01000111	=	6324.2845
-//
-//==================================================================================================
-float my::binToFloat(char str)
-{
-    int i, j;
-    char c;
-    int sign = 1;
-    int normalize_e;
-    int E = 0;
-    float number;
-    char str[SIZE] = {'0'};
-    char binary_form[FLOAT_LENGTH] = {'0'};
-    float test_number = 6324.2845;
-    float *fp;
-
-    fp = &test_number;
-    // Запись строки
-    printf("\nEnter binary form of the float number>\t");
-    ReadString(str, SIZE);
-    BigEndian(str, binary_form);
-
-    /*printf("\nChoose the form of the entered number>\t");
-    printf("\n\tPress \"B\" - if Big-endian");
-    printf("\n\tPress \"L\" - if Little-endian\n");
-    c = getchar();
-    switch(c) {
-        case 'b':
-            BigEndian(str, binary_form);
-            break;
-        default:
-            break;
-    }*/
+//int BigEndian(char line[], char bin[]);
 
 
 
-    // Чтение знака
-    sign = ((binary_form[0] == '0') ? 1 : -1);
+////==================================================================================================
+////         TYPE:    General function
+////  DESCRIPTION:    Программа переводит число, записанное в двоичном виде, в число типа float
+////   PARAMETERS:    ........
+//// RETURN VALUE:    ........
+////     COMMENTS:    К сожалению, даже здесь используются расчеты с использованием типа float.
+////                  А я бы хотел полностью в двоичном виде представить число типа float с использованием только целочисленной арифметики.
+////                  Возможно, для эти целей нужно изменить функцию power(), которая дает тип float в результат, если исходная степень отрицательна.
+////
+////
+////                  11000000 10100100 00000000 00000000	=	5.125
+////                  01000101 11000101 10100010 01000111	=	6324.2845
+////
+////==================================================================================================
+//float my::binToFloat(char str)
+//{
+//    int i, j;
+//    char c;
+//    int sign = 1;
+//    int normalize_e;
+//    int E = 0;
+//    float number;
+//    char str[SIZE] = {'0'};
+//    char binary_form[FLOAT_LENGTH] = {'0'};
+//    float test_number = 6324.2845;
+//    float *fp;
 
-    // Чение порядка
-    for (i = BIT_ORDER, j = 0; i > 0; --i, j++)
-        if (binary_form[i] == '1')
-            E = E + 1 * (int) power(2, j);
-    normalize_e = E - OFFSET_FLOAT;
+//    fp = &test_number;
+//    // Запись строки
+//    printf("\nEnter binary form of the float number>\t");
+//    ReadString(str, SIZE);
+//    BigEndian(str, binary_form);
 
-    // Расчет числа через мантиссу и порядок
-    number = 1 * power(2, normalize_e--);						// Учитываем неявный бит мантиссы
-    for (i = BIT_ORDER + 1; i < FLOAT_LENGTH; ++i, normalize_e--)
-        if (binary_form[i] == '1')
-            number = number + 1 * power(2, normalize_e);
-
-    printf("\n\nnumber = %f", number * sign);
-
-    printf("n\nEnter any key to continue. . .");
-    getchar();
-    return;
-}
-
+//    /*printf("\nChoose the form of the entered number>\t");
+//    printf("\n\tPress \"B\" - if Big-endian");
+//    printf("\n\tPress \"L\" - if Little-endian\n");
+//    c = getchar();
+//    switch(c) {
+//        case 'b':
+//            BigEndian(str, binary_form);
+//            break;
+//        default:
+//            break;
+//    }*/
 
 
 
+//    // Чтение знака
+//    sign = ((binary_form[0] == '0') ? 1 : -1);
 
+//    // Чение порядка
+//    for (i = BIT_ORDER, j = 0; i > 0; --i, j++)
+//        if (binary_form[i] == '1')
+//            E = E + 1 * (int) power(2, j);
+//    normalize_e = E - OFFSET_FLOAT;
 
+//    // Расчет числа через мантиссу и порядок
+//    number = 1 * power(2, normalize_e--);						// Учитываем неявный бит мантиссы
+//    for (i = BIT_ORDER + 1; i < FLOAT_LENGTH; ++i, normalize_e--)
+//        if (binary_form[i] == '1')
+//            number = number + 1 * power(2, normalize_e);
 
+//    printf("\n\nnumber = %f", number * sign);
 
-// BigEndian(): ф-ция приводит строку line к соответствующему виду. Если все нормально - возвращает 0. В противном случае -1.
-int BigEndian(char line[], char bin[])
-{
-    int i, j;
-
-    for (i = 0, j = 0; j < FLOAT_LENGTH; ++i) {
-        if (line[i] == '0' || line[i] == '1')
-            bin[j++] = line[i];
-        else if (line[i] == '\n' || line[i] == '\0')
-            while (j < FLOAT_LENGTH)
-                bin[j++] = '0';
-    }
-
-    return 0;
-}
+//    printf("n\nEnter any key to continue. . .");
+//    getchar();
+//    return;
+//}
 
 
 
@@ -322,31 +299,54 @@ int BigEndian(char line[], char bin[])
 
 
 
-//==================================================================================================
-//         TYPE:    General function
-//  DESCRIPTION:    Возводит @base в целую степень @exp (но exp > -128)
-//   PARAMETERS:    ........
-// RETURN VALUE:    ........
-//     COMMENTS:    ........
-//==================================================================================================
-float my::power(int base, int exp)
-{
-    assert(exp > -128 && "Exponent should be higher than -128. Abort.");
+//// BigEndian(): ф-ция приводит строку line к соответствующему виду. Если все нормально - возвращает 0. В противном случае -1.
+//int BigEndian(char line[], char bin[])
+//{
+//    int i, j;
 
-    float temp {1.0};
+//    for (i = 0, j = 0; j < FLOAT_LENGTH; ++i) {
+//        if (line[i] == '0' || line[i] == '1')
+//            bin[j++] = line[i];
+//        else if (line[i] == '\n' || line[i] == '\0')
+//            while (j < FLOAT_LENGTH)
+//                bin[j++] = '0';
+//    }
 
-    if (n >= 0) {
-        for (n; n > 0; --n)
-            temp *= base;
-    }
-    else {
-        for (n = -n; n > 0; --n)
-            temp *= base;
-        temp = 1 / temp;
-    }
+//    return 0;
+//}
 
-    return temp;
-}
+
+
+
+
+
+
+
+////==================================================================================================
+////         TYPE:    General function
+////  DESCRIPTION:    Возводит @base в целую степень @exp (но exp > -128)
+////   PARAMETERS:    ........
+//// RETURN VALUE:    ........
+////     COMMENTS:    ........
+////==================================================================================================
+//float my::power(int base, int exp)
+//{
+//    assert(exp > -128 && "Exponent should be higher than -128. Abort.");
+
+//    float temp {1.0};
+
+//    if (n >= 0) {
+//        for (n; n > 0; --n)
+//            temp *= base;
+//    }
+//    else {
+//        for (n = -n; n > 0; --n)
+//            temp *= base;
+//        temp = 1 / temp;
+//    }
+
+//    return temp;
+//}
 
 
 
