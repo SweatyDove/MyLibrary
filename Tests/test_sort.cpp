@@ -39,7 +39,7 @@ int main()
     std::vector<int> reversedArray(size);
     std::vector<int> almostSortedArray(size);
 
-    std::vector<int> simpleArray = {1, 4, 7, 0, 5, 9, 2, 3, 2, 8};                // size = 10
+    std::vector<int> simpleArray = {1, 4, 7, 0, 5, 9, 2, 3};                // size = 8
 
 //    std::vector<int> stdSortArray(size);
 //    std::vector<int> customSortArray(size);
@@ -47,6 +47,21 @@ int main()
     for (int ii {0}; ii < size - 1; ++ii) {
         randomArray[ii] = my::getRandomNumber(-size, size);
     }
+
+
+
+    std::vector a = sort.mergeUpDown(simpleArray, 0, simpleArray.size());
+
+
+
+
+
+
+
+
+
+
+
 
 
     std::cout << "\nArray size:  " << size << std::endl;

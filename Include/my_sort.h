@@ -55,7 +55,7 @@ public:
     double shellClassic(std::vector<int>& a);
 
     // # Сортировки слиянием
-    void merge(std::vector<int>& a);
+    std::vector<int> mergeUpDown(std::vector<int>& a, int left, int right);
 
 
 
