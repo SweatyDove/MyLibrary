@@ -32,7 +32,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int size {100'000};
+    int size {1'000};
     std::vector<int> testArray(size);
     std::vector<int> randomArray(size);
     std::vector<int> sortedArray(size);
@@ -50,7 +50,7 @@ int main()
 
 
 
-    sort.mergeUpDown(simpleArray);
+    sort.mergeUpDown(randomArray);
 
 
 
