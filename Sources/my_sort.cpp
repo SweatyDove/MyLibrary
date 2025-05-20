@@ -837,6 +837,60 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 
 
 
+
+
+//==================================================================================================
+// COMMENTS:    Выскакивает ошибка с 9-ой у тестового массива. Видимо где-то забываю обработать
+//              последний элемент.
+//==================================================================================================
+std::vector<int> foo(std::vector<int>& a, int left, int right)
+{
+    std::vector<int> retArray;
+
+    // # If only 1 element in @a - then @a is sorted
+    if (right - left == 1) {
+        retArray.push_back(a[left]);
+        return retArray;
+    }
+    else {}
+
+
+
+    // # Get sorted subarray
+    std::vector<int> aLeft = foo(a, left, (left + right) / 2);
+    std::vector<int> aRight = foo(a, (left + right) / 2, right);            // +1 ?
+
+
+
+    // # Form new array from 2 sorted subarrays (can use reference on proto-array as buffer)
+    int ii {0};         // Left subarray iterator
+    int jj {0};         // Right subarray iterator
+
+    while ((ii < aLeft.size()) && (jj < aRight.size())) {
+        if (aLeft[ii] <= aRight[jj]) {
+            retArray.push_back(aLeft[ii]);
+            ++ii;
+        }
+        else {
+            retArray.push_back(aRight[jj]);
+            ++jj;
+        }
+    }
+
+    // # Only one of below loops will work
+    while (ii < aLeft.size()) {
+        retArray.push_back(aLeft[ii++]);
+    }
+    while (jj < aLeft.size()) {
+        retArray.push_back(aRight[jj++]);
+    }
+
+    return retArray;
+}
+
+
+
+
 //==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Сортировка слиянием "сверху-вниз"
@@ -852,54 +906,21 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 //                      каждый из которых отсортирован, мерджит их в какой-то дополнительный буффер
 //                      (выделять в стеке или статическим сделать?) и возвращает результат наверх.
 //==================================================================================================
-std::vector<int> my::Sort::mergeUpDown(std::vector<int>& a, int left, int right)
+double my::Sort::mergeUpDown(std::vector<int>& a)
 {
-    // # If only 1 element in array - then array is sorted
-    if (a.size() == 1) {
-        return a;
-    }
-    else {}
+    int n = a.size();
+
+    mb_stopwatch.reset();
+
+    foo(a, 0, a.size());
 
 
-    // # Get sorted subarray
-    std::vector<int> aLeft = this->mergeUpDown(a, left, (left + right) / 2);
-    std::vector<int> aRight = this->mergeUpDown(a, (left + right) / 2, right);
 
 
-    // # Form new array from 2 sorted subarrays (can use reference on proto-array as buffer)
-    int ii {0};         // Left subarray iterator
-    int jj {0};         // Right subarray iterator
-    int kk {0};         // Target array iterator
-
-    while ((ii < aLeft.size()) && (jj < aRight.size())) {
-        if (aLeft[ii] <= aRight[jj]) {
-            a[kk] = aLeft[ii];
-            ++ii;
-        }
-        else {
-            a[kk] = aRight[jj];
-            ++jj;
-        }
-        ++kk;
-    }
-
-    // # Only one of below loops will work
-    while (ii < aLeft.size()) {
-        a[kk++] = aLeft[ii++];
-    }
-    while (jj < aLeft.size()) {
-        a[kk++] = aRight[jj++];
-    }
-
-
-    return a;
+    mb_timeInterval = mb_stopwatch.elapsed();
+    return mb_timeInterval;
 
 }
-
-
-
-
-
 
 
 
