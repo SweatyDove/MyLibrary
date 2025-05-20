@@ -836,29 +836,28 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 }
 
 
-
+std::vector<int> aLeft(n/2);
+std::vector<int> aRight(n/2);
 
 
 //==================================================================================================
 // COMMENTS:    Выскакивает ошибка с 9-ой у тестового массива. Видимо где-то забываю обработать
 //              последний элемент.
 //==================================================================================================
-std::vector<int> foo(std::vector<int>& a, int left, int right)
+void foo(std::vector<int>& subArray, std::vector<int>& a, int left, int right)
 {
-    std::vector<int> retArray;
 
     // # If only 1 element in @a - then @a is sorted
     if (right - left == 1) {
-        retArray.push_back(a[left]);
-        return retArray;
+        return a[left];
     }
     else {}
 
 
 
-    // # Get sorted subarray
-    std::vector<int> aLeft = foo(a, left, (left + right) / 2);
-    std::vector<int> aRight = foo(a, (left + right) / 2, right);            // +1 ?
+    // # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
+    aLeft = foo(a, left, (left + right) / 2);
+    aRight = foo(a, (left + right) / 2, right);            // +1 ?
 
 
 
@@ -881,9 +880,10 @@ std::vector<int> foo(std::vector<int>& a, int left, int right)
     while (ii < aLeft.size()) {
         retArray.push_back(aLeft[ii++]);
     }
-    while (jj < aLeft.size()) {
+    while (jj < aRight.size()) {
         retArray.push_back(aRight[jj++]);
     }
+
 
     return retArray;
 }
@@ -897,26 +897,35 @@ std::vector<int> foo(std::vector<int>& a, int left, int right)
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 //      COMMENTS:   Алгоритм:
-//                  0)
-//                  1)  Спускаемся по массиву сверху вниз, каждый раз деля на два подмассива и
-//                      применяя к каждой части данную функцию рекурсивно.
-//                  2)  Если в полученном подмассиве 1 элемент - то массив отсортирован и можно
-//                      выходить.
-//                  3)  Как работает процедура merge: по-идее, она берёт два подмассива, каждый из
-//                      каждый из которых отсортирован, мерджит их в какой-то дополнительный буффер
-//                      (выделять в стеке или статическим сделать?) и возвращает результат наверх.
+//                  0)  Выделяем память под два массива, длинной n/2
+//                  1)  На каждом шаге делим исходный массив на две части до тех пор, пока длина
+//                      полученной части не станет равна единице - то есть часть отсортирована. Всё
+//                      это пока происходит в исходном массиве (путём индексации).
+//                  2)  Возвращаем отсортированную часть и, используя move-семантику, помещаем эту
+//                      часть в один из двух вспомогательных массивов (тем самым освобождается место
+//                      в исходном массиве)
+//                  3)  После того, как получили две отсортированые части (в двух вспомогательных
+//                      массивах), сливаем эти части в исходный массив (в пределах соответствующих
+//                      границ).
+//                  4)  Повторяем этот шаг до тех пор, пока не поднимемся до шага, когда сливаем две
+//                      отсортированные половинки.
 //==================================================================================================
 double my::Sort::mergeUpDown(std::vector<int>& a)
 {
-    int n = a.size();
-
     mb_stopwatch.reset();
 
-    foo(a, 0, a.size());
+    int n {a.size()};
+
+    // # Create 2 additional arrays (memory == O(n))
+    std::vector<int> aLeft(n/2);
+    std::vector<int> aRight(n/2);
 
 
 
 
+
+
+    // # Sort time
     mb_timeInterval = mb_stopwatch.elapsed();
     return mb_timeInterval;
 
