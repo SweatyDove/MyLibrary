@@ -39,7 +39,7 @@ int main()
     std::vector<int> reversedArray(size);
     std::vector<int> almostSortedArray(size);
 
-    std::vector<int> simpleArray = {1, 4, 7, 0, 5, 9, 2, 3};                // size = 8
+    std::vector<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
 
 //    std::vector<int> stdSortArray(size);
 //    std::vector<int> customSortArray(size);
@@ -50,7 +50,7 @@ int main()
 
 
 
-    std::vector a = sort.mergeUpDown(simpleArray, 0, simpleArray.size());
+    sort.mergeUpDown(simpleArray);
 
 
 
