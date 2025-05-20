@@ -304,10 +304,14 @@ char& my::String::operator[](int index)
 
 
 
-//==============================================================================
-// TYPE: Overloaded [operator<<] for <const char*> type.
-// GOAL: Writing buffer of <char> into the my::String object.
-//==============================================================================
+
+//==================================================================================================
+//         TYPE:    Friend function
+//  DESCRIPTION:    Writing @charDataBuffer into the @string.
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
 my::String& my::operator<<(my::String& string, const char* charDataBuffer)
 {
 
