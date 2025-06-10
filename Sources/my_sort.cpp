@@ -836,56 +836,66 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 }
 
 
-std::vector<int> aLeft(n/2);
-std::vector<int> aRight(n/2);
+
+
+
+
+
+
+
 
 
 //==================================================================================================
 // COMMENTS:    Выскакивает ошибка с 9-ой у тестового массива. Видимо где-то забываю обработать
 //              последний элемент.
 //==================================================================================================
-void foo(std::vector<int>& subArray, std::vector<int>& a, int left, int right)
+std::vector<int> foo(std::vector<int>& a, int left, int right)
 {
+    int size {right - left};
+    std::vector<int> retArray(size);
 
     // # If only 1 element in @a - then @a is sorted
     if (right - left == 1) {
-        return a[left];
+        retArray.push_back(std::move(a[left]));
+        return retArray;
     }
     else {}
 
 
 
     // # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
+    std::vector<int> aLeft(size/2);
+    std::vector<int> aRight(size/2);
+
     aLeft = foo(a, left, (left + right) / 2);
     aRight = foo(a, (left + right) / 2, right);            // +1 ?
 
 
 
     // # Form new array from 2 sorted subarrays (can use reference on proto-array as buffer)
+    int kk {left};      // Proto array iterator
     int ii {0};         // Left subarray iterator
     int jj {0};         // Right subarray iterator
 
     while ((ii < aLeft.size()) && (jj < aRight.size())) {
         if (aLeft[ii] <= aRight[jj]) {
-            retArray.push_back(aLeft[ii]);
-            ++ii;
+            a[kk++] = std::move(aLeft[ii++]);
         }
         else {
-            retArray.push_back(aRight[jj]);
-            ++jj;
+            a[kk++] = std::move(aRight[jj++]);
         }
     }
 
     // # Only one of below loops will work
     while (ii < aLeft.size()) {
-        retArray.push_back(aLeft[ii++]);
+        a[kk++] = std::move(aLeft[ii++]);
     }
     while (jj < aRight.size()) {
-        retArray.push_back(aRight[jj++]);
+        a[kk++] = std::move(aRight[ii++]);
     }
 
-
     return retArray;
+
 }
 
 
