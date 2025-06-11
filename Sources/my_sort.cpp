@@ -840,42 +840,46 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 
 
 
-
-
-
-
-
 //==================================================================================================
-// COMMENTS:    Выскакивает ошибка с 9-ой у тестового массива. Видимо где-то забываю обработать
-//              последний элемент.
 //==================================================================================================
-std::vector<int> foo(std::vector<int>& a, int left, int right)
+struct Pair {
+    int left;
+    int right;
+};
+
+
+// # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
+std::vector<int> aLeft;
+std::vector<int> aRight;
+
+
+Pair foo(std::vector<int>& a, Pair pair)
 {
-    int size {right - left};
-    std::vector<int> retArray(size);
-
     // # If only 1 element in @a - then @a is sorted
-    if (right - left == 1) {
-        retArray.push_back(std::move(a[left]));
-        return retArray;
+    if (pair.right - pair.left == 1) {
+        return pair;
     }
     else {}
 
 
+    // # Получаем пару идексов (начало и конец) отсортированной части
+    Pair lPair = foo(a, {pair.left, (pair.left + pair.right) / 2});
+    Pair rPair = foo(a, {(pair.left + pair.right) / 2,  pair.right});
 
-    // # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
-    std::vector<int> aLeft(size/2);
-    std::vector<int> aRight(size/2);
-
-    aLeft = foo(a, left, (left + right) / 2);
-    aRight = foo(a, (left + right) / 2, right);            // +1 ?
+    // # Переносим отсортированные части из изначального массива во вспомогательные
+    for (int ii {lPair.left}; ii < lPair.right; ++ii) {
+        aLeft.push_back(std::move(a[ii]));
+    }
+    for (int ii {rPair.left}; ii < rPair.right; ++ii) {
+        aRight.push_back(std::move(a[ii]));
+    }
 
 
 
     // # Form new array from 2 sorted subarrays (can use reference on proto-array as buffer)
-    int kk {left};      // Proto array iterator
-    int ii {0};         // Left subarray iterator
-    int jj {0};         // Right subarray iterator
+    int kk {pair.left};         // Proto array iterator
+    int ii {0};                 // Left subarray iterator
+    int jj {0};                 // Right subarray iterator
 
     while ((ii < aLeft.size()) && (jj < aRight.size())) {
         if (aLeft[ii] <= aRight[jj]) {
@@ -891,10 +895,15 @@ std::vector<int> foo(std::vector<int>& a, int left, int right)
         a[kk++] = std::move(aLeft[ii++]);
     }
     while (jj < aRight.size()) {
-        a[kk++] = std::move(aRight[ii++]);
+        a[kk++] = std::move(aRight[jj++]);
     }
 
-    return retArray;
+    // # Тут приходится очищать временные массивы, т.к. ПЕРЕНОС != уменьшению размера, просто элемент
+    // # начинает находиться в неопределённом состоянии
+    aLeft.clear();
+    aRight.clear();
+
+    return pair;
 
 }
 
@@ -924,15 +933,15 @@ double my::Sort::mergeUpDown(std::vector<int>& a)
 {
     mb_stopwatch.reset();
 
-    int n {a.size()};
+//    int n {a.size()};
+    Pair pair {0, a.size()};
 
     // # Create 2 additional arrays (memory == O(n))
-    std::vector<int> aLeft(n/2);
-    std::vector<int> aRight(n/2);
+//    std::vector<int> aLeft(n/2);
+//    std::vector<int> aRight(n/2);
 
 
-
-
+    foo(a, pair);
 
 
     // # Sort time

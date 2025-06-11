@@ -32,7 +32,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     std::rand();
 
-    int size {1'000};
+    int size {10'000};
     std::vector<int> testArray(size);
     std::vector<int> randomArray(size);
     std::vector<int> sortedArray(size);
@@ -50,7 +50,7 @@ int main()
 
 
 
-    sort.mergeUpDown(randomArray);
+//    sort.mergeUpDown(randomArray);
 
 
 
@@ -130,15 +130,17 @@ int main()
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::bubble, "BUBBLE");
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::cocktail, "COCKTAIL");
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::oddEven, "ODD_EVEN");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
 
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
 
 
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
     sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
     sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
+    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::mergeUpDown, "MERGE");
+
 
 
     return 0;
