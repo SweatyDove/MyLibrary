@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sys/resource.h>
 #include <cstring>
+#include "my_exception.h"
 
 
 //==================================================================================================
@@ -80,6 +81,8 @@ public:
     void clear();
     void reallocate(int newCapacity);
 
+    [[nodiscard]]   int     toInt() const;
+
 
     [[nodiscard]]   int     getLength() const;
                     void    setLength(int length);
@@ -93,7 +96,7 @@ public:
 
 
 
-};
+}; // End of <String> class
 
 // Prototypes of the friend functions
 my::String& operator<<(my::String& string, int intNumber);
@@ -107,7 +110,30 @@ std::ostream& operator<<(std::ostream& out, const my::String& string);
 std::istream& operator>>(std::istream& in, my::String& string);
 
 
-} // End of namespace "my"
+
+
+
+//==================================================================================================
+//         TYPE:    Class
+//  DESCRIPTION:    Exception class for <String> objects
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    ........
+//==================================================================================================
+class StringException : public Exception {
+
+public:
+    StringException(const char* description);
+    const char* what() const override;
+
+
+}; // End of <StringException> class
+
+
+
+
+
+} // End of <my> namespace
 
 
 #endif  // MY_STRING_H

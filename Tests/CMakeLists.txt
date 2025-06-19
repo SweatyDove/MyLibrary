@@ -12,6 +12,8 @@ add_executable(MyLibrary
     ../Sources/my_smartptr.cpp
     ../Sources/my_string.cpp
     ../Sources/my_utilities.cpp
+    ../Sources/my_exception.cpp
+
 #    ../Sources/my_splitter.cpp
 #    ../Sources/my_serialdevice.cpp
 
@@ -21,8 +23,10 @@ add_executable(MyLibrary
     ../Include/my_smartptr.h
     ../Include/my_string.h
     ../Include/my_utilities.h
+    ../Include/my_exception.h
 
-    test_general.cpp
+    test_exception.cpp
+#    test_general.cpp
 #    test_array.cpp
 #    test_dynamicarray.cpp
 #    test_smartptr.cpp

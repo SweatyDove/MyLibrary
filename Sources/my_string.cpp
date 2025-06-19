@@ -746,3 +746,102 @@ const char* my::String::getFirstElementAdress() const
 {
     return mb_data;
 }
+
+
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+int my::String::toInt() const
+{
+    int retValue {0};
+
+
+    auto isSpace {
+        [](char ch) -> bool {return (ch == ' ' || ch == '\t' || ch == '\n');}
+    };
+
+    auto isDigit {
+                 [](char ch) -> bool { return (ch >= '0' && ch <= '9');}
+    };
+
+
+
+    bool skipLeadingSpaces {true};
+    bool numberIsRead {false};
+
+    for (int ii {0}; ii < mb_length; ++ii) {
+
+        char ch {mb_data[ii]};
+
+        // ## Handle invalid input
+        if (!isSpace(ch) && !isDigit(ch)) {
+            throw "Can't handle symbol, that is not digit or space.";
+        }
+        else {}
+
+
+        // ## Skip leading spaces
+        if ((skipLeadingSpaces == true) && isSpace(ch)) {
+            continue;
+        }
+        else {
+            skipLeadingSpaces = false;
+        }
+
+
+        // ## Read number
+        if (numberIsRead == false && isDigit(ch)) {
+            retValue = retValue * 10 + (ch - '0');
+            continue;
+        }
+        else if (numberIsRead == false && isSpace(ch)) {
+            numberIsRead = true;
+            skipLeadingSpaces = true;
+        }
+        else {}
+
+    }
+
+
+    return retValue;
+
+}
+
+
+
+
+
+
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+my::StringException::StringException(const char* description) :
+    my::Exception {description}
+{
+    // Nothing to do
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
+const char* my::StringException::what() const
+{
+    return mb_description;
+}
