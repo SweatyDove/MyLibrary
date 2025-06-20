@@ -54,7 +54,7 @@ public:
     my::String& operator=(const char* stringLiteral);
 
 
-    bool operator==(const char* stringLiteral) const;
+//    bool operator==(const char* stringLiteral) const;         // Do I need it?
     bool operator==(const my::String& myString) const;
     bool operator!=(const char* stringLiteral);
     bool operator!=(const my::String& myString);
@@ -123,7 +123,7 @@ std::istream& operator>>(std::istream& in, my::String& string);
 class StringException : public Exception {
 
 public:
-    StringException(const char* description);
+    explicit StringException(const char* description);
     const char* what() const override;
 
 

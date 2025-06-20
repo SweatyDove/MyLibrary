@@ -751,8 +751,8 @@ const char* my::String::getFirstElementAdress() const
 
 
 //==================================================================================================
-//          TYPE:   ........
-//   DESCRIPTION:   ........
+//          TYPE:   Member function
+//   DESCRIPTION:   Returns integer number, that contains in *this object.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
@@ -781,7 +781,7 @@ int my::String::toInt() const
 
         // ## Handle invalid input
         if (!isSpace(ch) && !isDigit(ch)) {
-            throw "Can't handle symbol, that is not digit or space.";
+            throw StringException("Can't handle symbol, that is not digit or space.");
         }
         else {}
 
@@ -802,9 +802,13 @@ int my::String::toInt() const
         }
         else if (numberIsRead == false && isSpace(ch)) {
             numberIsRead = true;
-            skipLeadingSpaces = true;
         }
-        else {}
+        else if (numberIsRead == true && isSpace(ch)) {
+            continue;
+        }
+        else {
+            throw StringException("Can handle only single integer number.");
+        }
 
     }
 

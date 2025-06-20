@@ -18,7 +18,7 @@ protected:
     const char* mb_description;
 
 public:
-    Exception(const char* description);
+    explicit Exception(const char* description);
 
     virtual const char* what() const;
 };

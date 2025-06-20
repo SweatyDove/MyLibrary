@@ -60,46 +60,67 @@ private:
 
 
 public:
+
+    // #############################################################################################
+    // ################################### Constructors and Destructors  ###########################
+    // #############################################################################################
+
     DynamicArray();
     DynamicArray(std::initializer_list<Type> list);
+    DynamicArray(const char* string);
+
+    // # Copy/Move constructors
+    DynamicArray(const DynamicArray<Type>& dynArr);
+    //DynamicArray(DynamicArray<Type>&& dynArr);
+
+
+
     ~DynamicArray();
 
+    // #############################################################################################
+    // ################################### Overloaded Operators ####################################
+    // #############################################################################################
 
-    const Type& operator[](int ii) const;
-    Type& operator[](int ii);
-
-    // # Setters and getters
-    int getSize() const;
-    int size() const;
-    int getCapacity() const;
-    int getCapacityChunk() const;
-    void reallocate(int newCapacity);
+    // # Copy/Move assignment
+    DynamicArray<Type>&     operator=(const DynamicArray<Type>& dynArr);
+   //DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
 
 
-    // # COPY CONSTRUCTOR and COPY ASSIGNMENT operators (do not release yet)
-    DynamicArray(const DynamicArray<Type>& dynArr);
-    DynamicArray<Type>& operator=(const DynamicArray<Type>& dynArr);
-
-    // # MOVE CONSTRUCTOR and MOVE ASSIGNMENT operators (do not release yet)
-//     DynamicArray(DynamicArray<Type>&& dynArr);
-//     DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
+    const Type&             operator[](int ii) const;
+    Type&                   operator[](int ii);
 
 
-    // # Interface
-    void pushBack(const Type& value);
-    void pushBack(Type&& value);
+    template <typename Type>
+    std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);
 
-    void push_back(const Type& value);
-    void push_back(Type&& value);
+    template <typename Type>
+    std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
-    Type popBack();
-
-
-    void extend(const my::DynamicArray<Type>& dynArr);
-
-    void nullify();
+    // #############################################################################################
+    // ################################### Interface  ##############################################
+    // #############################################################################################
 
 
+    int     getSize() const;
+    int     size() const;
+    int     getCapacity() const;
+    int     getCapacityChunk() const;
+    void    reallocate(int newCapacity);
+    void    pushBack(const Type& value);
+    void    pushBack(Type&& value);
+    void    push_back(const Type& value);
+    void    push_back(Type&& value);
+    Type    popBack();
+    void    extend(const my::DynamicArray<Type>& dynArr);
+    void    nullify();
+    void    insert(Type* pos, Type* copyFrom, Type* copyTo);
+
+
+    // ######## For using in iteration algorithms
+    const Type*     cbegin() const;
+    const Type*     cend() const;
+    Type*           begin();
+    Type*           end();
 
 //    template <int size>
 //    void extend(const my::Array<Type, size>& staticArr);
@@ -108,19 +129,15 @@ public:
     template <int length>
     void extend(const my::Array<Type, length>& staticArr);
 
-    void insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 
-
-
-
-    // ######## For using in iteration algorithms
-    const Type* cbegin() const;
-    const Type* cend() const;
-    Type* begin();
-    Type* end();
-
-
+    //==================================================================================================
+    //          TYPE:   Class
+    //   DESCRIPTION:   Represents iterator objects for the <my::DynamicArray>
+    //    PARAMETERS:   ........
+    //  RETURN VALUE:   ........
+    //      COMMENTS:   ........
+    //==================================================================================================
     class Iterator {
     public:
         // # The tags below are needed for the functions from <algorithms> and allow to provide
@@ -159,16 +176,12 @@ public:
 
 
 
-template <typename Type>
-std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);
 
-template <typename Type>
-std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
 } // End of @my-namespace
 
 
-// # Add templated part
+// # Templated part implementations
 #include "Implementations/my_dynamicarray.hpp"
 
 

@@ -105,6 +105,24 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 
 
 
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   Forms dynamic array of <Type> entities from <const char*>. For example - array
+//                  of <int>.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Не уверен, что именно здесь стоит добавлять такую функцию
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::DynamicArray(const char* string)
+{
+
+}
+
+
+
+
 //==================================================================================================
 //          TYPE:   Copy constructor
 //   DESCRIPTION:   ........

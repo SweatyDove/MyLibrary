@@ -19,6 +19,7 @@ add_executable(MyLibrary
 
     ../Include/my_array.h
     ../Include/my_dynamicarray.h
+    ../Include/Implementations/my_dynamicarray.hpp
     ../Include/my_prettyprint.h
     ../Include/my_smartptr.h
     ../Include/my_string.h
@@ -26,6 +27,7 @@ add_executable(MyLibrary
     ../Include/my_exception.h
 
     test_exception.cpp
+    ../Include/my_splitter.h
 #    test_general.cpp
 #    test_array.cpp
 #    test_dynamicarray.cpp
