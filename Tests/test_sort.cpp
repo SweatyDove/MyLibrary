@@ -10,6 +10,78 @@
 #include "my_utilities.h"
 
 
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Merges two subarrays of arr[].
+// First subarray is arr[left..mid]
+// Second subarray is arr[mid+1..right]
+void merge(vector<int>& arr, int left,
+           int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Create temp vectors
+    vector<int> L(n1), R(n2);
+
+    // Copy data to temp vectors L[] and R[]
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0;
+    int k = left;
+
+    // Merge the temp vectors back
+    // into arr[left..right]
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of L[],
+    // if there are any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of R[],
+    // if there are any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// begin is for left index and end is right index
+// of the sub-array of arr to be sorted
+void mergeSort(vector<int>& arr, int left, int right)
+{
+    if (left >= right)
+        return;
+
+    int mid = left + (right - left) / 2;
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, mid, right);
+}
+
+
 //void foo(std::vector<int>& randomArray,
 //         std::vector<int>& sortedArray,
 //         std::vector<int>& reversedArray,
@@ -123,6 +195,9 @@ int main()
 
 
 
+
+
+
     //##############################################################################################
     //###################################        my::Sort       ####################################
     //##############################################################################################
@@ -130,21 +205,49 @@ int main()
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::bubble, "BUBBLE");
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::cocktail, "COCKTAIL");
 //    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::oddEven, "ODD_EVEN");
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
 
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
 
 
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
-    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
     sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::mergeUpDown, "MERGE");
 
 
+    std::cout << "\n\n";
+
+
+    testArray = randomArray;
+    timer.reset();
+    mergeSort(testArray, 0, size);
+    time = timer.elapsed();
+    std::cout << "CLASSIC MERGE time of RANDOM array:       " << time << " milliseconds" << std::endl;
+
+    testArray = sortedArray;
+    timer.reset();
+    mergeSort(testArray, 0, size);
+    time = timer.elapsed();
+    std::cout << "CLASSIC MERGE time of SORTED array:       " << time << " milliseconds" << std::endl;
+
+    testArray = almostSortedArray;
+    timer.reset();
+    mergeSort(testArray, 0, size);
+    time = timer.elapsed();
+    std::cout << "CLASSIC MERGE time of ALMOST SORTED array:       " << time << " milliseconds" << std::endl;
+
+    testArray = reversedArray;
+    timer.reset();
+    mergeSort(testArray, 0, size);
+    time = timer.elapsed();
+    std::cout << "CLASSIC MERGE time of REVERSED array:       " << time << " milliseconds" << std::endl;
 
     return 0;
 }
+
+
 
 
 

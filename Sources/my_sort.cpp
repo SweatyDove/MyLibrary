@@ -840,17 +840,16 @@ double my::Sort::shellClassic(std::vector<int>& array) {
 
 
 
-//==================================================================================================
-//==================================================================================================
+
 struct Pair {
     int left;
     int right;
 };
 
-
 // # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
-std::vector<int> aLeft;
-std::vector<int> aRight;
+    std::vector<int> aLeft;
+    std::vector<int> aRight;
+
 
 
 Pair foo(std::vector<int>& a, Pair pair)
@@ -907,9 +906,6 @@ Pair foo(std::vector<int>& a, Pair pair)
 
 }
 
-
-
-
 //==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Сортировка слиянием "сверху-вниз"
@@ -932,6 +928,8 @@ Pair foo(std::vector<int>& a, Pair pair)
 double my::Sort::mergeUpDown(std::vector<int>& a)
 {
     mb_stopwatch.reset();
+
+
 
 //    int n {a.size()};
     Pair pair {0, a.size()};
