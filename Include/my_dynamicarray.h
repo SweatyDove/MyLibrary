@@ -1,8 +1,9 @@
 #ifndef MY_DYNAMIC_ARRAY_H
 #define MY_DYNAMIC_ARRAY_H
 
-#include "my_array.h"
+#include "my_array.h"                   // Circular dependencies? Should I exclude it?
 #include "my_utilities.h"
+#include "my_exception.h"
 
 #include <initializer_list>
 #include <iostream>
@@ -173,6 +174,24 @@ public:
 
 
 };
+
+
+
+//==================================================================================================
+//         TYPE:    Class
+//  DESCRIPTION:    Exception class for <String> objects
+//   PARAMETERS:    ........
+// RETURN VALUE:    ........
+//     COMMENTS:    Do I need <Type> here?
+//==================================================================================================
+class DynamicArrayException : public Exception {
+
+public:
+    explicit DynamicArrayException(const char* description);
+    const char* what() const override;
+
+
+}; // End of <StringException> class
 
 
 

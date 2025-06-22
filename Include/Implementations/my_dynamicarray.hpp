@@ -112,11 +112,71 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 //                  of <int>.
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   Не уверен, что именно здесь стоит добавлять такую функцию
+//      COMMENTS:   Draft version
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::DynamicArray(const char* string)
 {
+    // # Check the acceptable type
+    assert(typeid(Type) == typeid(int) && "Construction of <my::DynamicArray> from <const char*> is possible only for <int> type.");
+
+    // # Initialization/allocation
+    mb_capacity = mb_capacityChunk;
+    mb_size = 0;
+    mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
+
+    // # Nullification
+    this->nullify();
+
+
+
+    // # Define lambdas (instead of usage C-style macros)
+    auto isSpace {
+        [](char ch) -> bool {return (ch == ' ' || ch == '\t' || ch == '\n');}
+    };
+    auto isDigit {
+        [](char ch) -> bool { return (ch >= '0' && ch <= '9');}
+    };
+
+
+
+    // # Main loop, that walks through @string
+    bool skipSpaces {true};
+
+    for (const char* strPtr {string}; *strPtr != '\0'; ++strPtr) {
+
+        char    ch          {*strPtr};
+        int     curNumber     {0};
+
+
+        // ## Handle invalid input
+        if (!isSpace(ch) && !isDigit(ch)) {
+            throw DynamicArrayException("Can't handle symbol, that is not digit or space.");
+        }
+        else {}
+
+
+        // ## Skip leading spaces
+        if ((skipSpaces == true) && isSpace(ch)) {
+            continue;
+        }
+        else {
+            skipSpaces = false;
+        }
+
+
+        // ## Read number or push number and set @skipSpaces flag to true
+        if (isDigit(ch)) {
+            curNumber = curNumber * 10 + (ch - '0');
+        }
+        else {
+            this->pushBack(curNumber);
+            skipSpaces = true;
+        }
+
+    }
+
+
 
 }
 

@@ -1,44 +1,34 @@
 #include <iostream>
 #include "my_exception.h"
+#include "my_dynamicarray.h"
+#include "my_string.h"
 
-class BaseA {
-private:
-    int mb_a {};
-public:
-    BaseA() {}
-};
-
-class BaseB{
-private:
-    int mb_b {2};
-public:
-    BaseB() {}
-};
-
-
-class DerivedAB : public BaseA, public BaseB {
-private:
-    int mb_d {12};
-public:
-    DerivedAB() {}
-};
 
 
 
 int main()
 {
-    try {
-        throw DerivedAB();
+
+    bool mainLoop {true};
+
+    while (mainLoop) {
+
+        std::cout << "Enter a integer:" << std::endl;
+        my::String testString {};
+        std::cin >> testString;
+
+        try {
+            int a {testString.toInt()};
+        }
+        catch (const my::StringException& exception) {
+            std::cerr << "Incorrect input!" << std::endl;
+            continue;
+        }
+
+        std::cout << "Your integer: " << a << std::endl;
+        mainLoop = false;
     }
-//    catch (const BaseA& baseA) {
-//        std::cout << "Caught BaseA" << std::endl;
-//    }
-    catch (const BaseB& baseB) {
-        std::cout << "Caught BaseB" << std::endl;
-    }
-    catch (const DerivedAB& derivedAB) {
-        std::cout << "Caught DerivedAB" << std::endl;
-    }
+
 
     return 0;
 }
