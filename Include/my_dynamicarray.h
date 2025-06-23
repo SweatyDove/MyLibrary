@@ -71,7 +71,7 @@ public:
     DynamicArray(const char* string);
 
     // # Copy/Move constructors
-    DynamicArray(const DynamicArray<Type>& dynArr);
+    DynamicArray(const DynamicArray<Type>& that);
     //DynamicArray(DynamicArray<Type>&& dynArr);
 
 
@@ -83,7 +83,7 @@ public:
     // #############################################################################################
 
     // # Copy/Move assignment
-    DynamicArray<Type>&     operator=(const DynamicArray<Type>& dynArr);
+    DynamicArray<Type>&     operator=(const DynamicArray<Type>& that);
    //DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
 
 
@@ -91,11 +91,7 @@ public:
     Type&                   operator[](int ii);
 
 
-    template <typename Type>
-    std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);
 
-    template <typename Type>
-    std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
     // #############################################################################################
     // ################################### Interface  ##############################################
@@ -175,6 +171,12 @@ public:
 
 };
 
+
+template <typename Type>
+std::ostream& operator<<(std::ostream& out, const my::DynamicArray<Type>& dynArr);
+
+template <typename Type>
+std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
 
 //==================================================================================================

@@ -142,12 +142,11 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
 
     // # Main loop, that walks through @string
     bool skipSpaces {true};
+    int  curNumber  {0};
 
     for (const char* strPtr {string}; *strPtr != '\0'; ++strPtr) {
 
-        char    ch          {*strPtr};
-        int     curNumber     {0};
-
+        char ch {*strPtr};
 
         // ## Handle invalid input
         if (!isSpace(ch) && !isDigit(ch)) {
@@ -171,10 +170,18 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
         }
         else {
             this->pushBack(curNumber);
+            curNumber = 0;
             skipSpaces = true;
         }
 
     }
+
+
+    // # Handling the last value if it presents (otherwise @skipSpaces == true)
+    if (skipSpaces == false) {
+        this->pushBack(curNumber);
+    }
+    else {}
 
 
 
@@ -195,17 +202,17 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
 //                  можно, но тогда придётся ловить исключения вне*.
 //==================================================================================================
 template <typename Type>
-my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& dynArr):
-    mb_size {dynArr.getSize()},
-    mb_capacity {dynArr.getCapacity()},
-    mb_capacityChunk {dynArr.getCapacityChunk()},
+my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that):
+    mb_size {that.getSize()},
+    mb_capacity {that.getCapacity()},
+    mb_capacityChunk {that.getCapacityChunk()},
     mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
 {
     // # Зануление выделенной памяти
     this->nullify();
 
     for (int ii {0}; ii < mb_size; ++ii) {
-        *(mb_dataPtr + ii) = dynArr[ii];
+        *(mb_dataPtr + ii) = that[ii];
     }
 
 }
@@ -643,36 +650,36 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 //==================================================================================================
 //          TYPE:   Copy assignment
 //   DESCRIPTION:   ........
-//    PARAMETERS:   Clear @this array and copy data from @dynArray in it.
+//    PARAMETERS:   Clear @this array and copy data from @that in it.
 //  RETURN VALUE:   ........
 //      COMMENTS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
-//                  For example, if this->mb_size == 100500 and dynArr->mb_size == 10, it is better
+//                  For example, if this->mb_size == 100500 and that->mb_size == 10, it is better
 //                  to free the memory in the heap. Otherwise, I can reuse already allocated memory...
 //==================================================================================================
 template <typename Type>
-my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& dynArr)
+my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& that)
 {
     // # Self-assignment checking
-    if (this == &dynArr) {
+    if (this == &that) {
         return *this;
     }
     else {} // Nothing to do
 
 
     // # Reallocate @this array (with new capacity) or only clear it (leave the old capacity)
-    if (mb_capacity < dynArr.mb_capacity) {
-        this->reallocate(dynArr.mb_capacity);
+    if (mb_capacity < that.mb_capacity) {
+        this->reallocate(that.mb_capacity);
     }
     else {
         this->nullify();
     }
 
 
-    mb_capacityChunk = dynArr.getCapacityChunk();
-    mb_size = dynArr.getSize();
+    mb_capacityChunk = that.getCapacityChunk();
+    mb_size = that.getSize();
 
     for (int ii {0}; ii < mb_size; ++ii) {
-        *(mb_dataPtr + ii) = dynArr[ii];
+        *(mb_dataPtr + ii) = that[ii];
     }
 
     return *this;
