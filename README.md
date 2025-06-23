@@ -11,11 +11,11 @@ things.
 
 **Structure**
 
-./Include			- directory for headers (.h). It should be specified as "include" when use this library
-./Include/Implementations	- directory for the template implementations (.hpp).
-./Sources			- directory for the sources (.cpp).
-./Tests				- directory for the different tests.
-./Library			- directory for the building library.
+- Include			- directory for headers (.h). It should be specified as "include" when use this library
+- Include/Implementations	- directory for the template implementations (.hpp).
+- Sources		    	- directory for the sources (.cpp).
+- Tests			    	- directory for the different tests.
+- Library		    	- directory for the building library.
 
 
 **How to use**
