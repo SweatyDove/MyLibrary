@@ -113,6 +113,7 @@ public:
     void    insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 
+
     // ######## For using in iteration algorithms
     const Type*     cbegin() const;
     const Type*     cend() const;
@@ -166,10 +167,10 @@ public:
     private:
         pointer mb_ptr;
 
-    };
+    }; // End of <DynamicArray::Iterator> class
 
 
-};
+}; // End of <DynamicArray> class
 
 
 template <typename Type>

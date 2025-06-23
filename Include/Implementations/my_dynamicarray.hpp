@@ -258,6 +258,11 @@ my::DynamicArray<Type>::~DynamicArray()
 template <typename Type>
 const Type& my::DynamicArray<Type>::operator[](int ii) const
 {
+    if (ii < 0 || ii >= mb_size) {
+        throw my::DynamicArrayException {"The index out of range."};
+    }
+    else {}
+
     return *(mb_dataPtr + ii);
 
 }
@@ -272,6 +277,11 @@ const Type& my::DynamicArray<Type>::operator[](int ii) const
 template <typename Type>
 Type& my::DynamicArray<Type>::operator[](int ii)
 {
+    if (ii < 0 || ii >= mb_size) {
+        throw my::DynamicArrayException {"The index out of range."};
+    }
+    else {}
+
     return *(mb_dataPtr + ii);
 }
 
@@ -758,6 +768,7 @@ void my::DynamicArray<Type>::nullify()
     }
 
 }
+
 
 
 
