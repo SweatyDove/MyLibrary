@@ -13,12 +13,14 @@ int main()
 
     while (mainLoop) {
 
+        int a {0};
+
         std::cout << "Enter a integer:" << std::endl;
         my::String testString {};
         std::cin >> testString;
 
         try {
-            int a {testString.toInt()};
+            a = testString.toInt();
         }
         catch (const my::StringException& exception) {
             std::cerr << "Incorrect input!" << std::endl;
