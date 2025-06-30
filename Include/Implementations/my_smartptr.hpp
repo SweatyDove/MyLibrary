@@ -150,18 +150,36 @@ my::SmartPtr<Type>::operator bool() const
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   Стоит ли проверять mb_ptr на равенство nullptr?
-//                  Наверное, стоит кидать исключение при нулевом указателе... Подумать...
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 Type& my::SmartPtr<Type>::operator*()
 {
-    if (mb_ptr != nullptr) {
-        return *mb_ptr;
+    if (mb_ptr == nullptr) {
+        throw my::SmartPtrException("Can't dereference nullptr.");
     }
-    else {
-        assert(false && "[ERROR]: can't dereference nullptr. Abort.");
+    else {}
+
+    return *mb_ptr;
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+const Type& my::SmartPtr<Type>::operator*() const
+{
+    if (mb_ptr == nullptr) {
+        throw my::SmartPtrException("Can't dereference nullptr.");
     }
+    else {}
+
+    return *mb_ptr;
 }
 
 
@@ -176,12 +194,31 @@ Type& my::SmartPtr<Type>::operator*()
 template <typename Type>
 Type* my::SmartPtr<Type>::operator->()
 {
-    if (mb_ptr != nullptr) {
-        return mb_ptr;
+    if (mb_ptr == nullptr) {
+        throw my::SmartPtrException("Can't get access to the class member, when class addr is nullptr.");
     }
-    else {
-        assert(false && "[ERROR]: can't get access to the class member, when class addr is nullptr. Abort.");
+    else {}
+
+    return mb_ptr;
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+const Type* my::SmartPtr<Type>::operator->() const
+{
+    if (mb_ptr == nullptr) {
+        throw my::SmartPtrException("Can't get access to the class member, when class addr is nullptr.");
     }
+    else {}
+
+    return mb_ptr;
 
 }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cassert>
+#include "my_exception.h"
 
 //#include "my_prettyprint.h"
 
@@ -65,9 +66,12 @@ public:
 
     // # Dereference operator
     Type& operator*();
+    const Type& operator*() const;
+
 
     // # Access to the class member operator
     Type* operator->();
+    const Type* operator->() const;
 
     void nullify();
 
@@ -79,7 +83,29 @@ public:
 
     // # Release the OWNERSHIP under the resource and transfer OWNERSHIP to the caller.
     Type* release();
-};
+
+
+}; // End of <SmartPtr> class
+
+
+
+
+//==================================================================================================
+//          TYPE:    ........
+//   DESCRIPTION:    ........
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+// COMMENTS/BUGS:    ........
+//==================================================================================================
+class SmartPtrException : public Exception {
+public:
+    explicit SmartPtrException(const char* description);
+    const char* what() const override;
+
+}; // End of <SmartPtrException> class
+
+
+
 
 
 } // End of "my" namespace
