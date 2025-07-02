@@ -77,6 +77,7 @@ public:
 
 
     operator bool() const;
+    bool isFree() const;
 
     /* Should I have two versions of dereference operator: const and non-const? */
 //    const Type& operator*();

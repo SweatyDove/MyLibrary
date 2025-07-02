@@ -143,6 +143,20 @@ my::SmartPtr<Type>::operator bool() const
 }
 
 
+//==================================================================================================
+//          TYPE:   Member function
+//   DESCRIPTION:   Analog of operator bool(), checks if the <my::SmartPtr> object has no resource
+//                  in ownership.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+bool my::SmartPtr::isFree() const
+{
+    return (mb_ptr == nullptr);
+}
+
+
 
 
 //==================================================================================================

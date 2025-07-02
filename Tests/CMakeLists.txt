@@ -22,6 +22,7 @@ add_executable(MyLibrary
     ../Include/Implementations/my_dynamicarray.hpp
     ../Include/my_prettyprint.h
     ../Include/my_smartptr.h
+    ../Include/Implementations/my_smartptr.hpp
     ../Include/my_string.h
     ../Include/my_utilities.h
     ../Include/my_exception.h
