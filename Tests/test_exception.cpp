@@ -2,12 +2,15 @@
 #include "my_exception.h"
 #include "my_dynamicarray.h"
 #include "my_string.h"
+#include "my_smartptr.h"
 
 
 
 
 int main()
 {
+
+
 
     bool mainLoop {true};
 

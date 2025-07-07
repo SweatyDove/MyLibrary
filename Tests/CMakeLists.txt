@@ -26,10 +26,10 @@ add_executable(MyLibrary
     ../Include/my_string.h
     ../Include/my_utilities.h
     ../Include/my_exception.h
-
-    test_exception.cpp
     ../Include/my_splitter.h
-#    test_general.cpp
+
+#    test_exception.cpp
+    test_general.cpp
 #    test_array.cpp
 #    test_dynamicarray.cpp
 #    test_smartptr.cpp

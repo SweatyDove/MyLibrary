@@ -151,7 +151,8 @@ my::SmartPtr<Type>::operator bool() const
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-bool my::SmartPtr::isFree() const
+template <typename Type>
+bool my::SmartPtr<Type>::isFree() const
 {
     return (mb_ptr == nullptr);
 }

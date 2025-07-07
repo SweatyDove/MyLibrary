@@ -15,15 +15,21 @@
 
 int main()
 {
-    my::String string {" d123 "};
-    int a {0};
 
-    try {
-        a = string.toInt();
-    }
-    catch (const char* exception){
-        std::cout << "EXCEPTION: " << exception << std::endl;
-    }
+    my::SmartPtr<int> p (new int(1));
+//    my::SmartPtr<int> pp = new int(1);            // не сработает, т.к. нужно неявно сконструировать временный объект типа my::SmartPtr<int> справа, однако конструктор у меня explicit
+
+    std::cout << typeid(new double(1.1)).name() << std::endl;
+
+//    my::String string {" d123 "};
+//    int a {0};
+
+//    try {
+//        a = string.toInt();
+//    }
+//    catch (const char* exception){
+//        std::cout << "EXCEPTION: " << exception << std::endl;
+//    }
 
 //    my::String string {"Hello, "};
 //    my::Array<char, 6> a {'w', 'o', 'r', 'l', 'd', '!'};

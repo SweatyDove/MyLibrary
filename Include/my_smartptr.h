@@ -48,7 +48,7 @@ private:
 
 public:
     SmartPtr();
-    SmartPtr(Type* resource);
+    explicit SmartPtr(Type* resource);
     ~SmartPtr();
 
     // # Delete copy constructor and copy assignment 'cause it is assumed, that ONLY one object owns
