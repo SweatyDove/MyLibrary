@@ -67,8 +67,9 @@ public:
     // #############################################################################################
 
     DynamicArray();
-    DynamicArray(std::initializer_list<Type> list);
-    DynamicArray(const char* string);
+    explicit DynamicArray(std::initializer_list<Type> list);
+    explicit DynamicArray(const char* string);
+//    explicit DynamicArray(int size);
 
     // # Copy/Move constructors
     DynamicArray(const DynamicArray<Type>& that);

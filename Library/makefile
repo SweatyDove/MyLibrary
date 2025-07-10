@@ -26,8 +26,6 @@ LDFLAGS= -o
 # External library
 # WIRING_LIB= -L/root/WiringNP -lwiringPi
 
-# List of object files
-OBJECTS= my_array.o my_dynamicarray.o my_prettyprint.o my_smartptr.o my_string.o my_utilities.o
 
 # Name of target program/library
 TARGET= MyLib.a
@@ -45,7 +43,8 @@ INCLUDE_DIR= ../Include
 SOURCES_DIR= ../Sources
 
 
-
+# List of object files
+OBJECTS= my_array.o my_dynamicarray.o my_prettyprint.o my_smartptr.o my_string.o my_utilities.o my_exception.o
 
 
 
@@ -79,6 +78,9 @@ my_string.o: $(SOURCES_DIR)/my_string.cpp $(INCLUDE_DIR)/my_string.h $(INCLUDE_D
 
 my_utilities.o: $(SOURCES_DIR)/my_utilities.cpp $(INCLUDE_DIR)/my_utilities.h
 	$(CC) $(CXXFLAGS) $(SOURCES_DIR)/my_utilities.cpp -I $(INCLUDE_DIR)
+	
+my_exception.o: $(SOURCES_DIR)/my_exception.cpp $(INCLUDE_DIR)/my_exception.h
+	$(CC) $(CXXFLAGS) $(SOURCES_DIR)/my_exception.cpp -I $(INCLUDE_DIR)
 
 
 # Recursively (-r) and without asking (-f) delete previous stuff

@@ -57,6 +57,13 @@ public:
     my::SmartPtr<Type>& operator=(const my::SmartPtr<Type>& smartPtr) = delete;
 
 
+    /*
+     * Why I shouldn't use CONST-rvalue-reference as an argument in move-semantic functions?
+     *
+     * When we realizing move-semantic - we move RESOURCE, not an object itself - that is why
+     * OBJECT shouldn't have a 'const' qualifier because we NEED an access to the object's gut and,
+     * most likely, going to change something in it.
+     */
 
     // # Move-constructor
     SmartPtr(my::SmartPtr<Type>&& smartPtr);

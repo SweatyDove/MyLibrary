@@ -16,6 +16,8 @@
 int main()
 {
 
+    my::DynamicArray intArr {10};
+
     my::SmartPtr<int> p (new int(1));
 //    my::SmartPtr<int> pp = new int(1);            // не сработает, т.к. нужно неявно сконструировать временный объект типа my::SmartPtr<int> справа, однако конструктор у меня explicit
 
