@@ -12,16 +12,63 @@
 #include "my_utilities.h"
 #include "my_smartptr.h"
 
+#include "vector"
+
+
+
+class Base {
+private:
+    int mb_a {};
+    int mb_b {};
+public:
+    Base(int x) :
+        mb_a {x}, mb_b {x * 2}
+    {
+
+    }
+//    Base() = default;
+
+//    Base(int a = 2, int b = 3) : mb_a {a}, mb_b {b}
+//    {
+//        // Nothing to do
+//    }
+
+    Base& operator=(const Base& that)
+    {
+        this->mb_a = that.mb_a;
+        this->mb_b = that.mb_b;
+
+        return *this;
+    }
+
+
+    void print() const
+    {
+        std::cout << "mb_a = " << mb_a << '\n'
+                  << "mb_b = " << mb_b << '\n'
+                  << std::endl;
+    }
+};
+
 
 int main()
 {
 
-    my::DynamicArray intArr {10};
+//    my::DynamicArray<Base> baseArray {2, 3};
 
-    my::SmartPtr<int> p (new int(1));
-//    my::SmartPtr<int> pp = new int(1);            // не сработает, т.к. нужно неявно сконструировать временный объект типа my::SmartPtr<int> справа, однако конструктор у меня explicit
+    my::DynamicArray<Base> baseVec {1, 2};
 
-    std::cout << typeid(new double(1.1)).name() << std::endl;
+    for (const auto& base: baseVec) {
+        base.print();
+    }
+
+
+//    my::DynamicArray intArr {10};
+
+//    my::SmartPtr<int> p (new int(1));
+////    my::SmartPtr<int> pp = new int(1);            // не сработает, т.к. нужно неявно сконструировать временный объект типа my::SmartPtr<int> справа, однако конструктор у меня explicit
+
+//    std::cout << typeid(new double(1.1)).name() << std::endl;
 
 //    my::String string {" d123 "};
 //    int a {0};

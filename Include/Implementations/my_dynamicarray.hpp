@@ -43,11 +43,7 @@ my::DynamicArray<Type>::DynamicArray():
     //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
     //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
-    // # Конструирование объекта через 'placement new()' (но надо потом вызывать деструктор для типа
-    // # в явном виде).
-    //    for (int ii {0}; ii < mb_capacity; ++ii) {
-    //        new(mb_dataPtr + ii) Type();
-    //    }
+
 
     // # 'Конструирование' (ака зануление) объекта ручками. Тут я вызываю специальный метод для этого
     // # дела (тогда придётся этот метод пихать во все мои классы), т.к. в классическом варианте
@@ -56,9 +52,35 @@ my::DynamicArray<Type>::DynamicArray():
     //        (mb_dataPtr + ii)->nullify();
     //    }
 
-    // # Зануление по-жёсткому
-    this->nullify();
+    // # Зануление по-жёсткому (не надо, т.к. потом вызываю placement new()
+    // this->nullify();
 
+    /***********************************************************************************************
+     * А теперь предположим, что <Type> - это класс и его дефолтный конструктор инициализирует
+     * члены класса НЕ НУЛЯМИ! То есть нужно всё равно вызывать placement new()... То есть конструктор
+     * же для того и нужен, чтобы как-то инициализировать объект. И не всегда такая инициализация
+     * тривиальна (ака зануление).
+     *
+     * Если я хочу инициализировать объект (память, которую привёл к типу данного объекта, т.е.
+     * трактую её как 'объект'), возможно, я должен провести какие-то вычислительныые операции -
+     * которые указаны, например, в теле конструктора. И как иначе это сделать, не вызывая тело
+     * конструктора (функцию по сути). Вроде как для POD-типов можно что-то придумать, т.к. там
+     * просто набор данных.
+     *
+     * Тогда пока остановлюсь на placement new().
+     *
+     * Или же можно установить требование, чтобы тип <Type> был копируемый - затем просто создавать
+     * временный объект и копировать его содержимое в выделенную память. Или же не оставить память
+     * инициализируемой нулями - и пока size() = 0, нам не важно, что там внутри вектора. А когда
+     * захотим что-то поместить - просто это что-то скопируем.
+     **********************************************************************************************/
+
+    // # Конструирование объекта через 'placement new()' (но надо потом вызывать деструктор для типа
+    // # в явном виде). То есть помимо освобождения памяти (через delete) вызвать предварительно
+    // # на этой памяти ~Type()
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        new(mb_dataPtr + ii) Type();
+    }
 }
 
 
@@ -77,12 +99,6 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
     //    mb_output.debug("LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called.");
     //    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
-    // Allocate memory for the list's objects of type <Type>
-    // Остановился здесь: а что мне использовать? operator new/new[] или new/new[] оператор? Первый
-    // выделяет сырую память, второй выделяет память и вызывает на этой памяти конструктор указанного
-    // типа. Можно ли просто выделить память и на ней уже организовать конструирование объектов <Type>?
-    // И обращаться к этой памяти не по сырым указателям? То есть ручками с памятью работать. Надо
-    // подумать...
 
     // # Выделил память под нужный мне тип (с небольшим запасом)
     auto listSize = list.size();
@@ -90,17 +106,24 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
     mb_dataPtr = static_cast<Type*>(operator new[] (sizeof(Type) * mb_capacity));
 
 
-    // # Зануление выделенной памяти
+    // # Зануление выделенной памяти (наверное можно убрать, т.к. затем всё равно переписываю её).
+    // # Хотя не обязательно ВСЮ переписываю, а только до listSize.
     this->nullify();
 
     // # Затем я как бы 'конструирую' на этой памяти объекты данного типа и копирую/перемещаю туда
-    // # объекты из списка инициализации
+    // # объекты из списка инициализации. Но тут, как я понимаю, объекты должны иметь оператор
+    // # присваивания (или оператор перемещения).
     int ii {0};
     while (ii < listSize) {
-        *(mb_dataPtr + ii) = list.begin()[ii];
+        *(mb_dataPtr + ii) = list.begin()[ii];          // Тут копирую (перемещаю)
         ++ii;
     }
     mb_size = ii;
+
+    /***********************************************************************************************
+     * Вопрос: что делать с памятью в полуинтервале [@mb_size; @mb_capacity) оставить просто
+     * занулённой? Или же вызвать дефолтный конструктор на этой памяти через placement new()?
+     **********************************************************************************************/
 }
 
 
@@ -197,7 +220,9 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
 //  RETURN VALUE:   ........
 //      COMMENTS:   Такой вопрос. А нужно ли мне в данном случае выделять память в куче? Или же
 //                  можно "украсть" указатель на данные из аргумента? Тут тогда такой вопрос
-//                  возникает, а является ли аргумент "временным обектом"?
+//                  возникает, а является ли аргумент "временным обектом"? Если l-value reference,
+//                  то это идентифицируемый объект, значит нельзя 'воровать'... Для воровства создан
+//                  move-constructor.
 //
 //                  Ещё вопрос, можно ли выделять память в куче не в фигурных скобках? Наверное,
 //                  можно, но тогда придётся ловить исключения вне*. А вот что делать, если не удастся
@@ -226,9 +251,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that):
 //   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   Нужно в явном виде вызывать деструктор для типа, наверное. То есть я же создал
-//                  память и сконструировал на ней объект ручками.
-//
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 my::DynamicArray<Type>::~DynamicArray()
@@ -236,9 +259,10 @@ my::DynamicArray<Type>::~DynamicArray()
     //    mb_output.debug("DESTRUCTOR of the <DynamicArray> class has been called.");
     //    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
-    //    for (int ii {0}; ii < mb_capacity; ++ii) {
-    //        new(mb_dataPtr + ii) Type();
-    //    }
+    // # Explicitly call destructor on memory before realizing it
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        (mb_dataPtr + ii)->~Type();
+    }
 
     // Не уверен, что здесь имеет смысл присваивать nullptr после освобождения памяти.
     operator delete[](mb_dataPtr);
@@ -394,7 +418,7 @@ Type my::DynamicArray<Type>::popBack()
 
 
 //==================================================================================================
-//          TYPE:   ........
+//          TYPE:   Public member function
 //   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
@@ -405,27 +429,34 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
 {
     assert(newCapacity > mb_capacity && "New capacity must be higher than the old one");
 
+    // # Allocation
     Type* newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
-    mb_capacity = newCapacity;
 
-    /***********************************************************************************************
-     * Добавить конструирование классов в каком-то виде на новой памяти, иначе возникнет ошибка
-     * при работе с умными указателями и move-семантикой, когда те будут пытаться удалить старые
-     * данные, которых нет в принципе.
-     **********************************************************************************************/
+
+    // # Nullification
     char* singleByte = (char*) newDataPtr;
     for (int ii {0}; ii < sizeof(Type) * newCapacity; ++ii) {
         *(singleByte + ii) = '\0';
     }
 
-    // # Перемещаем данные из старой области в новую, используя move-семантику
+
+    // # Moving
     for (int ii {0}; ii < mb_size; ++ii) {
         *(newDataPtr + ii) = my::move(*(mb_dataPtr + ii));
     }
-    // # Free old memory
-    operator delete[] (mb_dataPtr);
 
+
+    // # Explicitly calls destructor
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        (mb_dataPtr + ii)->~Type();
+    }
+
+
+    // # Updating
+    operator delete[] (mb_dataPtr);
     mb_dataPtr = newDataPtr;
+    mb_capacity = newCapacity;
+
 }
 
 
@@ -458,6 +489,38 @@ int my::DynamicArray<Type>::size() const
     return mb_size;
 }
 
+
+//==================================================================================================
+//          TYPE:    ........
+//   DESCRIPTION:    Resize the *this object
+//    PARAMETERS:    ........
+//  RETURN VALUE:    ........
+//      COMMENTS:    ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::resize(int newSize)
+{
+    if (newSize < size) {
+        assert(false && "Do not release yet.");
+    }
+    else if (newSize == mb_size) {
+        return;
+    }
+    else {
+
+        // # Reallocation
+        if (newSize > mb_capacity) {
+            this->reallocate(newSize + mb_capacityChunk);
+        }
+        else {}
+
+        // # Do not need to pushBack (or insert) zero-initialized elements of type <Type>, because
+        // # I nullify the whole area.
+        mb_size = newSize;
+
+    }
+
+}
 
 
 //==================================================================================================

@@ -41,6 +41,18 @@ namespace my {
 //                      "error: use of deleted function 'std::unique_ptr...". Возможно, дело в том, что конкретная связка
 //                      стандартного std::vector и std::unique_ptr работают вместе, а с моим классом нужно что-то делать, как-то
 //                      допилить его. ПОпробую написать свой умный указатель, а там видно будет.
+//
+//
+//                  3 - What if <Type> default-constructor set special values for its members? In such
+//                      case I should't nullify all space or should call default constructor explicitly
+//                      on that space after nullifing.
+//
+//                  4 - Предположим, что я хочу создать вектор из 10 элементов, но не заполнять его.
+//                      Что мне делать с выделенным местом под это дело? Должен ли я вызвать сразу
+//                      на нём placement new() (Тогда нужен соотвествующий конструктор)?
+//                      Или же создавать объект при использовании pushBack() (можно обойтись аналогом
+//                      memset), то есть уже потом, а изначально оставить область неинициализированной (или
+//                      инициализированной нулём).
 //==================================================================================================
 template <typename Type>
 class DynamicArray {
@@ -101,9 +113,18 @@ public:
 
     int     getSize() const;
     int     size() const;
+    void    resize(int newSize);
     int     getCapacity() const;
     int     getCapacityChunk() const;
     void    reallocate(int newCapacity);
+
+    /*
+     * void    reallocate(int newCapacity = (mb_capacity + mb_capacityChunk));
+     *
+     * Cant do this cause of 'unspecified' order of evaluation function parameters. See:
+     * reallocate(my::DynamicArray<int>* this, int newCapacity = this->mb_capacity);
+     */
+
     void    pushBack(const Type& value);
     void    pushBack(Type&& value);
     void    push_back(const Type& value);
