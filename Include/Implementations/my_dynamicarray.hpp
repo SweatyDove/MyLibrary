@@ -33,27 +33,41 @@
 //                      за исключением виртуальных функций (там есть доп. указатель на v_table) -
 //                      возможно, это где-то может вылезти.
 //
+//                      Боюсь, что работать с сырой памятью не получится, так как у оператора
+//                      присваивания/перемещаения, которые в таком случае нужны, могут быть нетривиальные
+//                      реализации, в зависимости от содержимого левого операнда - то есть я не могу
+//                      просто взять и привести память к нужному мне типу, а потом инициализировать
+//                      нулями - то есть могу, но это будет неверно, так как я не знаю, как
+//                      инициализировать объект правильно. Но это знает конструктор объекта.
+//
+//                      В общем, как ни крути - нужно использовать конструктор в каком-то виде.
+//
 //==================================================================================================
 template <typename Type>
-my::DynamicArray<Type>::DynamicArray():
-    mb_capacity {mb_capacityChunk},
-    mb_size {0},
-    mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
+my::DynamicArray<Type>::DynamicArray()
 {
     //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
     //    std::cout << "[DEBUG]: DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
+    try {
+        mb_capacity = mb_capacityChunk;
+        mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
 
 
     // # 'Конструирование' (ака зануление) объекта ручками. Тут я вызываю специальный метод для этого
-    // # дела (тогда придётся этот метод пихать во все мои классы), т.к. в классическом варианте
+    // # дела (но тогда придётся этот метод пихать во все мои классы), т.к. в классическом варианте
     // # используется конструктор класса
     //    for (int ii {0}; ii < mb_capacity; ++ii) {
     //        (mb_dataPtr + ii)->nullify();
     //    }
 
-    // # Зануление по-жёсткому (не надо, т.к. потом вызываю placement new()
-    // this->nullify();
+    // # Зануление по-жёсткому
+    this->nullify();
 
     /***********************************************************************************************
      * А теперь предположим, что <Type> - это класс и его дефолтный конструктор инициализирует
@@ -73,15 +87,20 @@ my::DynamicArray<Type>::DynamicArray():
      * временный объект и копировать его содержимое в выделенную память. Или же не оставить память
      * инициализируемой нулями - и пока size() = 0, нам не важно, что там внутри вектора. А когда
      * захотим что-то поместить - просто это что-то скопируем.
+     * Но опять же, если мы хотим СКОПИРОВАТЬ, то мы предполагаем, что слева объект УЖЕ имеется (
+     * если речь идёт об operator=()). Но тут опять же - вдруг копирование нетривиально и
+     * ведёт себя по разному в зависимости от каких-то значений слева. Поэтому, всё-равно нужно
+     * вызывать конструктор - нельзя обойтись копированием НЕ для POD-типов.
      **********************************************************************************************/
 
     // # Конструирование объекта через 'placement new()' (но надо потом вызывать деструктор для типа
     // # в явном виде). То есть помимо освобождения памяти (через delete) вызвать предварительно
-    // # на этой памяти ~Type()
-    for (int ii {0}; ii < mb_capacity; ++ii) {
-        new(mb_dataPtr + ii) Type();
-    }
+    // # на этой памяти ~Type().
+//    for (int ii {0}; ii < mb_capacity; ++ii) {
+//        new(mb_dataPtr + ii) Type();
+//    }
 }
+
 
 
 //==================================================================================================
@@ -100,30 +119,31 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
     //    std::cout << "[DEBUG]: LIST-INITIALIZED CONSTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
 
-    // # Выделил память под нужный мне тип (с небольшим запасом)
+    // # Allocation
     auto listSize = list.size();
     mb_capacity = listSize + mb_capacityChunk;
-    mb_dataPtr = static_cast<Type*>(operator new[] (sizeof(Type) * mb_capacity));
+
+    try {
+        mb_dataPtr = static_cast<Type*>(operator new[] (sizeof(Type) * mb_capacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
 
 
-    // # Зануление выделенной памяти (наверное можно убрать, т.к. затем всё равно переписываю её).
-    // # Хотя не обязательно ВСЮ переписываю, а только до listSize.
-    this->nullify();
-
-    // # Затем я как бы 'конструирую' на этой памяти объекты данного типа и копирую/перемещаю туда
-    // # объекты из списка инициализации. Но тут, как я понимаю, объекты должны иметь оператор
-    // # присваивания (или оператор перемещения).
+    // # Initialization
     int ii {0};
     while (ii < listSize) {
-        *(mb_dataPtr + ii) = list.begin()[ii];          // Тут копирую (перемещаю)
+        new(mb_dataPtr + ii) Type(list.begin()[ii]);          // Calls copy-constructor
         ++ii;
     }
     mb_size = ii;
 
-    /***********************************************************************************************
-     * Вопрос: что делать с памятью в полуинтервале [@mb_size; @mb_capacity) оставить просто
-     * занулённой? Или же вызвать дефолтный конструктор на этой памяти через placement new()?
-     **********************************************************************************************/
+
+    // # Nullify other allocated space (for convenience)
+    this->nullify();
+
 }
 
 
@@ -146,7 +166,15 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
     // # Initialization/allocation
     mb_capacity = mb_capacityChunk;
     mb_size = 0;
-    mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
+
+    try {
+        mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
+
 
     // # Nullification
     this->nullify();
@@ -223,24 +251,32 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
 //                  возникает, а является ли аргумент "временным обектом"? Если l-value reference,
 //                  то это идентифицируемый объект, значит нельзя 'воровать'... Для воровства создан
 //                  move-constructor.
-//
-//                  Ещё вопрос, можно ли выделять память в куче не в фигурных скобках? Наверное,
-//                  можно, но тогда придётся ловить исключения вне*. А вот что делать, если не удастся
-//                  выделить память в куче и вылетит исключение? Нужно добавить function-try-block сюда.
 //==================================================================================================
 template <typename Type>
-my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that):
-    mb_size {that.getSize()},
-    mb_capacity {that.getCapacity()},
+my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that) :
     mb_capacityChunk {that.getCapacityChunk()},
-    mb_dataPtr {static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity))}
+    mb_capacity {that.getCapacity()},
+    mb_size {that.getSize()}
 {
-    // # Зануление выделенной памяти
-    this->nullify();
 
-    for (int ii {0}; ii < mb_size; ++ii) {
-        *(mb_dataPtr + ii) = that[ii];
+    // # Allocation
+    try {
+        mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
     }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
+
+    // # Нельзя использовать оператор присваивания, т.к. слева у меня НЕТ объекта, а есть сырая
+    // # память, приведённая к нужному типу, а этого может быть недостаточно для корректного присваивания.
+    for (int ii {0}; ii < mb_size; ++ii) {
+        new(mb_dataPtr + ii) Type(that[ii]);
+    }
+
+
+    // # For convenience
+    this->nullify();
 
 }
 
@@ -260,7 +296,7 @@ my::DynamicArray<Type>::~DynamicArray()
     //    std::cout << "[DEBUG]: DESTRUCTOR of the <DynamicArray> class has been called." << std::endl;
 
     // # Explicitly call destructor on memory before realizing it
-    for (int ii {0}; ii < mb_capacity; ++ii) {
+    for (int ii {0}; ii < mb_size; ++ii) {
         (mb_dataPtr + ii)->~Type();
     }
 
@@ -318,9 +354,7 @@ Type& my::DynamicArray<Type>::operator[](int ii)
 //   DESCRIPTION:   ........
 //    PARAMETERS:   Add a new element at the end of the array, using COPY-semantic
 //  RETURN VALUE:   ........
-//      COMMENTS:   Добавить обработку исключений при ошибке выделения памяти оператором new[].
-//                  Кроме того, а может стоит передавать в качестве аргумента <const Type&>,
-//                  а не передавать по значению...
+//      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::pushBack(const Type& value)
@@ -336,7 +370,7 @@ void my::DynamicArray<Type>::pushBack(const Type& value)
     else {} // Nothing to do
 
     // # Добавляем новый элемент в массив и увеличиваем его размер.
-    *(mb_dataPtr + mb_size) = value;
+    new(mb_dataPtr + mb_size) Type(value);
     mb_size++;
 }
 
@@ -376,7 +410,7 @@ void my::DynamicArray<Type>::pushBack(Type&& value)
     // # move-семантика, или copy-семантика, в зависимости от того, предоставлена ли она классом <Type>.
     // # my::DynamicArray этим НЕ должен заниматься. Но он и не занимается, а просто рассматривает
     // # value согласно типу, который он принимает.
-    *(mb_dataPtr + mb_size) = my::move(value);
+    new(mb_dataPtr + mb_size) Type(my::move(value));
     mb_size++;
 }
 
@@ -409,7 +443,7 @@ void my::DynamicArray<Type>::push_back(Type&& value)
 template <typename Type>
 Type my::DynamicArray<Type>::popBack()
 {
-    assert(mb_size > 0 && "Can't pop_back the last element from the empty array. Abort.");
+    assert(mb_size > 0 && "Can't extract element from the empty array. Abort.");
 
     return mb_dataPtr[--mb_size];
 }
@@ -428,25 +462,25 @@ template <typename Type>
 void my::DynamicArray<Type>::reallocate(int newCapacity)
 {
     assert(newCapacity > mb_capacity && "New capacity must be higher than the old one");
+    Type* newDataPtr {nullptr};
 
     // # Allocation
-    Type* newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
-
-
-    // # Nullification
-    char* singleByte = (char*) newDataPtr;
-    for (int ii {0}; ii < sizeof(Type) * newCapacity; ++ii) {
-        *(singleByte + ii) = '\0';
+    try {
+        newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
     }
 
 
-    // # Moving
+    // # Move old data to the new place
     for (int ii {0}; ii < mb_size; ++ii) {
-        *(newDataPtr + ii) = my::move(*(mb_dataPtr + ii));
+        new(newDataPtr + ii) Type(my::move(*(mb_dataPtr + ii)));
     }
 
 
-    // # Explicitly calls destructor
+    // # Explicitly calls destructor in old place
     for (int ii {0}; ii < mb_capacity; ++ii) {
         (mb_dataPtr + ii)->~Type();
     }
@@ -457,6 +491,9 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
     mb_dataPtr = newDataPtr;
     mb_capacity = newCapacity;
 
+
+    // # Nullification
+    this->nullify();
 }
 
 
@@ -684,8 +721,8 @@ void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
 
     // # Copy elements from rh-operand to *this object
     for (auto& element: dynArr) {
-        // (mb_dataPtr + mb_size++) = element;
-        mb_dataPtr[mb_size++] = element;
+        new(mb_dataPtr + mb_size) Type(element);
+        ++mb_size;
     }
 
 }
@@ -713,8 +750,8 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 
     // # Copy data from @staticArray to *this array
     for (const auto& element: staticArr) {
-        // (mb_dataPtr + mb_size++) = element;        // Just an option
-        mb_dataPtr[mb_size++] = element;
+        new(mb_dataPtr + mb_size) Type(element);
+        mb_size++;
     }
 
 }
@@ -730,35 +767,36 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 //      COMMENTS:   Perhaps, there are some situations, where I should/shouldn't call operator delete[].
 //                  For example, if this->mb_size == 100500 and that->mb_size == 10, it is better
 //                  to free the memory in the heap. Otherwise, I can reuse already allocated memory...
+//
 //==================================================================================================
-template <typename Type>
-my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& that)
-{
-    // # Self-assignment checking
-    if (this == &that) {
-        return *this;
-    }
-    else {} // Nothing to do
+//template <typename Type>
+//my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& that)
+//{
+//    // # Self-assignment checking
+//    if (this == &that) {
+//        return *this;
+//    }
+//    else {} // Nothing to do
 
 
-    // # Reallocate @this array (with new capacity) or only clear it (leave the old capacity)
-    if (mb_capacity < that.mb_capacity) {
-        this->reallocate(that.mb_capacity);
-    }
-    else {
-        this->nullify();
-    }
+//    // # Reallocate @this array (with new capacity) or only clear it (leave the old capacity)
+//    if (mb_capacity < that.mb_capacity) {
+//        this->reallocate(that.mb_capacity);
+//    }
+//    else {
+//        this->nullify();
+//    }
 
 
-    mb_capacityChunk = that.getCapacityChunk();
-    mb_size = that.getSize();
+//    mb_capacityChunk = that.getCapacityChunk();
+//    mb_size = that.getSize();
 
-    for (int ii {0}; ii < mb_size; ++ii) {
-        *(mb_dataPtr + ii) = that[ii];
-    }
+//    for (int ii {0}; ii < mb_size; ++ii) {
+//        *(mb_dataPtr + ii) = that[ii];
+//    }
 
-    return *this;
-}
+//    return *this;
+//}
 
 
 
@@ -797,15 +835,20 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
     else {}
 
 
-    // # Displace elements in *this array
+    // # Displace elements in *this array (on @copySize positions to the right)
+    /*
+     * Остановился здесь - тут нужно посмотреть, что происходит после перемещения элементов вправо -
+     * то есть что мне делать с освободившимся местом? Вызывать деструктор?
+     */
     Type* thisEnd {this->end()};
     Type* thisLastElementAddr {thisEnd - 1};
     for (Type* last {thisLastElementAddr}; last >= pos; --last) {
-        *(last + copySize) = *last;
+        new(last + copySize) Type(*last);
     }
 
 
     // # Insert data from @copyFrom to @copyTo
+
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
         *pos = *ptr;
         ++pos;
@@ -819,16 +862,21 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
 
 //==================================================================================================
 //          TYPE:   Member function
-//   DESCRIPTION:   Зануление выделенной памяти в стиле Си
+//   DESCRIPTION:   Nullifying allocated, but not initialized memory (for convenience purpose).
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   Perhaps, I can replace it with std::memset()
 //==================================================================================================
 template <typename Type>
 void my::DynamicArray<Type>::nullify()
 {
+    auto start {mb_size * sizeof(Type)};
+    auto end   {mb_capacity * sizeof(Type)};
+
     char* singleByte = (char*) mb_dataPtr;
-    for (int ii {0}; ii < sizeof(Type) * mb_capacity; ++ii) {
+
+
+    for (int ii {start}; ii < end; ++ii) {
         *(singleByte + ii) = '\0';
     }
 

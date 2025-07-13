@@ -10,6 +10,7 @@
 #include <cassert>
 #include <iterator>         // For std::forward_iterator_tag
 #include <cstddef>          // For std::ptrdiff_t
+#include <new>              // For std::bad_alloc
 
 
 namespace my {
@@ -17,10 +18,10 @@ namespace my {
 
 //==================================================================================================
 //          TYPE:   Class
-//    PARAMETERS:   --------
-//   DESCRIPTION:   --------
-//  RETURN VALUE:   --------
-// COMMENTS/BUGS:   0 - Some decisions while writing this class may be not optimal. But I do all
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   0 - Some decisions while writing this class may be not optimal. But I do all
 //                      things just for the practice, to find some narrow places in my understanding
 //                      of fundamental things... Sometimes I choose dangerous things (C-style arrays,
 //                      pure pointers and etc.) in order to face with problems of the usage of such
@@ -53,13 +54,26 @@ namespace my {
 //                      Или же создавать объект при использовании pushBack() (можно обойтись аналогом
 //                      memset), то есть уже потом, а изначально оставить область неинициализированной (или
 //                      инициализированной нулём).
+//
+//                      Всё-таки решил, что буду выделять и занулять память, но без конструирования
+//                      на ней объектов (пусть и инициализированных дефолтным конструктором). То есть
+//                      в таком случае, при использовании некоторых функций (например, pushBack()),
+//                      мне нельзя будет использовать операторы копирования/перемещения, т.к. слева
+//                      нет объекта, а есть сырые данные - поэтому нужен в таком случае
+//                      Copy-constructor у типа <Type>.
+//
+//                  5 - Ещё одна вещь, которую нужно учитывать - это то, что operator new возвращает
+//                      указатель на void. И, по хорошему, надо бы его таким и оставить ДО вызова
+//                      placement new(), чтобы где-то случайно не использовать не по назначению.
+//                      Но т.к. я сразу присваиваю указатель на выделенную память переменной
+//                      <Type*> mb_dataPtr, то приходится кастить в нужный тип.
 //==================================================================================================
 template <typename Type>
 class DynamicArray {
 private:
     int mb_capacityChunk {4};
-    int mb_capacity {};
-    int mb_size {};
+    int mb_capacity {0};
+    int mb_size {0};
     Type* mb_dataPtr {nullptr};
 
 
@@ -96,7 +110,7 @@ public:
     // #############################################################################################
 
     // # Copy/Move assignment
-    DynamicArray<Type>&     operator=(const DynamicArray<Type>& that);
+//    DynamicArray<Type>&     operator=(const DynamicArray<Type>& that);
    //DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
 
 
@@ -202,12 +216,15 @@ template <typename Type>
 std::ostream& operator<<(std::ostream& out, my::DynamicArray<Type>& dynArr);
 
 
+
+
+
 //==================================================================================================
 //         TYPE:    Class
-//  DESCRIPTION:    Exception class for <String> objects
+//  DESCRIPTION:    Exception class for <DynamicArray> objects
 //   PARAMETERS:    ........
 // RETURN VALUE:    ........
-//     COMMENTS:    Do I need <Type> here?
+//     COMMENTS:    Do I need to use templates here?
 //==================================================================================================
 class DynamicArrayException : public Exception {
 
@@ -216,7 +233,7 @@ public:
     const char* what() const override;
 
 
-}; // End of <StringException> class
+}; // End of <DynamicArrayException> class
 
 
 
