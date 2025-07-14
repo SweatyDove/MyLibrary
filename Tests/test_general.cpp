@@ -54,13 +54,13 @@ public:
 int main()
 {
 
-//    my::DynamicArray<Base> baseArray {2, 3};
+    my::DynamicArray<int> a {1, 2, 3, 4, 5};
+    std::cout << a << std::endl;
 
-    my::DynamicArray<Base> baseVec {1, 2};
+    a.resize(10);
+    std::cout << a << std::endl;
 
-    for (const auto& base: baseVec) {
-        base.print();
-    }
+
 
 
 //    my::DynamicArray intArr {10};

@@ -133,12 +133,10 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 
 
     // # Initialization
-    int ii {0};
-    while (ii < listSize) {
+    for (int ii {0}; ii < listSize; ++ii) {
         new(mb_dataPtr + ii) Type(list.begin()[ii]);          // Calls copy-constructor
-        ++ii;
     }
-    mb_size = ii;
+    mb_size = listSize;
 
 
     // # Nullify other allocated space (for convenience)
@@ -282,6 +280,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that) :
 
 
 
+
 //==================================================================================================
 //          TYPE:   Destructor
 //   DESCRIPTION:   ........
@@ -309,13 +308,65 @@ my::DynamicArray<Type>::~DynamicArray()
 
 
 
+
+//==================================================================================================
+//          TYPE:   Public member function
+//   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::reallocate(int newCapacity)
+{
+    assert(newCapacity > mb_capacity && "New capacity must be higher than the old one");
+
+
+
+    // # Allocation
+    Type* newDataPtr {nullptr};
+    try {
+        newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
+
+
+    // # Move old data to the new place
+    for (int ii {0}; ii < mb_size; ++ii) {
+        new(newDataPtr + ii) Type(my::move(*(mb_dataPtr + ii)));
+    }
+
+
+    // # Explicitly calls destructor in old place
+    for (int ii {0}; ii < mb_capacity; ++ii) {
+        (mb_dataPtr + ii)->~Type();
+    }
+
+
+    // # Updating
+    operator delete[] (mb_dataPtr);
+    mb_dataPtr = newDataPtr;
+    mb_capacity = newCapacity;
+
+
+    // # Nullification
+    this->nullify();
+}
+
+
+
+
+
 //==================================================================================================
 //          TYPE:   Method
 //   DESCRIPTION:   Overloaded subscription operator that returns "const reference" (aka "reference
 //                  to const")
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   Think about adding an option to iterate array in reverse order via [-1; -mb_size]
 //==================================================================================================
 template <typename Type>
 const Type& my::DynamicArray<Type>::operator[](int ii) const
@@ -451,51 +502,6 @@ Type my::DynamicArray<Type>::popBack()
 
 
 
-//==================================================================================================
-//          TYPE:   Public member function
-//   DESCRIPTION:   Set new capacity of the array and move data from old place into the new one
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   ........
-//==================================================================================================
-template <typename Type>
-void my::DynamicArray<Type>::reallocate(int newCapacity)
-{
-    assert(newCapacity > mb_capacity && "New capacity must be higher than the old one");
-    Type* newDataPtr {nullptr};
-
-    // # Allocation
-    try {
-        newDataPtr = static_cast<Type*>(operator new[](sizeof(Type) * newCapacity));
-    }
-    catch (const std::bad_alloc& exception) {
-        std::cout << exception.what();
-        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
-    }
-
-
-    // # Move old data to the new place
-    for (int ii {0}; ii < mb_size; ++ii) {
-        new(newDataPtr + ii) Type(my::move(*(mb_dataPtr + ii)));
-    }
-
-
-    // # Explicitly calls destructor in old place
-    for (int ii {0}; ii < mb_capacity; ++ii) {
-        (mb_dataPtr + ii)->~Type();
-    }
-
-
-    // # Updating
-    operator delete[] (mb_dataPtr);
-    mb_dataPtr = newDataPtr;
-    mb_capacity = newCapacity;
-
-
-    // # Nullification
-    this->nullify();
-}
-
 
 
 
@@ -529,7 +535,7 @@ int my::DynamicArray<Type>::size() const
 
 //==================================================================================================
 //          TYPE:    ........
-//   DESCRIPTION:    Resize the *this object
+//   DESCRIPTION:    Resize @this object via explicitly calling default constructor Type() on memory
 //    PARAMETERS:    ........
 //  RETURN VALUE:    ........
 //      COMMENTS:    ........
@@ -537,7 +543,7 @@ int my::DynamicArray<Type>::size() const
 template <typename Type>
 void my::DynamicArray<Type>::resize(int newSize)
 {
-    if (newSize < size) {
+    if (newSize < mb_size) {
         assert(false && "Do not release yet.");
     }
     else if (newSize == mb_size) {
@@ -551,10 +557,11 @@ void my::DynamicArray<Type>::resize(int newSize)
         }
         else {}
 
-        // # Do not need to pushBack (or insert) zero-initialized elements of type <Type>, because
-        // # I nullify the whole area.
+        // # Call default constructor
+        for (int ii {mb_size}; ii < newSize; ++ii) {
+            new(mb_dataPtr + ii) Type();
+        }
         mb_size = newSize;
-
     }
 
 }
@@ -706,9 +713,9 @@ const Type* my::DynamicArray<Type>::cend() const
 //      COMMENTS:   Возможно, стоит добавить аналог для move-семантики.
 //==================================================================================================
 template <typename Type>
-void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
+void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& that)
 {
-    int newSize {mb_size + dynArr.getSize()};
+    int newSize {mb_size + that.getSize()};
 
     // # Если массив может вместить данные из другого массива, то просто расширяем его. Хотя, можно,
     // # наверное и не расширять, т.к. он автоматически расширится при копировании (если я
@@ -719,8 +726,8 @@ void my::DynamicArray<Type>::extend(const my::DynamicArray<Type>& dynArr)
     else {}
 
 
-    // # Copy elements from rh-operand to *this object
-    for (auto& element: dynArr) {
+    // # Copy-construction of elements from rh-operand on @this object
+    for (auto& element: that) {
         new(mb_dataPtr + mb_size) Type(element);
         ++mb_size;
     }
@@ -748,7 +755,7 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
     }
     else {}
 
-    // # Copy data from @staticArray to *this array
+    // # Copy-construct data from @staticArray on @this array
     for (const auto& element: staticArr) {
         new(mb_dataPtr + mb_size) Type(element);
         mb_size++;
@@ -769,41 +776,78 @@ void my::DynamicArray<Type>::extend(const my::Array<Type, length>& staticArr)
 //                  to free the memory in the heap. Otherwise, I can reuse already allocated memory...
 //
 //==================================================================================================
-//template <typename Type>
-//my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& that)
-//{
-//    // # Self-assignment checking
-//    if (this == &that) {
-//        return *this;
-//    }
-//    else {} // Nothing to do
+template <typename Type>
+my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray<Type>& that)
+{
+    // # Self-assignment checking
+    if (this == &that) {
+        return *this;
+    }
+    else {} // Nothing to do
 
 
-//    // # Reallocate @this array (with new capacity) or only clear it (leave the old capacity)
-//    if (mb_capacity < that.mb_capacity) {
-//        this->reallocate(that.mb_capacity);
-//    }
-//    else {
-//        this->nullify();
-//    }
+    /* Что нужно сделать?
+     * Я хочу скопировать то, что справа туда, что слева. То есть и слева и справа ЕСТЬ массивы.
+     * Должен ли я очистить предварительно то, что слева? Или же поверх этого присваивать? То есть
+     * вдруг для присваивания важно содержимое соответствующего аргумента слева - но тогда это неочевидное
+     * присваивание. Например:
+     *
+     * Type& operator=(const Type& that)
+     *  {
+     *      this->mb_a = (this->mb_a > 0) ? (that->mb_a) : -(that->mb_a);
+     *  }
+     *
+     *  В примере выше подразумевается, что есть какое-то значение слева и в зависимости от этого
+     *  значения выполняется присваивание. Но тут именно специфичное поведение для конкретного типа.
+     *  Ок, значит, если данные есть - вызываем оператор копирования. Если данных нет,
+     *  то конструктор копирования. Если копируемых данных меньше, то то, что есть - не трогаем.
+     *
+     *
+     *
+     */
+
+    // # Should I copy mb_capacityChunk?
+    assert(mb_capacityChunk == that.mb_capacityChunk && "Do not release yet.");
 
 
-//    mb_capacityChunk = that.getCapacityChunk();
-//    mb_size = that.getSize();
+    // # Reallocation to fit all data from @that
+    if (mb_capacity < that.mb_size) {
+        this->reallocate(that.mb_size + mb_capacityChunk);
+    }
+    else {}
 
-//    for (int ii {0}; ii < mb_size; ++ii) {
-//        *(mb_dataPtr + ii) = that[ii];
-//    }
+    // # Copy-assignment
+    int ii {0};     // @this index
+    int jj {0};     // @that index
 
-//    return *this;
-//}
+    while (ii < mb_size && jj < that.mb_size) {
+        *(mb_dataPtr + ii) = *(that.mb_dataPtr + jj);
+        ++ii;
+        ++jj;
+    }
+
+    // # Reach end of @this array
+    if (ii == mb_size) {
+
+        // # Copy-construction (via placement new())
+        while (jj < that.mb_size) {
+            new(mb_dataPtr + ii) Type(mb_dataPtr + jj);
+            ++ii;
+            ++jj;
+        }
+        mb_size = that.mb_size;
+    }
+    else {}
+
+    return *this;
+}
 
 
 
 //==================================================================================================
 //          TYPE:   ........
 //   DESCRIPTION:   ........
-//    PARAMETERS:   @pos - position in *this object where is insertion of elements begin;
+//    PARAMETERS:   @pos - position in @this object where is insertion of elements begin;
 //                  @copyFrom - start position (in other object?), where is copying of elements starts (inclusive)
 //                  @copyTo - end position (in OTHER object?), where is copying of elemets ends (exclusive)
 //  RETURN VALUE:   ........
@@ -816,14 +860,15 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
 {
     assert (copyFrom <= copyTo && "ERROR, begin-adress should be less than the end-adress");
 
-    // # Calculate number of elements for copying
+    // # Calculate number of elements to copy
     int copySize {0};
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
         ++copySize;
     }
 
 
-    // # Check if the target (*this) can or can't fit new data (после реаллокации меняется фактический pos!)
+    // # Check if the target (*this) can or can't fit new data. Be aware that after the reallocation
+    // # @pos will change!
     int newSize {mb_size + copySize};
     if (newSize > mb_capacity) {
 
@@ -843,14 +888,22 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
     Type* thisEnd {this->end()};
     Type* thisLastElementAddr {thisEnd - 1};
     for (Type* last {thisLastElementAddr}; last >= pos; --last) {
-        new(last + copySize) Type(*last);
+        new(last + copySize) Type(my::move(*last));
+        /* Вопрос: а что происходит с местом, ОТКУДА произошло перемещение? Остаётся ли там объект?
+         * Но ведь я перемещаю не переменную (что, по сути, псевдоним для какого-то места в памяти),
+         * а перемещаю её содержимое, оставляя переменную потенциально с неопределённым значением
+         * (в зависимости от реализации оператора перемещения).
+         *
+         * Ок, тогда, наверное, стоит вызывать деструктор, так как мне нужна память в данном случае
+         * и я предполагаю, что с этой памяти всё было перемещенно вправо
+         */
+        last->~Type();
     }
 
 
-    // # Insert data from @copyFrom to @copyTo
-
+    // # Insert data from @copyFrom to @copyTo via calling copy-constructor
     for (Type* ptr {copyFrom}; ptr != copyTo; ++ptr) {
-        *pos = *ptr;
+        new(pos) Type(*ptr);
         ++pos;
     }
 

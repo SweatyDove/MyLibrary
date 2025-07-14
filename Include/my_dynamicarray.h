@@ -110,7 +110,7 @@ public:
     // #############################################################################################
 
     // # Copy/Move assignment
-//    DynamicArray<Type>&     operator=(const DynamicArray<Type>& that);
+    DynamicArray<Type>&     operator=(const DynamicArray<Type>& that);
    //DynamicArray<Type>& operator=(DynamicArray<Type>&& dynArr);
 
 
