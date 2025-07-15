@@ -71,6 +71,10 @@ namespace my {
 template <typename Type>
 class DynamicArray {
 private:
+
+//    static constexpr int st_defaultCapacityChunk {4};             // Optional: default value for mb_capacityChunk
+
+
     int mb_capacityChunk {4};
     int mb_capacity {0};
     int mb_size {0};
@@ -95,7 +99,7 @@ public:
     DynamicArray();
     explicit DynamicArray(std::initializer_list<Type> list);
     explicit DynamicArray(const char* string);
-//    explicit DynamicArray(int size);
+    explicit DynamicArray(int size);
 
     // # Copy/Move constructors
     DynamicArray(const DynamicArray<Type>& that);

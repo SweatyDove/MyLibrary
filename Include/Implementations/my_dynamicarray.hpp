@@ -44,6 +44,7 @@
 //
 //==================================================================================================
 template <typename Type>
+//my::DynamicArray<Type>::DynamicArray() :  mb_capacity {mb_capacityChunk}          // Optional
 my::DynamicArray<Type>::DynamicArray()
 {
     //    mb_output.debug("DEFAULT CONSTRUCTOR of the <DynamicArray> class has been called.");
@@ -274,6 +275,41 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that) :
 
 
     // # For convenience
+    this->nullify();
+
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   DIRECT-INITIALIZED constructor, that initializes dynamic array
+//                  of @size default-initialized elements of type <Type>.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::DynamicArray(int size) :
+    mb_capacity {size + mb_capacityChunk},
+    mb_size {size}
+{
+
+    // # Allocation
+    try {
+        mb_dataPtr = static_cast<Type*>(operator new[](sizeof(Type) * mb_capacity));
+    }
+    catch (const std::bad_alloc& exception) {
+        std::cout << exception.what();
+        throw my::DynamicArrayException("Couldn't allocate memory in the heap!");
+    }
+
+    // # Default-initialization
+    for (int ii {0}; ii < mb_size; ++ii) {
+        new(mb_dataPtr + ii) Type();
+    }
+
+    // # Nullification (for convenience)
     this->nullify();
 
 }
