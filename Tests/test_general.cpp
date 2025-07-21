@@ -51,11 +51,43 @@ public:
 };
 
 
+
+
+
+
+void print(int& value)
+{
+    std::cout << value << " is lvalue-reference" << std::endl;
+}
+
+void print(int&& value)
+{
+    std::cout << value << " is rvalue-reference" << std::endl;
+}
+
+
+template <class Type>
+void bar(Type&& value)
+{
+    print(forward<Type>(value));
+}
+
+
 int main()
 {
 
-    my::DynamicArray<int> a(10);
-    my::DynamicArray<int> b{10};
+    int n {999};
+    int& nRef {n};
+
+    bar(123);
+    bar(nRef);
+
+
+
+//    print(my::forward<int>(nRef));
+
+//    my::DynamicArray<int> a(10);
+//    my::DynamicArray<int> b{10};
 //    std::cout << a << std::endl;
 
 //    a.resize(10);

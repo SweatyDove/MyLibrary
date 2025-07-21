@@ -25,4 +25,50 @@ Type&& my::move(Type& value)
 }
 
 
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   Custom realization of 'std::forward()', that accepts forwarding reference - here
+//                  it is an L-VALUE of <R-value-reference-type> or <L-value-reference-type> and
+//                  then returns @value as <R-value-reference-type> of <L-value-reference-type>
+//                  respectively.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <class Type>
+Type&& forward(typename std::remove_reference<Type>::type& value)
+{
+    return static_cast<Type&&>(value);
+}
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   Custom realization of 'std::forward()', that accepts forwarding reference - here
+//                  it is an R-VALUE... other part of description is the same as description above.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <class Type>
+Type&& forward(typename std::remove_reference<Type>::type&& value)
+{
+    return static_cast<Type&&>(value);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif

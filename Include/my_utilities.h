@@ -28,6 +28,16 @@ template <typename Type>
 Type&&  move(Type& value);
 
 
+
+template <class Type>
+Type&& forward(typename std::remove_reference<Type>::type& value);
+
+template <class Type>
+Type&& forward(typename std::remove_reference<Type>::type&& value);
+
+
+
+
 int     getRandomNumber(int min, int max);
 int     readLineToBuffer(char* buffer, int sizeOfBuffer);
 int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
