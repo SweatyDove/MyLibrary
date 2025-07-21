@@ -23,7 +23,7 @@ my::Sort::Sort()
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-//my::Sort::Sort(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& reversedArray) :
+//my::Sort::Sort(const my::DynamicArray<int>& randomArray, const my::DynamicArray<int>& sortedArray, const my::DynamicArray<int>& reversedArray) :
 //    mb_randomArray {randomArray},
 //    mb_sortedArray {sortedArray},
 //    mb_reversedArray {reversedArray}
@@ -40,9 +40,9 @@ my::Sort::Sort()
 //==================================================================================================
 inline void my::Sort::swap(int& a, int& b)
 {
-    int temp {a};
-    a = b;
-    b = temp;
+    int temp {my::move(a)};
+    a = my::move(b);
+    b = my::move(temp);
 }
 
 
@@ -55,12 +55,14 @@ inline void my::Sort::swap(int& a, int& b)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-void my::Sort::test(const std::vector<int>& randomArray, const std::vector<int>& sortedArray, const std::vector<int>& almostSortedArray, const std::vector<int>& reversedArray, double (my::Sort::*fn)(std::vector<int>& nums), const char* algoName)
+void my::Sort::test(const my::DynamicArray<int>& randomArray, const my::DynamicArray<int>& sortedArray, const my::DynamicArray<int>& almostSortedArray, const my::DynamicArray<int>& reversedArray, double (my::Sort::*fn)(my::DynamicArray<int>& nums), const char* algoName)
 {
-    std::vector<int> testArray;
+    my::DynamicArray<int> testArray;
     double time;
 
     testArray = randomArray;
+
+
     // fn - это АДРЕС функции сортировки, поэтому *fn - сама функция. А ещё нужен объект для её вызова
     // и поэтому перед *fn стоит this-> (можно (*this).)
     time = ((*this).*fn)(testArray);
@@ -112,7 +114,7 @@ void my::Sort::test(const std::vector<int>& randomArray, const std::vector<int>&
 //                  2) Usage of pointers versus indexes is NOT faster!
 //                  3) Taking expression "size - 1" outside the for-loop is NOT faster!
 //==================================================================================================
-double my::Sort::stupid(std::vector<int>& nums)
+double my::Sort::stupid(my::DynamicArray<int>& nums)
 {
     int size    {static_cast<int>(nums.size())};
 
@@ -138,7 +140,7 @@ double my::Sort::stupid(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::bubble(std::vector<int>& nums)
+double my::Sort::bubble(my::DynamicArray<int>& nums)
 {
 
     int size    {static_cast<int>(nums.size())};
@@ -166,7 +168,7 @@ double my::Sort::bubble(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::cocktail(std::vector<int>& nums)
+double my::Sort::cocktail(my::DynamicArray<int>& nums)
 {
 
     int     size        {static_cast<int>(nums.size())};
@@ -229,7 +231,7 @@ double my::Sort::cocktail(std::vector<int>& nums)
 //                  }
 //
 //==================================================================================================
-double my::Sort::oddEven(std::vector<int>& nums)
+double my::Sort::oddEven(my::DynamicArray<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
@@ -264,7 +266,7 @@ double my::Sort::oddEven(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   About 4-5% faster than base version (but need to compile with -O3 option)
 //==================================================================================================
-double my::Sort::oddEvenVer1(std::vector<int>& nums)
+double my::Sort::oddEvenVer1(my::DynamicArray<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
@@ -319,7 +321,7 @@ double my::Sort::oddEvenVer1(std::vector<int>& nums)
 //      COMMENTS:   About 8-10% faster than base version, but with MUCH MORE difficult logic... And
 //                  I'm not sure, that is all correct.
 //==================================================================================================
-double my::Sort::oddEvenVer2(std::vector<int>& nums)
+double my::Sort::oddEvenVer2(my::DynamicArray<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     int     clearPass   {0};              // Num of passes through @nums without changes
@@ -408,7 +410,7 @@ double my::Sort::oddEvenVer2(std::vector<int>& nums)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::comb(std::vector<int>& nums)
+double my::Sort::comb(my::DynamicArray<int>& nums)
 {
     int     size        {static_cast<int>(nums.size())};
     double  factor      {1.247};                                    // Constant (why "1.247" look wiki)
@@ -448,7 +450,7 @@ double my::Sort::comb(std::vector<int>& nums)
 //                  параметра 'edge' для такого случая.
 //                  3) Работает быстрее 'классического' исполнения (quickClassic())
 //==================================================================================================
-void my::Sort::quick(std::vector<int>& a, int start, int end)
+void my::Sort::quick(my::DynamicArray<int>& a, int start, int end)
 {
     // Exit if subarray has 1 element or 0
     if (start >= end) {
@@ -510,7 +512,7 @@ void my::Sort::quick(std::vector<int>& a, int start, int end)
 //  RETURN VALUE:   ........
 //      COMMENTS:   'Classic' realization
 //==================================================================================================
-void my::Sort::quickClassic(std::vector<int>& a, int start, int end)
+void my::Sort::quickClassic(my::DynamicArray<int>& a, int start, int end)
 {
     if (start > end) {
         return;
@@ -554,7 +556,7 @@ void my::Sort::quickClassic(std::vector<int>& a, int start, int end)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::selection(std::vector<int>& a)
+double my::Sort::selection(my::DynamicArray<int>& a)
 {
     int size {a.size()};
 
@@ -588,7 +590,7 @@ double my::Sort::selection(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-//void my::Sort::heap(std::vector<int>& a)
+//void my::Sort::heap(my::DynamicArray<int>& a)
 //{
 //    int n {a.size() - 1};           // Last element index
 
@@ -656,7 +658,7 @@ double my::Sort::selection(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
-double my::Sort::heap(std::vector<int>& a)
+double my::Sort::heap(my::DynamicArray<int>& a)
 {
     int lastUnsortedIndex {a.size() - 1};           // Last element index
 
@@ -723,7 +725,7 @@ double my::Sort::heap(std::vector<int>& a)
 //  RETURN VALUE:   ........
 //      COMMENTS:   Не ОБМЕНЫ, а СДВИГ!
 //==================================================================================================
-double my::Sort::insertion(std::vector<int>& a)
+double my::Sort::insertion(my::DynamicArray<int>& a)
 {
     int n {a.size()};
 
@@ -761,7 +763,7 @@ double my::Sort::insertion(std::vector<int>& a)
 //                  по каждому элементу, начиная с gap и дальше запускать цикл сравнения с элементами,
 //                  отстающими от текущего на gap, 2gap и т.д. Так сделано в shellClassic().
 //==================================================================================================
-double my::Sort::shell(std::vector<int>& a)
+double my::Sort::shell(my::DynamicArray<int>& a)
 {
     int size    {   a.size()    };
 
@@ -810,7 +812,7 @@ double my::Sort::shell(std::vector<int>& a)
 //      COMMENTS:   From https://www.programiz.com/dsa/shell-sort
 //                  Принцип работы для данной реализации смотри выше в описании my::Sort::shell()
 //==================================================================================================
-double my::Sort::shellClassic(std::vector<int>& array) {
+double my::Sort::shellClassic(my::DynamicArray<int>& array) {
 
     int n = array.size();
 
@@ -847,12 +849,12 @@ struct Pair {
 };
 
 // # Get sorted subarray. Here I want to MOVE content from @a to @aLeft and @aRight
-    std::vector<int> aLeft;
-    std::vector<int> aRight;
+    my::DynamicArray<int> aLeft;
+    my::DynamicArray<int> aRight;
 
 
 
-Pair foo(std::vector<int>& a, Pair pair)
+Pair foo(my::DynamicArray<int>& a, Pair pair)
 {
     // # If only 1 element in @a - then @a is sorted
     if (pair.right - pair.left == 1) {
@@ -925,7 +927,7 @@ Pair foo(std::vector<int>& a, Pair pair)
 //                  4)  Повторяем этот шаг до тех пор, пока не поднимемся до шага, когда сливаем две
 //                      отсортированные половинки.
 //==================================================================================================
-double my::Sort::mergeUpDown(std::vector<int>& a)
+double my::Sort::mergeUpDown(my::DynamicArray<int>& a)
 {
     mb_stopwatch.reset();
 
@@ -935,8 +937,8 @@ double my::Sort::mergeUpDown(std::vector<int>& a)
     Pair pair {0, a.size()};
 
     // # Create 2 additional arrays (memory == O(n))
-//    std::vector<int> aLeft(n/2);
-//    std::vector<int> aRight(n/2);
+//    my::DynamicArray<int> aLeft(n/2);
+//    my::DynamicArray<int> aRight(n/2);
 
 
     foo(a, pair);

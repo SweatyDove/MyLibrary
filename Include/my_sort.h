@@ -1,12 +1,13 @@
 #ifndef MY_SORT_H
 #define MY_SORT_H
 
-#include <vector>
+//#include <vector>
 #include <iostream>
 #include <sys/resource.h>
 #include <functional>               // Fot std::function
 
 #include "my_utilities.h"
+#include "my_dynamicarray.h"
 
 
 namespace my {
@@ -15,9 +16,9 @@ namespace my {
 class Sort {
 public:
 
-//    const std::vector<int>& mb_randomArray;
-//    const std::vector<int>& mb_sortedArray;
-//    const std::vector<int>& mb_reversedArray;
+//    const my::DynamicArray<int>& mb_randomArray;
+//    const my::DynamicArray<int>& mb_sortedArray;
+//    const my::DynamicArray<int>& mb_reversedArray;
 
     my::Timer   mb_stopwatch;
     double      mb_timeInterval {};
@@ -27,35 +28,35 @@ public:
 
     inline void swap(int& a, int& b);
 
-    void test(const std::vector<int>& randomArray,
-              const std::vector<int>& sortedArray,
-              const std::vector<int>& almostSortedArray,
-              const std::vector<int>& reversedArray,
-              double (my::Sort::*fn)(std::vector<int>& nums),
+    void test(const my::DynamicArray<int>& randomArray,
+              const my::DynamicArray<int>& sortedArray,
+              const my::DynamicArray<int>& almostSortedArray,
+              const my::DynamicArray<int>& reversedArray,
+              double (my::Sort::*fn)(my::DynamicArray<int>& nums),
               const char* algoName);
 
     // # Сортировки обменом
-    double stupid(std::vector<int>& nums);
-    double bubble(std::vector<int>& nums);
-    double cocktail(std::vector<int>& nums);
-    double oddEven(std::vector<int>& nums);
-    double oddEvenVer1(std::vector<int>& nums);
-    double oddEvenVer2(std::vector<int>& nums);
-    double comb(std::vector<int>& nums);
-    void quick(std::vector<int>& a, int start, int end);
-    void quickClassic(std::vector<int>& a, int start, int end);
+    double stupid(my::DynamicArray<int>& nums);
+    double bubble(my::DynamicArray<int>& nums);
+    double cocktail(my::DynamicArray<int>& nums);
+    double oddEven(my::DynamicArray<int>& nums);
+    double oddEvenVer1(my::DynamicArray<int>& nums);
+    double oddEvenVer2(my::DynamicArray<int>& nums);
+    double comb(my::DynamicArray<int>& nums);
+    void quick(my::DynamicArray<int>& a, int start, int end);
+    void quickClassic(my::DynamicArray<int>& a, int start, int end);
 
     // # Сортировки выбором
-    double selection(std::vector<int>& a);
-    double heap(std::vector<int>& a);
+    double selection(my::DynamicArray<int>& a);
+    double heap(my::DynamicArray<int>& a);
 
     // # Сортировки вставками
-    double insertion(std::vector<int>& a);
-    double shell(std::vector<int>& a);
-    double shellClassic(std::vector<int>& a);
+    double insertion(my::DynamicArray<int>& a);
+    double shell(my::DynamicArray<int>& a);
+    double shellClassic(my::DynamicArray<int>& a);
 
     // # Сортировки слиянием
-    double mergeUpDown(std::vector<int>& a);
+    double mergeUpDown(my::DynamicArray<int>& a);
 
 
 
