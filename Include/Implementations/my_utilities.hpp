@@ -60,7 +60,20 @@ Type&& forward(typename std::remove_reference<Type>::type&& value)
 
 
 
-
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   Realization of universal swap() function
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+void swap(Type&& a, Type&& b)
+{
+    Type temp {my::forward(a)};
+    a = my::forward(b);
+    b = my::forward(temp);
+}
 
 
 

@@ -62,11 +62,21 @@ Type&&  move(Type& value);
 
 
 
+
+
+
 template <class Type>
 Type&& forward(typename std::remove_reference<Type>::type& value);
 
 template <class Type>
 Type&& forward(typename std::remove_reference<Type>::type&& value);
+
+
+
+template <typename Type>
+void swap(Type&& a, Type&& b);
+
+
 
 
 

@@ -68,7 +68,7 @@ my::DynamicArray<Type>::DynamicArray()
     //    }
 
     // # Зануление по-жёсткому
-    this->nullify();
+    this->nullify(0, mb_capacity);
 
     /***********************************************************************************************
      * А теперь предположим, что <Type> - это класс и его дефолтный конструктор инициализирует
@@ -141,7 +141,7 @@ my::DynamicArray<Type>::DynamicArray(std::initializer_list<Type> list)
 
 
     // # Nullify other allocated space (for convenience)
-    this->nullify();
+    this->nullify(mb_size, mb_capacity);
 
 }
 
@@ -176,7 +176,7 @@ my::DynamicArray<Type>::DynamicArray(const char* string)
 
 
     // # Nullification
-    this->nullify();
+    this->nullify(0, mb_capacity);
 
 
 
@@ -275,7 +275,7 @@ my::DynamicArray<Type>::DynamicArray(const my::DynamicArray<Type>& that) :
 
 
     // # For convenience
-    this->nullify();
+    this->nullify(mb_size, mb_capacity);
 
 }
 
@@ -310,7 +310,7 @@ my::DynamicArray<Type>::DynamicArray(int size) :
     }
 
     // # Nullification (for convenience)
-    this->nullify();
+    this->nullify(mb_size, mb_capacity);
 
 }
 
@@ -389,7 +389,7 @@ void my::DynamicArray<Type>::reallocate(int newCapacity)
 
 
     // # Nullification
-    this->nullify();
+    this->nullify(mb_size, mb_capacity);
 }
 
 
@@ -432,6 +432,22 @@ Type& my::DynamicArray<Type>::operator[](int ii)
     else {}
 
     return *(mb_dataPtr + ii);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Public member function (overloaded operator)
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+bool my::DynamicArray<Type>::operator==(const my::DynamicArray<Type>& that) const
+{
+//    assert(false && "Do not release yet.");
+    return true;
 }
 
 
@@ -836,8 +852,8 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
      *  В примере выше подразумевается, что есть какое-то значение слева и в зависимости от этого
      *  значения выполняется присваивание. Но тут именно специфичное поведение для конкретного типа.
      *  Ок, значит, если данные есть - вызываем оператор копирования. Если данных нет,
-     *  то конструктор копирования. Если копируемых данных меньше, то то, что есть - не трогаем.
-     *
+     *  то конструктор копирования. Если копируемых данных меньше, то то, что есть - не трогаем,
+     *  а просто переписываем только то, что есть.
      *
      *
      */
@@ -867,7 +883,7 @@ my::DynamicArray<Type>& my::DynamicArray<Type>::operator=(const my::DynamicArray
 
         // # Copy-construction (via placement new())
         while (jj < that.mb_size) {
-            new(mb_dataPtr + ii) Type(mb_dataPtr + jj);
+            new(mb_dataPtr + ii) Type(*(mb_dataPtr + jj));
             ++ii;
             ++jj;
         }
@@ -957,10 +973,10 @@ void my::DynamicArray<Type>::insert(Type* pos, Type* copyFrom, Type* copyTo)
 //      COMMENTS:   Perhaps, I can replace it with std::memset()
 //==================================================================================================
 template <typename Type>
-void my::DynamicArray<Type>::nullify()
+void my::DynamicArray<Type>::nullify(int start, int end)
 {
-    auto start {mb_size * sizeof(Type)};
-    auto end   {mb_capacity * sizeof(Type)};
+    start *= sizeof(Type);
+    end *= sizeof(Type);
 
     char* singleByte = (char*) mb_dataPtr;
 
@@ -969,6 +985,28 @@ void my::DynamicArray<Type>::nullify()
         *(singleByte + ii) = '\0';
     }
 
+}
+
+//==================================================================================================
+//          TYPE:   Public member function
+//   DESCRIPTION:   Clears the array: calls destructors for each element, then nullify allocated
+//                  memory and set @mb_size to zero.
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+void my::DynamicArray<Type>::clear()
+{
+    // # Explicitly calls destructor
+    for (int ii {0}; ii < mb_size; ++ii) {
+        (mb_dataPtr + ii)->~Type();
+    }
+
+    // # Nullification
+    this->nullify(0, mb_size);
+
+    mb_size = 0;
 }
 
 

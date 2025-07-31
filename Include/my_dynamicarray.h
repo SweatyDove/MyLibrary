@@ -67,6 +67,8 @@ namespace my {
 //                      placement new(), чтобы где-то случайно не использовать не по назначению.
 //                      Но т.к. я сразу присваиваю указатель на выделенную память переменной
 //                      <Type*> mb_dataPtr, то приходится кастить в нужный тип.
+//
+//                  6 - Добавить проверку на самоприсваивание, когда that == this
 //==================================================================================================
 template <typename Type>
 class DynamicArray {
@@ -122,7 +124,7 @@ public:
     Type&                   operator[](int ii);
 
 
-
+    bool operator==(const my::DynamicArray<Type>& that) const;
 
     // #############################################################################################
     // ################################### Interface  ##############################################
@@ -135,6 +137,8 @@ public:
     int     getCapacity() const;
     int     getCapacityChunk() const;
     void    reallocate(int newCapacity);
+
+    void    clear();
 
     /*
      * void    reallocate(int newCapacity = (mb_capacity + mb_capacityChunk));
@@ -149,7 +153,7 @@ public:
     void    push_back(Type&& value);
     Type    popBack();
     void    extend(const my::DynamicArray<Type>& dynArr);
-    void    nullify();
+    void    nullify(int start, int end);
     void    insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 

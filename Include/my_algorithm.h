@@ -1,5 +1,5 @@
-#ifndef MY_SORT_H
-#define MY_SORT_H
+#ifndef MY_ALGORITHM_H
+#define MY_ALGORITHM_H
 
 //#include <vector>
 #include <iostream>
@@ -13,6 +13,13 @@
 namespace my {
 
 
+//==================================================================================================
+//          TYPE:   Class
+//   DESCRIPTION:   Custom realization of different sorting algorithms
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   ........
+//==================================================================================================
 class Sort {
 public:
 
@@ -69,4 +76,4 @@ public:
 
 } // End of 'my' namespace
 
-#endif // MY_SORT_H
+#endif // MY_ALGORITHM_H

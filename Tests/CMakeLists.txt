@@ -25,13 +25,14 @@ add_executable(MyLibrary
     ../Include/Implementations/my_smartptr.hpp
     ../Include/my_string.h
     ../Include/my_utilities.h
+    ../Include/Implementations/my_utilities.hpp
     ../Include/my_exception.h
     ../Include/my_splitter.h
 
 #    test_exception.cpp
     test_general.cpp
-    ../Sources/my_sort.cpp
-    ../Include/my_sort.h
+    ../Sources/my_algorithm.cpp
+    ../Include/my_algorithm.h
 #    test_array.cpp
 #    test_dynamicarray.cpp
 #    test_smartptr.cpp
