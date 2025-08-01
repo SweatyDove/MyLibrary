@@ -69,7 +69,7 @@ void print(int&& value)
 template <class Type>
 void bar(Type&& value)
 {
-    print(forward<Type>(value));
+    print(my::forward<Type>(value));
 }
 
 
@@ -81,6 +81,17 @@ int main()
 
     bar(123);
     bar(nRef);
+
+    int a {123};
+    int b {999};
+
+    my::swap(a, b);
+    std::cout << "a = " << a << std::endl;
+    std::cout << "b = " << b << std::endl;
+
+    my::swap(my::move(a), my::move(b));
+    std::cout << "a = " << a << std::endl;
+    std::cout << "b = " << b << std::endl;
 
 
 
