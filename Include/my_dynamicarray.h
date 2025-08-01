@@ -175,13 +175,14 @@ public:
 
     //==================================================================================================
     //          TYPE:   Class
-    //   DESCRIPTION:   Represents iterator objects for the <my::DynamicArray>
+    //   DESCRIPTION:   Representing <my::DynamicArray> iterator objects
     //    PARAMETERS:   ........
     //  RETURN VALUE:   ........
     //      COMMENTS:   ........
     //==================================================================================================
     class Iterator {
     public:
+
         // # The tags below are needed for the functions from <algorithms> and allow to provide
         // # optimal choices when choosing specific function (for sorting and etc)
         using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
@@ -211,7 +212,7 @@ public:
     private:
         pointer mb_ptr;
 
-    }; // End of <DynamicArray::Iterator> class
+    }; // End of <my::DynamicArray::Iterator> class
 
 
 }; // End of <DynamicArray> class

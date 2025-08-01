@@ -7,6 +7,7 @@
 #include <functional>               // Fot std::function
 
 #include "my_utilities.h"
+#include "my_iterator.h"
 #include "my_dynamicarray.h"
 
 
@@ -32,9 +33,6 @@ public:
 
     Sort();
 
-
-    inline void swap(int& a, int& b);
-
     void test(const my::DynamicArray<int>& randomArray,
               const my::DynamicArray<int>& sortedArray,
               const my::DynamicArray<int>& almostSortedArray,
@@ -43,27 +41,28 @@ public:
               const char* algoName);
 
     // # Сортировки обменом
-    double stupid(my::DynamicArray<int>& nums);
-    double bubble(my::DynamicArray<int>& nums);
-    double cocktail(my::DynamicArray<int>& nums);
-    double oddEven(my::DynamicArray<int>& nums);
-    double oddEvenVer1(my::DynamicArray<int>& nums);
-    double oddEvenVer2(my::DynamicArray<int>& nums);
-    double comb(my::DynamicArray<int>& nums);
-    void quick(my::DynamicArray<int>& a, int start, int end);
-    void quickClassic(my::DynamicArray<int>& a, int start, int end);
+//    double stupid(my::Iterator begin, my::Iterator begin end,  ;
+//    double stupid(my::DynamicArray<int>& nums);
+//    double bubble(my::DynamicArray<int>& nums);
+//    double cocktail(my::DynamicArray<int>& nums);
+//    double oddEven(my::DynamicArray<int>& nums);
+//    double oddEvenVer1(my::DynamicArray<int>& nums);
+//    double oddEvenVer2(my::DynamicArray<int>& nums);
+//    double comb(my::DynamicArray<int>& nums);
+//    void quick(my::DynamicArray<int>& a, int start, int end);
+//    void quickClassic(my::DynamicArray<int>& a, int start, int end);
 
-    // # Сортировки выбором
-    double selection(my::DynamicArray<int>& a);
-    double heap(my::DynamicArray<int>& a);
+//    // # Сортировки выбором
+//    double selection(my::DynamicArray<int>& a);
+//    double heap(my::DynamicArray<int>& a);
 
-    // # Сортировки вставками
-    double insertion(my::DynamicArray<int>& a);
-    double shell(my::DynamicArray<int>& a);
-    double shellClassic(my::DynamicArray<int>& a);
+//    // # Сортировки вставками
+//    double insertion(my::DynamicArray<int>& a);
+//    double shell(my::DynamicArray<int>& a);
+//    double shellClassic(my::DynamicArray<int>& a);
 
-    // # Сортировки слиянием
-    double mergeUpDown(my::DynamicArray<int>& a);
+//    // # Сортировки слиянием
+//    double mergeUpDown(my::DynamicArray<int>& a);
 
 
 

@@ -38,7 +38,7 @@ Type&& my::move(Type& value)
 //      COMMENTS:   ........
 //==================================================================================================
 template <class Type>
-Type&& forward(typename std::remove_reference<Type>::type& value)
+Type&& my::forward(typename std::remove_reference<Type>::type& value)
 {
     return static_cast<Type&&>(value);
 }
@@ -53,7 +53,7 @@ Type&& forward(typename std::remove_reference<Type>::type& value)
 //      COMMENTS:   ........
 //==================================================================================================
 template <class Type>
-Type&& forward(typename std::remove_reference<Type>::type&& value)
+Type&& my::forward(typename std::remove_reference<Type>::type&& value)
 {
     return static_cast<Type&&>(value);
 }
@@ -62,17 +62,21 @@ Type&& forward(typename std::remove_reference<Type>::type&& value)
 
 //==================================================================================================
 //          TYPE:   ........
-//   DESCRIPTION:   Realization of universal swap() function
-//    PARAMETERS:   ........
+//   DESCRIPTION:   Realization of universal swap() function,
+//    PARAMETERS:   @a, @b - forwarding references
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
-void swap(Type&& a, Type&& b)
+void my::swap(Type&& a, Type&& b)
 {
-    Type temp {my::forward(a)};
-    a = my::forward(b);
-    b = my::forward(temp);
+    /*
+     * Variable @temp should be a REAL variable (not reference!). If I make it a reference - it
+     * will specify on the same memory, that @a does - and in second line I got "temp = a = b"
+     */
+    typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
+    a = my::forward<Type>(b);
+    b = my::forward<Type>(temp);
 }
 
 
