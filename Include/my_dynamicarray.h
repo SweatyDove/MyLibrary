@@ -4,6 +4,7 @@
 #include "my_array.h"                   // Circular dependencies? Should I exclude it?
 #include "my_utilities.h"
 #include "my_exception.h"
+#include "my_iterator.h"
 
 #include <initializer_list>
 #include <iostream>
@@ -99,7 +100,7 @@ public:
     // #############################################################################################
 
     DynamicArray();
-    explicit DynamicArray(std::initializer_list<Type> list);
+    DynamicArray(std::initializer_list<Type> list);         // Do not need to mark as 'explicit', because if I pass initializer list as an argument, I WANT to invoke this constructor
     explicit DynamicArray(const char* string);
     explicit DynamicArray(int size);
 
@@ -157,6 +158,11 @@ public:
     void    insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 
+    template <int length>
+    void extend(const my::Array<Type, length>& staticArr);
+
+
+
 
     // ######## For using in iteration algorithms
     const Type*     cbegin() const;
@@ -164,13 +170,47 @@ public:
     Type*           begin();
     Type*           end();
 
+
+
 //    template <int size>
 //    void extend(const my::Array<Type, size>& staticArr);
 
 
-    template <int length>
-    void extend(const my::Array<Type, length>& staticArr);
 
+
+
+//    class DAIterator : public Iterator<Type> {
+//    private:
+//        Type* mb_ptr;
+//    public:
+//        // Contructor
+//        explicit DAIterator(Type* ptr) : mb_ptr {ptr} {}
+//        ~DAIterator() override {}
+
+//        Type& operator*() const override { return *mb_ptr; }
+//        Type* operator->() override { return mb_ptr; }
+
+//        Iterator<Type>& operator++() override { mb_ptr++; return *this; }
+//        Iterator<Type> operator++(Type) override {auto temp {*this}; ++(*this); return temp; }
+
+//        friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
+//        friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
+
+
+//        DAIterator begin()    {return DAIterator(&mb_dataPtr[0]);}
+//        DAIterator end()      {return DAIterator(&mb_dataPtr[mb_size]);}
+
+
+//    };
+
+
+
+//    DAIterator begin()
+//    {
+//        return DAIterator(mb_dataPtr);
+
+//    }
+//    DAIterator end();
 
 
     //==================================================================================================
@@ -178,7 +218,14 @@ public:
     //   DESCRIPTION:   Representing <my::DynamicArray> iterator objects
     //    PARAMETERS:   ........
     //  RETURN VALUE:   ........
-    //      COMMENTS:   ........
+    //      COMMENTS:   From https://www.internalpointers.com/post/writing-custom-iterators-modern-cpp
+    //
+    //                  "Input Iterator"            Can scan the container forward only once, can't change the value it points to (read-only);
+    //                  "Output Iterator"           Can scan the container forward only once, can't read the value it points to (write-only);
+    //                  "Forward Iterator"          Can scan the container forward multiple times, can read and write the value it points to;
+    //                  "Bidirectional Iterator"	Same as previous one but can scan the container back and forth;
+    //                  "Random Access Iterator"	Same as previous one but can access the container also non-sequentially (i.e. by jumping around);
+    //                  "Contiguous Iterator"       Same as previous one, with the addition that logically adjacent elements are also physically adjacent in memory.
     //==================================================================================================
     class Iterator {
     public:
@@ -213,6 +260,17 @@ public:
         pointer mb_ptr;
 
     }; // End of <my::DynamicArray::Iterator> class
+
+
+
+
+
+    Iterator itbegin()    {return Iterator(&mb_dataPtr[0]);}
+    Iterator itend()      {return Iterator(&mb_dataPtr[mb_size - 1]);}
+
+
+
+
 
 
 }; // End of <DynamicArray> class

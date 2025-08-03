@@ -5,6 +5,7 @@
 #include <random>
 #include <iomanip>
 
+//#include "my_iterator.h"
 #include "my_algorithm.h"
 #include "my_utilities.h"
 #include <bits/stdc++.h>
@@ -87,18 +88,40 @@
 
 
 
+/***************************************************************************************************
+ * А в чём разница между использованием шаблонов и использованием наследования? То есть в интернете
+ * пишут, что итераторы реализованы именно на базе шаблонов, НЕ наследования (как я пытаюсь сейчас).
+ * И там меняется именно тип аргумента (т.е. у меня сейчас предполагается, что функция sort() принимает
+ * референс на итератор, в то время как стандартная библиотека использует шаблон <typename Iterator>...
+ *
+ * Дальше, как я понимаю, хоть реализация типов разная (для разных типов контейнеров), т.к. у каждого
+ * из этих типов есть фиксированный набор операций (инкрементирование, разименование и т.д.), то и конфликта
+ * не возникает - аргументы используют функции с одинаковыми именами. То есть ШАБЛОН - это ШАБЛОН функции,
+ * а не функция. Компилятор при необходимости создаёт экземпляр функции для указанного типа. И если
+ * полученная функция имеет внутри валидные вызовы других функций (а в нашем случае они валидные, так как
+ * есть стандртный набор) - то никаких конфликтов не возникнет.
+ *
+ * Единственное, IDE тебе не покажет ошибку, если функция указана невалидная, т.к. он не знает, тип
+ * значения и какой у него интерфейс - нужно сперва скомпилировать.
+ **************************************************************************************************/
 
-void stupid(my::DynamicArray<int>::Iterator begin, my::DynamicArray<int>::Iterator end)
+template <typename RAIterator>
+void stupid(RAIterator beginIt, RAIterator endIt)
 {
-    int size = end. - begin;
+//    auto start {beginIt.begin()};
+//    auto end {endIt.end()};
 
-    for (int ii {0}; ii < size - 1; ++ii) {
-        if (nums[ii] > nums[ii + 1]) {
-            my::swap<int>(nums[ii], nums[ii + 1]);
-            ii = -1;
-        }
-        else {}
-    }
+    std::cout << *beginIt << std::endl;
+    std::cout << *endIt << std::endl;
+//    int size = end - start;
+
+//    for (int ii {0}; ii < size - 1; ++ii) {
+//        if (start[ii] > start[ii + 1]) {
+//            std::swap<int>(start[ii], start[ii + 1]);
+//            ii = -1;
+//        }
+//        else {}
+//    }
 }
 
 
@@ -107,14 +130,23 @@ int main()
 {
 
     my::DynamicArray<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
-    (simpleArray.begin(), simpleArray.end(), [](int a, int b) {return a <= b;});
+    stupid(simpleArray.itbegin(), simpleArray.itend());
 
-    for(auto num: simpleArray) {
-        std::cout << num << std::endl;
-    }
+//    std::sort(simpleArray.begin(), simpleArray.end(), [](int a, int b){return a < b;});
+    std::cout << simpleArray << std::endl;
 
 
-    return 0;
+//    my::DynamicArray<int>::DAIterator iter {simpleArray.begin()};
+//    std::cout << *iter << std::endl;
+
+//    stupid(simpleArray.begin(), simpleArray.end());
+
+//    for(auto num: simpleArray) {
+//        std::cout << num << std::endl;
+//    }
+
+
+//    return 0;
 }
 
 

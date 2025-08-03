@@ -14,9 +14,8 @@
 //   DESCRIPTION:   Cast l-value reference into the r-value reference
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   Couldn't place definition in cpp file because, in such case need to create new
-//                  file (my_utilities.hpp) and place h/cpp-defines in it. But it causes errors with
-//                  multiple definitions.
+//      COMMENTS:   Запомни! my::move() - это просто штука, помогающая компилятору разрешить
+//                  overload resolution. Она как бы ничего не возвращает (хоть и имеется return).
 //==================================================================================================
 template <typename Type>
 Type&& my::move(Type& value)
@@ -65,7 +64,8 @@ Type&& my::forward(typename std::remove_reference<Type>::type&& value)
 //   DESCRIPTION:   Realization of universal swap() function,
 //    PARAMETERS:   @a, @b - forwarding references
 //  RETURN VALUE:   ........
-//      COMMENTS:   ........
+//      COMMENTS:   Возможно, я вообще перемудрил с использованием forwarding reference в данном
+//                  случае.
 //==================================================================================================
 template <typename Type>
 void my::swap(Type&& a, Type&& b)
