@@ -14,6 +14,40 @@
 namespace my {
 
 
+
+//==================================================================================================
+//          TYPE:   Namespace
+//   DESCRIPTION:   Presents different sorting algorithms
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   1) Add requirements for <CompareType> and <IteratorType> (different sort functions
+//                      may need different iterator's functionality)
+//==================================================================================================
+namespace sort {
+
+template <typename IteratorType, typename CompareType>
+void stupid(IteratorType beginIt, IteratorType endIt, CompareType comp);
+
+template <typename IteratorType, typename CompareType>
+void bubble(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void cocktail(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void oddEven(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void oddEvenV2(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+
+
+} // End of 'sort' namespace
+
+
 //==================================================================================================
 //          TYPE:   Class
 //   DESCRIPTION:   Custom realization of different sorting algorithms
@@ -41,8 +75,6 @@ public:
               const char* algoName);
 
     // # Сортировки обменом
-//    double stupid(my::Iterator begin, my::Iterator begin end,  ;
-//    double stupid(my::DynamicArray<int>& nums);
 //    double bubble(my::DynamicArray<int>& nums);
 //    double cocktail(my::DynamicArray<int>& nums);
 //    double oddEven(my::DynamicArray<int>& nums);
@@ -74,5 +106,8 @@ public:
 
 
 } // End of 'my' namespace
+
+
+#include "Implementations/my_algorithm.hpp"
 
 #endif // MY_ALGORITHM_H

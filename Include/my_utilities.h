@@ -74,7 +74,10 @@ Type&& forward(typename std::remove_reference<Type>::type&& value);
 
 
 template <typename Type>
-void swap(Type&& a, Type&& b);
+void swap(Type& a, Type& b);
+
+//template <typename Type>
+//void swap(Type&& a, Type&& b);
 
 
 

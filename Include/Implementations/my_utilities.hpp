@@ -67,17 +67,35 @@ Type&& my::forward(typename std::remove_reference<Type>::type&& value)
 //      COMMENTS:   Возможно, я вообще перемудрил с использованием forwarding reference в данном
 //                  случае.
 //==================================================================================================
+//template <typename Type>
+//void my::swap(Type&& a, Type&& b)
+//{
+//    /*
+//     * Variable @temp should be a REAL variable (not reference!). If I make it a reference - it
+//     * will specify on the same memory, that @a does - and in second line I got "temp = a = b"
+//     */
+//    typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
+//    a = my::forward<Type>(b);
+//    b = my::forward<Type>(temp);
+//}
+
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
 template <typename Type>
-void my::swap(Type&& a, Type&& b)
+void my::swap(Type& a, Type& b)
 {
-    /*
-     * Variable @temp should be a REAL variable (not reference!). If I make it a reference - it
-     * will specify on the same memory, that @a does - and in second line I got "temp = a = b"
-     */
-    typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
-    a = my::forward<Type>(b);
-    b = my::forward<Type>(temp);
+    Type temp {my::move(a)};
+    a = my::move(b);
+    b = my::move(temp);
 }
+
 
 
 

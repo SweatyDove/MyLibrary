@@ -21,6 +21,7 @@ add_executable(MyLibrary
 
 #    ../Include/my_array.h
     ../Include/my_algorithm.h
+    ../Include/Implementations/my_algorithm.hpp
     ../Include/my_iterator.h
     ../Include/my_dynamicarray.h
     ../Include/Implementations/my_dynamicarray.hpp

@@ -105,23 +105,31 @@
  * значения и какой у него интерфейс - нужно сперва скомпилировать.
  **************************************************************************************************/
 
-template <typename RAIterator>
-void stupid(RAIterator beginIt, RAIterator endIt)
-{
-//    auto start {beginIt.begin()};
-//    auto end {endIt.end()};
+//template <typename UndefIterator>
+//void stupid(UndefIterator beginIt, UndefIterator endIt)
+//{
+//    using tempType = UndefIterator::pointer;
 
-    std::cout << *beginIt << std::endl;
-    std::cout << *endIt << std::endl;
-//    int size = end - start;
+//    tempType begin = beginIt.operator ->();
+//    tempType end = endIt.operator ->();
+
+//    int size = end - begin;
+
+//    tempType num = begin;
 
 //    for (int ii {0}; ii < size - 1; ++ii) {
-//        if (start[ii] > start[ii + 1]) {
-//            std::swap<int>(start[ii], start[ii + 1]);
+//        if (num[ii] > num[ii + 1]) {
+//            my::swap<int>(num[ii], num[ii + 1]);
 //            ii = -1;
 //        }
 //        else {}
 //    }
+//}
+
+
+bool comp(const int& a, const int& b)
+{
+    return a < b;
 }
 
 
@@ -129,11 +137,21 @@ void stupid(RAIterator beginIt, RAIterator endIt)
 int main()
 {
 
-    my::DynamicArray<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
-    stupid(simpleArray.itbegin(), simpleArray.itend());
 
+//    using vec_type = std::vector<int>::iterator::value_type;
+//    std::vector<int>::iterator::value_type test {};
+//    test = 3;
+
+//    std::vector<int> simpleVector {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};
+
+    my::DynamicArray<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
+    my::sort::oddEvenV3(simpleArray.itbegin(), simpleArray.itend(), [](int a, int b) { return (a < b); });                     // [](int a, int b) { return (a < b); }
+
+    for(auto num: simpleArray) {
+        std::cout << num << std::endl;
+    }
 //    std::sort(simpleArray.begin(), simpleArray.end(), [](int a, int b){return a < b;});
-    std::cout << simpleArray << std::endl;
+//    std::cout << simpleArray << std::endl;
 
 
 //    my::DynamicArray<int>::DAIterator iter {simpleArray.begin()};
@@ -141,9 +159,6 @@ int main()
 
 //    stupid(simpleArray.begin(), simpleArray.end());
 
-//    for(auto num: simpleArray) {
-//        std::cout << num << std::endl;
-//    }
 
 
 //    return 0;

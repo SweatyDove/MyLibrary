@@ -172,6 +172,10 @@ public:
 
 
 
+
+
+
+
 //    template <int size>
 //    void extend(const my::Array<Type, size>& staticArr);
 
@@ -218,7 +222,9 @@ public:
     //   DESCRIPTION:   Representing <my::DynamicArray> iterator objects
     //    PARAMETERS:   ........
     //  RETURN VALUE:   ........
-    //      COMMENTS:   From https://www.internalpointers.com/post/writing-custom-iterators-modern-cpp
+    //      COMMENTS:   References:
+    //                  https://cplusplus.com/reference/iterator/
+    //                  https://www.internalpointers.com/post/writing-custom-iterators-modern-cpp
     //
     //                  "Input Iterator"            Can scan the container forward only once, can't change the value it points to (read-only);
     //                  "Output Iterator"           Can scan the container forward only once, can't read the value it points to (write-only);
@@ -244,29 +250,52 @@ public:
         reference operator*() const { return *mb_ptr; }
         pointer operator->() { return mb_ptr; }
 
-        Iterator& operator++() { mb_ptr++; return *this; }
-        Iterator operator++(Type) {auto temp {*this}; ++(*this); return temp; }
+//        Iterator& operator++() { mb_ptr++; return *this; }
+//        Iterator operator++(Type) {auto temp {*this}; ++(*this); return temp; }
+
+        friend difference_type operator-(const Iterator& a, const Iterator& b)
+        {
+            return (a.mb_ptr - b.mb_ptr);
+        }
+
+
+
+        Type& operator[](int index) const
+        {
+            return mb_ptr[index];
+        }
+
 
         friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
         friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
 
 
-        Iterator begin()    {return Iterator(&mb_dataPtr[0]);}
-        Iterator end()      {return Iterator(&mb_dataPtr[mb_size]);}
+        /*
+         * А должны ли у итератора быть begin() и end()?
+         */
+//        Type* begin()    {return mb_dataPtr;}
+//        Type* end()
+//        {
+//            return (mb_dataPtr + mb_length);
+//        }
 
 
 
     private:
         pointer mb_ptr;
+//        int mb_length;
 
     }; // End of <my::DynamicArray::Iterator> class
 
 
 
 
+    Iterator itbegin()    {return Iterator(mb_dataPtr);}
+    Iterator itend()      {return Iterator(mb_dataPtr + mb_size);}
 
-    Iterator itbegin()    {return Iterator(&mb_dataPtr[0]);}
-    Iterator itend()      {return Iterator(&mb_dataPtr[mb_size - 1]);}
+
+
+
 
 
 
