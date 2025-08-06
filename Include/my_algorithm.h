@@ -43,38 +43,67 @@ void oddEvenV2(IteratorType beginIt, IteratorType endIt, CompareType compare);
 template <typename IteratorType, typename CompareType>
 void oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
+template <typename IteratorType, typename CompareType>
+void comb(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+//template <typename IteratorType, typename CompareType>
+//void quick(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+//template <typename IteratorType, typename CompareType>
+//void quickClassic(IteratorType beginIt, IteratorType endIt, CompareType compare)
+
+
+template <typename IteratorType, typename CompareType>
+void selection(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void heap(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+
+template <typename IteratorType, typename CompareType>
+void insertion(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void shell(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void shellClassic(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
 
 
 } // End of 'sort' namespace
 
 
-//==================================================================================================
-//          TYPE:   Class
-//   DESCRIPTION:   Custom realization of different sorting algorithms
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
-//==================================================================================================
-class Sort {
-public:
+
+
+
+////==================================================================================================
+////          TYPE:   Class
+////   DESCRIPTION:   Custom realization of different sorting algorithms
+////    PARAMETERS:   ........
+////  RETURN VALUE:   ........
+//// COMMENTS/BUGS:   ........
+////==================================================================================================
+//class Sort {
+//public:
 
 //    const my::DynamicArray<int>& mb_randomArray;
 //    const my::DynamicArray<int>& mb_sortedArray;
 //    const my::DynamicArray<int>& mb_reversedArray;
 
-    my::Timer   mb_stopwatch;
-    double      mb_timeInterval {};
+//    my::Timer   mb_stopwatch;
+//    double      mb_timeInterval {};
 
-    Sort();
+//    Sort();
 
-    void test(const my::DynamicArray<int>& randomArray,
-              const my::DynamicArray<int>& sortedArray,
-              const my::DynamicArray<int>& almostSortedArray,
-              const my::DynamicArray<int>& reversedArray,
-              double (my::Sort::*fn)(my::DynamicArray<int>& nums),
-              const char* algoName);
+//    void test(const my::DynamicArray<int>& randomArray,
+//              const my::DynamicArray<int>& sortedArray,
+//              const my::DynamicArray<int>& almostSortedArray,
+//              const my::DynamicArray<int>& reversedArray,
+//              double (my::Sort::*fn)(my::DynamicArray<int>& nums),
+//              const char* algoName);
 
-    // # Сортировки обменом
+//    // # Сортировки обменом
 //    double bubble(my::DynamicArray<int>& nums);
 //    double cocktail(my::DynamicArray<int>& nums);
 //    double oddEven(my::DynamicArray<int>& nums);
@@ -96,12 +125,7 @@ public:
 //    // # Сортировки слиянием
 //    double mergeUpDown(my::DynamicArray<int>& a);
 
-
-
-
-
-
-};
+//};
 
 
 

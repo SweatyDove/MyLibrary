@@ -321,83 +321,94 @@ void my::sort::oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType c
 
 
 
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   ........
-////==================================================================================================
-//double my::Sort::comb(my::DynamicArray<int>& nums)
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::comb(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int     size        {end - begin};
+    double  factor      {1.247};                                    // Constant (why "1.247" look wiki)
+    int     gap         {static_cast<int>(size / factor)};
+    bool    isSwapped   {true};
+
+    while (gap > 1 || isSwapped == true) {
+
+        isSwapped = false;
+        for (int ii {0}; ii < size - gap; ++ii) {
+            if (compare(arg[ii + gap], arg[ii])) {
+                my::swap(arg[ii + gap], arg[ii]);
+                isSwapped = true;
+            }
+            else {} // Nothing to do
+        }
+        gap /= factor;
+        gap = (gap > 1) ? gap : 1;
+    }
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   1) Падает в случае массива, отсортированного в обратном порядке, размера 100'000
+//                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
+//                  2) Не работает с pivot = a[(start + end) / 2] из-за неверного выставления
+//                  параметра 'edge' для такого случая.
+//                  3) Работает быстрее 'классического' исполнения (quickClassic())
+//==================================================================================================
+//template <typename IteratorType, typename CompareType>
+//void my::sort::quick(IteratorType beginIt, IteratorType endIt, CompareType compare)
 //{
-//    int     size        {static_cast<int>(nums.size())};
-//    double  factor      {1.247};                                    // Constant (why "1.247" look wiki)
-//    int     gap         {static_cast<int>(size / factor)};
-//    bool    isSwapped   {true};
+//    using pType = IteratorType::pointer;
 
-//    mb_stopwatch.reset();
+//    pType begin     {beginIt.operator ->()};
+//    pType end       {endIt.operator ->()};
 
-//    while (gap > 1 || isSwapped == true) {
-
-//        isSwapped = false;
-//        for (int ii {0}; ii < size - gap; ++ii) {
-//            if (nums[ii] > nums[ii + gap]) {
-//                this->swap(nums[ii], nums[ii + gap]);
-//                isSwapped = true;
-//            }
-//            else {} // Nothing to do
-//        }
-//        gap /= factor;
-//        gap = (gap > 1) ? gap : 1;
-//    }
-
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
-
-//}
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   1) Падает в случае массива, отсортированного в обратном порядке, размера 100'000
-////                  элементов (слишком много рекурсивных вызовов, переполняется стек?)
-////                  2) Не работает с pivot = a[(start + end) / 2] из-за неверного выставления
-////                  параметра 'edge' для такого случая.
-////                  3) Работает быстрее 'классического' исполнения (quickClassic())
-////==================================================================================================
-//void my::Sort::quick(my::DynamicArray<int>& a, int start, int end)
-//{
 //    // Exit if subarray has 1 element or 0
-//    if (start >= end) {
+//    if (begin >= end) {
 //        return;
 //    }
 //    else {} // Nothing to do
 
-////    int     pivot       {a[(start + end) / 2]};
-//    int     pivot       {a[start]};
-//    int     ii          {start};
-//    int     jj          {end};
+
+//    pType   arg         {begin};
+//    int     size        {end - begin};
+//    int     pivot       {arg[0]};               // Or pivot = a[(start + end) / 2];
+//    int     ii          {0};
+//    int     jj          {size - 1};
 //    bool    isSwapped   {false};                 // Used, when all elements in subarray are higher than @pivot
 //                                            // and there aren't any swaps.
 
 //    while (true) {
 
 //        // ## Find element, that is equal or higher, than @pivot
-//        while (ii < jj && a[ii] < pivot) {
+//        while (ii < jj && compare(arg[ii], pivot)) {
 //            ++ii;
 //        }
 
 //        // ## Find element, that is less than @pivot
-//        while (ii < jj && a[jj] >= pivot) {
+//        while (ii < jj && !compare(arg[jj],  pivot)) {
 //            --jj;
 //        }
 
 //        // ## Swap elements
 //        if (ii < jj) {
-//            this->swap(a[ii], a[jj]);
+//            my::swap(arg[ii], arg[jj]);
 //            ++ii;
 //            --jj;
 //            isSwapped = true;
@@ -407,15 +418,15 @@ void my::sort::oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType c
 //        }
 //    }
 
-//    // # Choose which subarray a[ii] should be part of:
-//    // #    If a[ii] less, than pivot (obviosly)
+//    // # Choose which subarray arg[ii] should be part of:
+//    // #    If arg[ii] less, than pivot (obviosly)
 //    // #    If there are NOT any swap in array (for example [2, 3, 2]) and we need to 'take' one
 //    // #    element to left part.
-//    int edge = (a[ii] < pivot || isSwapped == false) ? ii : ii - 1;
-//    this->quick(a, start, edge);
-//    this->quick(a, edge + 1, end);
+//    int edge = (compare(arg[ii], pivot) || isSwapped == false) ? ii : ii - 1;
 
-//    return;
+//    std::cout << "Sorting [" <<
+//    my::sort::quick(IteratorType(begin), IteratorType(begin + edge), compare);
+//    my::sort::quick(IteratorType(begin + edge + 1), IteratorType(end), compare);
 
 //}
 
@@ -430,6 +441,9 @@ void my::sort::oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType c
 ////  RETURN VALUE:   ........
 ////      COMMENTS:   'Classic' realization
 ////==================================================================================================
+//template <typename IteratorType, typename CompareType>
+//void my::sort::quickClassic(IteratorType beginIt, IteratorType endIt, CompareType compare)
+//
 //void my::Sort::quickClassic(my::DynamicArray<int>& a, int start, int end)
 //{
 //    if (start > end) {
@@ -467,301 +481,311 @@ void my::sort::oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType c
 
 
 
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   ........
-////==================================================================================================
-//double my::Sort::selection(my::DynamicArray<int>& a)
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::selection(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int size {end - begin};
+
+    for (int jj {size - 1}; jj > 0; --jj) {
+
+        int ii {1};
+        int kk {0};
+
+        while (ii <= jj) {
+            kk = (compare(arg[kk], arg[ii])) ? ii : kk;
+            ++ii;
+        }
+
+        my::swap(arg[kk], arg[jj]);
+    }
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+//void my::Sort::heap(my::DynamicArray<int>& a)
 //{
-//    int size {a.size()};
+//    int n {a.size() - 1};           // Last element index
 
-//    mb_stopwatch.reset();
-
-//    for (int jj {size - 1}; jj > 0; --jj) {
-
-//        int ii {1};
-//        int kk {0};
-
-//        while (ii <= jj) {
-//            kk = (a[ii] > a[kk]) ? ii : kk;
-//            ++ii;
-//        }
-
-//        this->swap(a[kk], a[jj]);
-//    }
-
-
-
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
-
-//}
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   ........
-////==================================================================================================
-////void my::Sort::heap(my::DynamicArray<int>& a)
-////{
-////    int n {a.size() - 1};           // Last element index
-
-
-////    // # Лямбда-функция просейки
-////    std::function<void(int)> sift {
-////              [&](int parentIndex)
-////        {
-////            int leftChildIndex {2 * parentIndex + 1};
-////            int rightChildIndex {leftChildIndex + 1};
-////            int maxChildIndex {-1};
-
-
-////            // ## Определяем индекс большего из потомков
-////            if ((leftChildIndex > n) && (rightChildIndex <= n)) {
-////                maxChildIndex = rightChildIndex;
-////            }
-////            else if ((leftChildIndex <= n) && (rightChildIndex > n)) {
-////                maxChildIndex = leftChildIndex;
-////            }
-////            else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
-////                maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
-////            }
-////            // ## Нет детей - выходим
-////            else {
-////                return;
-////            }
-
-
-////            // ## Свапаем элементы и осуществляем просейку для @maxChildIndex (куда переместили родительский элемент)
-////            if (a[parentIndex] < a[maxChildIndex]) {
-////                this->swap(a[parentIndex], a[maxChildIndex]);
-////                parentIndex = maxChildIndex;
-////                sift(parentIndex);
-////            }
-////            else {}
-
-////            return;
-////        }
-////    };
-
-
-////    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
-////    for (int ii {n}; ii >= 0; --ii) {
-////        sift(ii);
-////    }
-
-////    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
-////    // # провести просейку для элемента в корне.
-////    for (int ii {n}; ii > 0; --ii) {
-////        this->swap(a[0], a[ii]);
-////        --n;
-////        sift(0);
-////    }
-
-////}
-
-
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   ........
-////==================================================================================================
-//double my::Sort::heap(my::DynamicArray<int>& a)
-//{
-//    int lastUnsortedIndex {a.size() - 1};           // Last element index
 
 //    // # Лямбда-функция просейки
 //    std::function<void(int)> sift {
-//        [&](int root)
+//              [&](int parentIndex)
 //        {
-//            // ## Спускаемся по дереву
-//            while (true) {
+//            int leftChildIndex {2 * parentIndex + 1};
+//            int rightChildIndex {leftChildIndex + 1};
+//            int maxChildIndex {-1};
 
-//                // ## Предполагаем только 1-го потомка (и считаем его наибольшим пока что)
-//                int child {root * 2 + 1};
 
-//                // ## Левого потомка не существует (следовательно и правого тоже, а потому выходим)
-//                if (child > lastUnsortedIndex) {
-//                    break;
-//                }
-//                // ## Существуют оба потомка и правый больше левого
-//                else if (child + 1 <= lastUnsortedIndex && a[child] < a[child + 1]) {
-//                    child += 1;
-//                }
-//                else {}
+//            // ## Определяем индекс большего из потомков
+//            if ((leftChildIndex > n) && (rightChildIndex <= n)) {
+//                maxChildIndex = rightChildIndex;
+//            }
+//            else if ((leftChildIndex <= n) && (rightChildIndex > n)) {
+//                maxChildIndex = leftChildIndex;
+//            }
+//            else if ((leftChildIndex <= n) && (rightChildIndex <= n)){
+//                maxChildIndex = ((a[leftChildIndex] > a[rightChildIndex]) ? leftChildIndex : rightChildIndex);
+//            }
+//            // ## Нет детей - выходим
+//            else {
+//                return;
+//            }
 
-//                // ## Свапаем родителя и потомка и устанавливаем новый индекс родителя
-//                if (a[root] < a[child]) {
-//                    this->swap(a[root], a[child]);
-//                    root = child;
-//                }
-//                else {
-//                    break;
-//                }
 
-//            } // while
+//            // ## Свапаем элементы и осуществляем просейку для @maxChildIndex (куда переместили родительский элемент)
+//            if (a[parentIndex] < a[maxChildIndex]) {
+//                this->swap(a[parentIndex], a[maxChildIndex]);
+//                parentIndex = maxChildIndex;
+//                sift(parentIndex);
+//            }
+//            else {}
 
 //            return;
 //        }
 //    };
 
-//    mb_stopwatch.reset();
 
 //    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
-//    for (int ii {lastUnsortedIndex}; ii >= 0; --ii) {
+//    for (int ii {n}; ii >= 0; --ii) {
 //        sift(ii);
 //    }
 
 //    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
 //    // # провести просейку для элемента в корне.
-//    for (int ii {lastUnsortedIndex}; ii > 0; --ii) {
+//    for (int ii {n}; ii > 0; --ii) {
 //        this->swap(a[0], a[ii]);
-//        --lastUnsortedIndex;
+//        --n;
 //        sift(0);
 //    }
 
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
-
-//}
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   Не ОБМЕНЫ, а СДВИГ!
-////==================================================================================================
-//double my::Sort::insertion(my::DynamicArray<int>& a)
-//{
-//    int n {a.size()};
-
-//    mb_stopwatch.reset();
-
-//    for (int ii {0}; ii < n; ++ii) {
-
-//        int temp {a[ii]};
-//        int kk {ii};
-//        while (kk > 0 && temp < a[kk - 1]) {
-//            a[kk] = a[kk - 1];                      // Здесь СДВИГ! Не нужно использовать swap()
-//            --kk;
-//        } // O(n)
-
-//        a[kk] = temp;       // O(3) -> O(1)
-
-//    } // O(n)
-
-//    // # Сложность: O(n) * [O(1) + O(n)] -> O(n) * O(n) = O(n^2)
-
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
-//}
-
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   1) Замена вызова функции swap() (что изначально было 'некорректно') на сдвиг решило
-////                  проблему со скоростью работы.
-////                  2) Можно улучшить работу, если не прыгать между подмассивами, а идти линейно
-////                  по каждому элементу, начиная с gap и дальше запускать цикл сравнения с элементами,
-////                  отстающими от текущего на gap, 2gap и т.д. Так сделано в shellClassic().
-////==================================================================================================
-//double my::Sort::shell(my::DynamicArray<int>& a)
-//{
-//    int size    {   a.size()    };
-
-//    mb_stopwatch.reset();
-
-
-//    // # Тут определяем дистанцию между соседними элементами 'подмассива'
-//    for (int gap {size / 2}; gap >= 1; gap /= 2) {
-
-//        // ## Тут уже проходимся по полученным 'подмассивам'
-//        for (int ii {0}; ii < gap; ++ii) {
-
-//            // #### Тут уже сортируем непосредственно "подмассив" методом сортировки вставками
-//            for (int jj {ii}; jj < size; jj += gap) {
-
-//                int temp = a[jj];
-//                int kk = jj;
-
-//                while (kk - gap >= 0 && temp < a[kk - gap]) {
-//                    a[kk] = a[kk - gap];
-//                    kk -= gap;
-//                } // O(n/gap) -> O(n)
-
-//                a[kk] = temp;
-
-
-//            } // O(n/gap + 1), где единица за счёт холостого 0-го эл-та
-
-//        } // O(gap) -> O(n/2) в худшем случае (1-ая итерация), т.е. этот член убывает для каждого следующего gap, т.е. как бы можно gap сократить будет при расчёте общего O-большого
-
-//    } // O(log n), т.к. в 2 раза уменьшаем каждый раз
-
-
-
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
-//}
-
-
-
-////==================================================================================================
-////          TYPE:   Method
-////   DESCRIPTION:   ........
-////    PARAMETERS:   ........
-////  RETURN VALUE:   ........
-////      COMMENTS:   From https://www.programiz.com/dsa/shell-sort
-////                  Принцип работы для данной реализации смотри выше в описании my::Sort::shell()
-////==================================================================================================
-//double my::Sort::shellClassic(my::DynamicArray<int>& array) {
-
-//    int n = array.size();
-
-//    mb_stopwatch.reset();
-
-
-//    // Rearrange elements at each n/2, n/4, n/8, ... gaps
-//    for (int gap = n / 2; gap > 0; gap /= 2) {
-//        for (int ii = gap; ii < n; ii += 1) {
-//            int temp = array[ii];
-//            int jj = ii;
-//            while (jj >= gap && array[jj - gap] > temp) {
-//                array[jj] = array[jj - gap];
-//                jj -= gap;
-//            }
-//            array[jj] = temp;
-//        }
-//    }
-
-
-//    mb_timeInterval = mb_stopwatch.elapsed();
-//    return mb_timeInterval;
 //}
 
 
 
 
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::heap(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+    using Type  = IteratorType::value_type;
+
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int size {end - begin};
+
+
+    int lastUnsortedIndex {size - 1};           // Last element index
+
+    // # Лямбда-функция просейки
+    auto sift {
+        [&](int root)
+        {
+            // ## Спускаемся по дереву
+            while (true) {
+
+                // ## Предполагаем только 1-го потомка (и считаем его наибольшим пока что)
+                int child {root * 2 + 1};
+
+                // ## Левого потомка не существует (следовательно и правого тоже, а потому выходим)
+                if (child > lastUnsortedIndex) {
+                    break;
+                }
+                // ## Существуют оба потомка и правый больше левого
+                else if (child + 1 <= lastUnsortedIndex && compare(arg[child], arg[child + 1])) {
+                    child += 1;
+                }
+                else {}
+
+                // ## Свапаем родителя и потомка и устанавливаем новый индекс родителя
+                if (compare(arg[root], arg[child])) {
+                    my::swap(arg[root], arg[child]);
+                    root = child;
+                }
+                else {
+                    break;
+                }
+
+            } // while
+
+            return;
+        }
+    };
+
+
+    // # Делаем сортирующее древо (через просейку каждого его эл-та, начиная с последнего).
+    for (int ii {lastUnsortedIndex}; ii >= 0; --ii) {
+        sift(ii);
+    }
+
+    // # Корень дерева свапнуть с последним эл-м, уменьшить размер неотсортированной части и
+    // # провести просейку для элемента в корне.
+    for (int ii {lastUnsortedIndex}; ii > 0; --ii) {
+        my::swap(arg[0], arg[ii]);
+        --lastUnsortedIndex;
+        sift(0);
+    }
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Не ОБМЕНЫ, а СДВИГ!
+//                  Сложность: O(n) * [O(1) + O(n)] -> O(n) * O(n) = O(n^2)
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::insertion(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int size {end - begin};
+
+
+    for (int ii {0}; ii < size; ++ii) {
+
+        int temp {arg[ii]};
+        int kk {ii};
+        while (kk > 0 && compare(temp, arg[kk - 1])) {
+            arg[kk] = arg[kk - 1];                      // Здесь СДВИГ! Не нужно использовать swap()
+            --kk;
+        } // O(n)
+
+        arg[kk] = temp;       // O(3) -> O(1)
+
+    } // O(n)
+
+}
 
 
 
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   1) Замена вызова функции swap() (что изначально было 'некорректно') на сдвиг решило
+//                  проблему со скоростью работы.
+//                  2) Можно улучшить работу, если не прыгать между подмассивами, а идти линейно
+//                  по каждому элементу, начиная с gap и дальше запускать цикл сравнения с элементами,
+//                  отстающими от текущего на gap, 2gap и т.д. Так сделано в shellClassic().
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::shell(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+    using Type  = IteratorType::value_type;
 
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int size {end - begin};
+
+    // # Тут определяем дистанцию между соседними элементами 'подмассива'
+    for (int gap {size / 2}; gap >= 1; gap /= 2) {
+
+        // ## Тут уже проходимся по полученным 'подмассивам'
+        for (int ii {0}; ii < gap; ++ii) {
+
+            // #### Тут уже сортируем непосредственно "подмассив" методом сортировки вставками
+            for (int jj {ii}; jj < size; jj += gap) {
+
+                Type temp = arg[jj];
+                int kk = jj;
+
+                while (kk - gap >= 0 && compare(temp, arg[kk - gap])) {
+                    arg[kk] = arg[kk - gap];
+                    kk -= gap;
+                } // O(n/gap) -> O(n)
+
+                arg[kk] = temp;
+
+
+            } // O(n/gap + 1), где единица за счёт холостого 0-го эл-та
+
+        } // O(gap) -> O(n/2) в худшем случае (1-ая итерация), т.е. этот член убывает для каждого следующего gap, т.е. как бы можно gap сократить будет при расчёте общего O-большого
+
+    } // O(log n), т.к. в 2 раза уменьшаем каждый раз
+
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Function template
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   From https://www.programiz.com/dsa/shell-sort
+//                  Принцип работы для данной реализации смотри выше в описании my::Sort::shell()
+//==================================================================================================
+template <typename IteratorType, typename CompareType>
+void my::sort::shellClassic(IteratorType beginIt, IteratorType endIt, CompareType compare)
+{
+    using pType = IteratorType::pointer;
+    using Type  = IteratorType::value_type;
+
+    pType begin     {beginIt.operator ->()};
+    pType end       {endIt.operator ->()};
+    pType arg       {begin};
+
+
+    int size {end - begin};
+
+    // Rearrange elements at each n/2, n/4, n/8, ... gaps
+    for (int gap = size / 2; gap > 0; gap /= 2) {
+        for (int ii = gap; ii < size; ii += 1) {
+            Type temp = arg[ii];
+            int jj = ii;
+            while (jj >= gap && compare(temp, arg[jj - gap])) {
+                arg[jj] = arg[jj - gap];
+                jj -= gap;
+            }
+            arg[jj] = temp;
+        }
+    }
+
+}
 
 
 

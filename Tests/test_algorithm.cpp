@@ -4,11 +4,326 @@
 #include <algorithm>
 #include <random>
 #include <iomanip>
+#include <variant>
 
 //#include "my_iterator.h"
 #include "my_algorithm.h"
 #include "my_utilities.h"
 #include <bits/stdc++.h>
+
+
+
+
+#define ARRAY_SIZE              10'000
+
+
+
+#define TEST_STUPID_SORT        false                   // В районе 11 минут у меня на 10'000
+#define TEST_BUBBLE_SORT        true
+#define TEST_COCKTAIL_SORT      true
+#define TEST_ODDEVEN_SORT       true
+#define TEST_COMB_SORT          true
+#define TEST_SELECTION_SORT     true
+#define TEST_HEAP_SORT          true
+#define TEST_INSERTION_SORT     true
+#define TEST_SHELL_SORT         true
+
+
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   Test specified algo on different arrays
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   А на сколько правильно (и можно) просто копировать сюда указатель на функцию.
+//                  Нет ли здесь подводных камней? А если в качестве <CompareType> передаётся
+//                  лямбда-функция или же std::function?
+//
+//                  Добавить таблицу для сравнения сортировок
+//==================================================================================================
+template <typename ContainerType, typename CompareType>
+class Test {
+public:
+    using column = std::variant<const char*>;
+
+
+private:
+    const ContainerType&   mb_random;
+    CompareType            mb_compare;
+
+
+    ContainerType   mb_tested {};
+    ContainerType   mb_sorted {};
+    ContainerType   mb_reversed {};
+    ContainerType   mb_almosted {};
+
+    double  mb_randomTime {};
+    double  mb_sortedTime {};
+    double  mb_reversedTime {};
+    double  mb_almostedTime {};
+
+    my::Timer       mb_stopwatch {};
+
+//    std::vector<std::array<3, column>> mb_table {};
+
+
+
+public:
+
+
+
+    // # Constructor
+    Test(const ContainerType& random, CompareType compare) :
+        mb_random {random},
+        mb_compare {compare}
+    {
+
+        int size {random.size()};
+
+        // # Подсчёт времени сортировки СЛУЧАЙНОГО массива
+        mb_tested = mb_random;
+        mb_stopwatch.reset();
+        std::sort(mb_tested.begin(), mb_tested.end(), compare);
+        mb_randomTime = mb_stopwatch.elapsed();
+
+
+
+        // # Формируем отсортированный массив
+        mb_sorted = mb_tested;
+
+
+        // # Подсчёт времени сортировки ОТСОРТИРОВАННОГО массива (вырожденный случай)
+        mb_stopwatch.reset();
+        std::sort(mb_tested.begin(), mb_tested.end(), compare);
+        mb_sortedTime = mb_stopwatch.elapsed();
+
+
+
+        // # Формируем ПОЧТИ отсортированный массив
+        int interval {(size / 25) > 1 ? size / 25 : 1};
+        auto rng = std::default_random_engine {};
+        mb_almosted = mb_sorted;
+        for (int ii {interval}; ii < size; ii += interval) {
+            std::ranges::shuffle(&mb_almosted[ii - interval], &mb_almosted[ii], rng);
+        }
+
+        // # Подсчёт времени сортировки ПОЧТИ отсортированного массива
+        mb_tested = mb_almosted;
+        mb_stopwatch.reset();
+        std::sort(mb_tested.begin(), mb_tested.end(), compare);
+        mb_almostedTime = mb_stopwatch.elapsed();
+
+
+        // # Формируем массив, отсортированный в ОБРАТНОМ порядке
+        mb_reversed = mb_random;
+        for (int ii {0}; ii < size; ++ii) {
+            mb_reversed[ii] = mb_sorted[size - 1 - ii];
+        }
+
+        // # Подсчёт времени сортировки ОБРАТНОГО массива (вырожденный случай)
+        mb_tested = mb_reversed;
+        mb_stopwatch.reset();
+        std::sort(mb_tested.begin(), mb_tested.end(), compare);
+        mb_reversedTime= mb_stopwatch.elapsed();
+
+    }
+
+
+    // #
+    void print() const
+    {
+        std::cout << "-----------------------------------------------------------------------------" <<std::endl;
+        std::cout << "STD::SORT        time of     RANDOM    container:   " << std::setw(12) << std::setprecision(4) << std::left << mb_randomTime << " milliseconds" << std::endl;
+        std::cout << "STD::SORT        time of     SORTED    container:   " << std::setw(12) << std::setprecision(4) << std::left << mb_sortedTime << " milliseconds" << std::endl;
+        std::cout << "STD::SORT        time of     ALMOST    container:   " << std::setw(12) << std::setprecision(4) << std::left << mb_almostedTime << " milliseconds" << std::endl;
+        std::cout << "STD::SORT        time of     REVERS    container:   " << std::setw(12) << std::setprecision(4) << std::left << mb_reversedTime << " milliseconds" << std::endl;
+        std::cout << "-----------------------------------------------------------------------------" <<std::endl;
+    }
+
+
+    // # Tester
+    void start(void (*fn)(typename ContainerType::Iterator, typename ContainerType::Iterator, CompareType),
+               const char* sortType = "SORT")
+    {
+        double time {0.0};
+
+        std::cout << "-----------------------------------------------------------------------------" <<std::endl;
+
+        // # Sort of RANDOM container
+        mb_tested = mb_random;
+        mb_stopwatch.reset();
+        (*fn)(mb_tested.begin(), mb_tested.end(), mb_compare);
+        time = mb_stopwatch.elapsed();
+
+        if (mb_tested == mb_sorted) {
+            std::cout << std::setw(16) << std::left << sortType << " time of     RANDOM    container:   " << std::setw(12) << std::setprecision(4) << std::left << time << " milliseconds" << std::endl;
+        }
+        else {
+            std::cout << std::setw(16) << sortType << " time of     RANDOM    container:   " << std::setw(12) << "INVALID" << std::endl;
+        }
+
+
+        // # Sort of SORTED container
+        mb_tested = mb_sorted;
+        mb_stopwatch.reset();
+        (*fn)(mb_tested.begin(), mb_tested.end(), mb_compare);
+        time = mb_stopwatch.elapsed();
+
+        if (mb_tested == mb_sorted) {
+            std::cout << std::setw(16) << std::left << sortType << " time of     SORTED    container:   " << std::setw(12) << std::setprecision(4) << std::left << time << " milliseconds" << std::endl;
+        }
+        else {
+            std::cout << std::setw(16) << sortType << " time of     SORTED    container:   " << std::setw(12) << "INVALID" << std::endl;
+        }
+
+        // # Sort of ALMOST SORTED container
+        mb_tested = mb_almosted;
+        mb_stopwatch.reset();
+        (*fn)(mb_tested.begin(), mb_tested.end(), mb_compare);
+        time = mb_stopwatch.elapsed();
+
+        if (mb_tested == mb_sorted) {
+            std::cout << std::setw(16) << std::left << sortType << " time of     ALMOST    container:   " << std::setw(12) << std::setprecision(4) << std::left << time << " milliseconds" << std::endl;
+        }
+        else {
+            std::cout << std::setw(16) << sortType << " time of     ALMOST    container:   " << std::setw(12) << "INVALID" << std::endl;
+        }
+
+        // # Sort of REVERSED container
+        mb_tested = mb_reversed;
+        mb_stopwatch.reset();
+        (*fn)(mb_tested.begin(), mb_tested.end(), mb_compare);
+        time = mb_stopwatch.elapsed();
+
+        if (mb_tested == mb_sorted) {
+            std::cout << std::setw(16) << std::left << sortType << " time of     REVERS    container:   " << std::setw(12) << std::setprecision(4) << std::left << time << " milliseconds" << std::endl;
+        }
+        else {
+            std::cout << std::setw(16) << sortType << " time of     REVERS    container:   " << std::setw(12) << "INVALID" << std::endl;
+        }
+
+        std::cout << "-----------------------------------------------------------------------------" <<std::endl;
+    }
+};
+
+
+
+
+
+int main()
+{
+    my::DynamicArray<int> randomArray(ARRAY_SIZE);
+
+    auto compLambda {
+        [](const auto& a, const auto& b) -> bool { return (a < b); }
+    };
+
+
+    // # Устанавливаем зерно для std::rand() и затем вызываем 1 раз std::rand() для того, чтобы
+    // # отбросить 1-ое значение.
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::rand();
+
+    for (int ii {0}; ii < ARRAY_SIZE - 1; ++ii) {
+        randomArray[ii] = my::getRandomNumber(-ARRAY_SIZE, ARRAY_SIZE);
+    }
+
+    Test test {randomArray, compLambda};
+    test.print();
+
+
+
+
+    if (TEST_STUPID_SORT)
+        test.start(my::sort::stupid, "STUPID SORT");
+
+    if (TEST_BUBBLE_SORT)
+        test.start(my::sort::bubble, "BUBBLE SORT");
+
+    if (TEST_COCKTAIL_SORT)
+        test.start(my::sort::cocktail, "COCKTAIL SORT");
+
+    if (TEST_ODDEVEN_SORT)
+        test.start(my::sort::oddEven, "ODDEVEN SORT");
+
+    if (TEST_COMB_SORT)
+        test.start(my::sort::comb, "COMB SORT");
+
+    if (TEST_SELECTION_SORT)
+        test.start(my::sort::selection, "SELECTION SORT");
+
+    if (TEST_HEAP_SORT)
+        test.start(my::sort::heap, "HEAP SORT");
+
+    if (TEST_INSERTION_SORT)
+        test.start(my::sort::insertion, "INSERTION SORT");
+
+    if (TEST_SHELL_SORT)
+        test.start(my::sort::shell, "SHELL SORT");
+
+
+
+//    ##############################################################################################
+//    ###################################        my::Sort       ####################################
+//    ##############################################################################################
+
+//    if (TEST_BUBBLE_SORT) {
+//        test(randomArray, sortedArray, &my::sort::bubble, "RANDOM ARRAY", "BUBBLE SORT");
+//    }
+//    else {}
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::cocktail, "COCKTAIL");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::oddEven, "ODD_EVEN");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
+
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
+
+
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
+//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::mergeUpDown, "MERGE");
+
+
+//    std::cout << "\n\n";
+
+
+//    testArray = randomArray;
+//    timer.reset();
+//    mergeSort(testArray, 0, size);
+//    time = timer.elapsed();
+//    std::cout << "CLASSIC MERGE time of RANDOM array:       " << time << " milliseconds" << std::endl;
+
+//    testArray = sortedArray;
+//    timer.reset();
+//    mergeSort(testArray, 0, size);
+//    time = timer.elapsed();
+//    std::cout << "CLASSIC MERGE time of SORTED array:       " << time << " milliseconds" << std::endl;
+
+//    testArray = almostSortedArray;
+//    timer.reset();
+//    mergeSort(testArray, 0, size);
+//    time = timer.elapsed();
+//    std::cout << "CLASSIC MERGE time of ALMOST SORTED array:       " << time << " milliseconds" << std::endl;
+
+//    testArray = reversedArray;
+//    timer.reset();
+//    mergeSort(testArray, 0, size);
+//    time = timer.elapsed();
+//    std::cout << "CLASSIC MERGE time of REVERSED array:       " << time << " milliseconds" << std::endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,271 +440,4 @@
 //        else {}
 //    }
 //}
-
-
-bool comp(const int& a, const int& b)
-{
-    return a < b;
-}
-
-
-
-int main()
-{
-
-
-//    using vec_type = std::vector<int>::iterator::value_type;
-//    std::vector<int>::iterator::value_type test {};
-//    test = 3;
-
-//    std::vector<int> simpleVector {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};
-
-    my::DynamicArray<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
-    my::sort::oddEvenV3(simpleArray.itbegin(), simpleArray.itend(), [](int a, int b) { return (a < b); });                     // [](int a, int b) { return (a < b); }
-
-    for(auto num: simpleArray) {
-        std::cout << num << std::endl;
-    }
-//    std::sort(simpleArray.begin(), simpleArray.end(), [](int a, int b){return a < b;});
-//    std::cout << simpleArray << std::endl;
-
-
-//    my::DynamicArray<int>::DAIterator iter {simpleArray.begin()};
-//    std::cout << *iter << std::endl;
-
-//    stupid(simpleArray.begin(), simpleArray.end());
-
-
-
-//    return 0;
-}
-
-
-//    my::Sort    sort;
-//    my::Timer   timer;
-//    double      time;
-
-
-//    // Устанавливаем зерно для std::rand() и затем вызываем 1 раз std::rand() для того, чтобы
-//    // отбросить 1-ое значение.
-//    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-//    std::rand();
-
-//    int size {10'000};
-//    std::vector<int> testArray(size);
-//    std::vector<int> randomArray(size);
-//    std::vector<int> sortedArray(size);
-//    std::vector<int> reversedArray(size);
-//    std::vector<int> almostSortedArray(size);
-
-//    std::vector<int> simpleArray = {7, 4, 2, 0, 1, 0, 3, 9, 7, 5};                // size = 10
-
-////    std::vector<int> stdSortArray(size);
-////    std::vector<int> customSortArray(size);
-
-//    for (int ii {0}; ii < size - 1; ++ii) {
-//        randomArray[ii] = my::getRandomNumber(-size, size);
-//    }
-
-
-
-//    sort.mergeUpDown(randomArray);
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    std::cout << "\nArray size:  " << size << std::endl;
-
-//    //##############################################################################################
-//    //################################        std::sort()       ####################################
-//    //##############################################################################################
-
-//    // # Подсчёт времени сортировки СЛУЧАЙНОГО массива
-//    testArray = randomArray;
-//    timer.reset();
-//    std::sort(testArray.begin(), testArray.end());
-//    time = timer.elapsed();
-//    std::cout << "\nstd::sort time of RANDOM array:         " << time << " milliseconds" << std::endl;
-
-
-
-//    // # Формируем отсортированный массив
-//    sortedArray = testArray;
-
-//    // # Подсчёт времени сортировки ОТСОРТИРОВАННОГО массива (вырожденный случай)
-//    // testArray = sortedArray;
-//    timer.reset();
-//    std::sort(testArray.begin(), testArray.end());
-//    time = timer.elapsed();
-//    std::cout << "std::sort time of SORTED array:         " << time << " milliseconds" << std::endl;
-
-
-
-//    // # Формируем ПОЧТИ отсортированный массив
-//    int interval {(size / 25) > 1 ? size / 25 : 1};
-//    auto rng = std::default_random_engine {};
-//    almostSortedArray = sortedArray;
-//    for (int ii {interval}; ii < size; ii += interval) {
-//        std::ranges::shuffle(&almostSortedArray[ii - interval], &almostSortedArray[ii], rng);
-//    }
-
-//    // # Подсчёт времени сортировки ПОЧТИ отсортированного массива
-//    testArray = almostSortedArray;
-//    timer.reset();
-//    std::sort(testArray.begin(), testArray.end());
-//    time = timer.elapsed();
-//    std::cout << "std::sort time of ALMOST sorted array:  " << time << " milliseconds" << std::endl;
-
-
-
-
-//    // # Формируем массив, отсортированный в ОБРАТНОМ порядке
-//    for (int ii {0}; ii < size; ++ii) {
-//        reversedArray[ii] = sortedArray[size - 1 - ii];
-//    }
-
-//    // # Подсчёт времени сортировки ОБРАТНОГО массива (вырожденный случай)
-//    testArray = reversedArray;
-//    timer.reset();
-//    std::sort(testArray.begin(), testArray.end());
-//    time = timer.elapsed();
-//    std::cout << "std::sort time of REVERSED array:       " << time << " milliseconds" << std::endl;
-
-
-
-
-
-
-    //##############################################################################################
-    //###################################        my::Sort       ####################################
-    //##############################################################################################
-
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::bubble, "BUBBLE");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::cocktail, "COCKTAIL");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::oddEven, "ODD_EVEN");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::comb, "COMB");
-
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::selection, "SELECTION");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::heap, "HEAP");
-
-
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::insertion, "INSERTION");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shell, "SHELL");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::shellClassic, "SHELL CLASSIC");
-//    sort.test(randomArray, sortedArray, almostSortedArray, reversedArray, &my::Sort::mergeUpDown, "MERGE");
-
-
-//    std::cout << "\n\n";
-
-
-//    testArray = randomArray;
-//    timer.reset();
-//    mergeSort(testArray, 0, size);
-//    time = timer.elapsed();
-//    std::cout << "CLASSIC MERGE time of RANDOM array:       " << time << " milliseconds" << std::endl;
-
-//    testArray = sortedArray;
-//    timer.reset();
-//    mergeSort(testArray, 0, size);
-//    time = timer.elapsed();
-//    std::cout << "CLASSIC MERGE time of SORTED array:       " << time << " milliseconds" << std::endl;
-
-//    testArray = almostSortedArray;
-//    timer.reset();
-//    mergeSort(testArray, 0, size);
-//    time = timer.elapsed();
-//    std::cout << "CLASSIC MERGE time of ALMOST SORTED array:       " << time << " milliseconds" << std::endl;
-
-//    testArray = reversedArray;
-//    timer.reset();
-//    mergeSort(testArray, 0, size);
-//    time = timer.elapsed();
-//    std::cout << "CLASSIC MERGE time of REVERSED array:       " << time << " milliseconds" << std::endl;
-
-//    return 0;
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Solution {
-public:
-    std::vector<int> getAverages(std::vector<int>& nums, int k) {
-
-        /*
-         *  А разве можно создавать новый вектор и возвращать ссылку на него? Да, память
-         * выделяется в куче, но разве она не должна освобождаться после выхода из функции,
-         * т.к. сам вектор res - это локальная переменная, сидящая в стеке и при выходе из
-         * функции эта стековая переменная должна уничтожаться (а потому там должен
-         * вызываться деструктор). То есть почему он всё-таки возвращается?
-         */
-        std::vector<int> res;
-
-        int numSize {static_cast<int>(nums.size())};
-        int windowSize {2 * k + 1};
-        int windowSum {0};
-
-
-        res.resize(numSize);
-
-        // # Граничный случай, когда размер массива nums < 2k + 1.
-        if (numSize < windowSize) {
-            for (int ii {0}; ii < numSize; ++ii) {
-                res[ii] = -1;
-            }
-        }
-        else {
-
-            // Считаем сумму в окне
-            for (int ii {0}; ii < windowSize; ++ii) {
-                windowSum += nums[ii];
-            }
-
-            // Заполняем начало массива
-            int ii {0};
-
-            while (ii < k) {
-                res[ii] = -1;
-                ++ii;
-            }
-
-            // Заполняем середину массива
-            while (ii < numSize - k - 1) {
-                res[ii] = (windowSum / windowSize);
-                windowSum = windowSum - nums[ii - k] + nums[ii + k + 1];
-                ++ii;
-            }
-            res[ii] = (windowSum / windowSize);
-            ++ii;
-
-            // Заполняем конец массива
-            while (ii < numSize) {
-                res[ii] = -1;
-                ++ii;
-            }
-        }
-
-        return res;
-    }
-};
-
 
