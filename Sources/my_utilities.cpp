@@ -591,7 +591,39 @@ my::Timer::Timer() :
 //==================================================================================================
 void my::Timer::reset()
 {
-        mb_begin = std::chrono::steady_clock::now();
+    mb_begin = std::chrono::steady_clock::now();
+}
+
+
+//==================================================================================================
+//          TYPE:   Method
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+// COMMENTS/BUGS:   Подумать над тем, как сперва получить время, а потом уже его кастить.
+//==================================================================================================
+double my::Timer::elapsed() const
+{
+//    std::chrono::time_point elaps {Clock::now() - mb_begin};
+
+    switch (mb_unit) {
+    case MeasureUnit::SECOND:
+        return std::chrono::duration_cast<Sec>(Clock::now() - mb_begin).count();
+        break;
+    case MeasureUnit::MILLI:
+        return std::chrono::duration_cast<Milli>(Clock::now() - mb_begin).count();
+        break;
+    case MeasureUnit::MICRO:
+        return std::chrono::duration_cast<Micro>(Clock::now() - mb_begin).count();
+        break;
+    case MeasureUnit::NANO:
+        return std::chrono::duration_cast<Nano>(Clock::now() - mb_begin).count();
+        break;
+    default:
+        assert(false && "Incorrect measure unit!");
+        break;
+    }
+
 }
 
 
@@ -602,9 +634,7 @@ void my::Timer::reset()
 //  RETURN VALUE:   ........
 // COMMENTS/BUGS:   ........
 //==================================================================================================
-double my::Timer::elapsed() const
+void my::Timer::setMeasureUnit(MeasureUnit mu)
 {
-    return std::chrono::duration_cast<Milli>(Clock::now() - mb_begin).count();
+    mb_unit = mu;
 }
-
-

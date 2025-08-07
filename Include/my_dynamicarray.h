@@ -186,40 +186,6 @@ public:
 
 
 
-//    class DAIterator : public Iterator<Type> {
-//    private:
-//        Type* mb_ptr;
-//    public:
-//        // Contructor
-//        explicit DAIterator(Type* ptr) : mb_ptr {ptr} {}
-//        ~DAIterator() override {}
-
-//        Type& operator*() const override { return *mb_ptr; }
-//        Type* operator->() override { return mb_ptr; }
-
-//        Iterator<Type>& operator++() override { mb_ptr++; return *this; }
-//        Iterator<Type> operator++(Type) override {auto temp {*this}; ++(*this); return temp; }
-
-//        friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
-//        friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
-
-
-//        DAIterator begin()    {return DAIterator(&mb_dataPtr[0]);}
-//        DAIterator end()      {return DAIterator(&mb_dataPtr[mb_size]);}
-
-
-//    };
-
-
-
-//    DAIterator begin()
-//    {
-//        return DAIterator(mb_dataPtr);
-
-//    }
-//    DAIterator end();
-
-
     //==================================================================================================
     //          TYPE:   Class
     //   DESCRIPTION:   Representing <my::DynamicArray> iterator objects
@@ -247,30 +213,92 @@ public:
         using pointer = Type*;
         using reference = Type&;
 
-        // Contructor
-        Iterator(pointer ptr) : mb_ptr {ptr} {}
 
-        reference operator*() const { return *mb_ptr; }
-        pointer operator->() { return mb_ptr; }
 
-//        Iterator& operator++() { mb_ptr++; return *this; }
-//        Iterator operator++(Type) {auto temp {*this}; ++(*this); return temp; }
 
-        friend difference_type operator-(const Iterator& a, const Iterator& b)
-        {
-            return (a.mb_ptr - b.mb_ptr);
-        }
+    private:
+        pointer mb_ptr;
+
+
+    public:
+
+        // #########################################################################################
+        // ###################################  ALL CATEGORIES  ####################################
+        // #########################################################################################
+        // # Do not mark as explicit because often use my::DynamicArray<Type>::begin() (or end()),
+        // # that returns pointer, that implicitly converts into Iterator
+        Iterator(Type* ptr);
+        Iterator(const Iterator& that);
+        ~Iterator();
+
+        Iterator& operator=(const Iterator& that);
+
+        Iterator& operator++();
+        Iterator operator++(Type);
+
+        // #########################################################################################
+        // ###################################  INPUT   ############################################
+        // #########################################################################################
+
+        friend bool operator==(const Iterator& a, const Iterator& b);
+        friend bool operator!=(const Iterator& a, const Iterator& b);
+
+        Type& operator*() const;
+        Type* operator->();
+
+        // #########################################################################################
+        // ###################################  OUTPUT   ###########################################
+        // #########################################################################################
+
+        /* Just add more properties to the dereference operator */
+
+
+        // #########################################################################################
+        // ###################################  FORWARD   ##########################################
+        // #########################################################################################
+
+        Iterator();             // Default constructible
+
+        /*
+         * Multi-pass: neither dereferencing nor incrementing affects dereferenceability: { b=a; *a++; *b; }
+         * То есть, как я понимаю, после выполнения операции инкрементирования и/или дереференса,
+         * сам итератор остаётся валиден и его можно повторно использовать
+         */
+
+
+        // #########################################################################################
+        // ###################################  BIDIRECTIONAL   ####################################
+        // #########################################################################################
+
+        Iterator& operator--();
+        Iterator operator--(Type);
+
+
+        // #########################################################################################
+        // ###################################  RANDOM ACCESS  #####################################
+        // #########################################################################################
+
+        friend Iterator operator+(const Iterator& a, int n);
+        friend Iterator operator+(int n, const Iterator& a);
+        friend Iterator operator-(const Iterator& a, int n);
+
+        friend bool operator<(const Iterator& a, const Iterator& b);
+        friend bool operator>(const Iterator& a, const Iterator& b);
+        friend bool operator>=(const Iterator& a, const Iterator& b);
+        friend bool operator<=(const Iterator& a, const Iterator& b);
+
+
+
+        friend difference_type operator-(const Iterator& a, const Iterator& b);
 
 
 
         Type& operator[](int index) const
         {
             return mb_ptr[index];
+
         }
 
-
-        friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
-        friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
 
 
         /*
@@ -282,11 +310,6 @@ public:
 //            return (mb_dataPtr + mb_length);
 //        }
 
-
-
-    private:
-        pointer mb_ptr;
-//        int mb_length;
 
     }; // End of <my::DynamicArray::Iterator> class
 

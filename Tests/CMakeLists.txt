@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(MyLibrary
 #    ../Sources/my_array.cpp
     ../Sources/my_dynamicarray.cpp
-    ../Sources/my_algorithm.cpp
-    ../Sources/my_iterator.cpp
+
+#    ../Sources/my_iterator.cpp
 #    ../Sources/my_prettyprint.cpp
 #    ../Sources/my_smartptr.cpp
 #    ../Sources/my_string.cpp
@@ -22,7 +22,7 @@ add_executable(MyLibrary
 #    ../Include/my_array.h
     ../Include/my_algorithm.h
     ../Include/Implementations/my_algorithm.hpp
-    ../Include/my_iterator.h
+#    ../Include/my_iterator.h
     ../Include/my_dynamicarray.h
     ../Include/Implementations/my_dynamicarray.hpp
 #    ../Include/my_prettyprint.h
