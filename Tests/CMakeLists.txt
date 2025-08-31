@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(MyLibrary
-#    ../Sources/my_array.cpp
+    ../Sources/my_array.cpp
     ../Sources/my_dynamicarray.cpp
-
 #    ../Sources/my_iterator.cpp
 #    ../Sources/my_prettyprint.cpp
 #    ../Sources/my_smartptr.cpp
@@ -20,6 +19,8 @@ add_executable(MyLibrary
 #    ../Sources/my_serialdevice.cpp
 
 #    ../Include/my_array.h
+#    ../Include/Implementations/my_array.hpp
+
     ../Include/my_algorithm.h
     ../Include/Implementations/my_algorithm.hpp
 #    ../Include/my_iterator.h

@@ -4,7 +4,7 @@
 #ifndef MY_DYNAMIC_ARRAY_HPP
 #define MY_DYNAMIC_ARRAY_HPP
 
-#include "my_dynamicarray.h"            // For IDE visibility
+#include "../my_dynamicarray.h"            // For IDE visibility
 
 
 
@@ -1271,7 +1271,7 @@ Type* my::DynamicArray<Type>::Iterator::operator->()
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
 template <typename Type>
-my::DynamicArray<Type>::Iterator operator+(const typename my::DynamicArray<Type>::Iterator& a, int n)
+typename my::DynamicArray<Type>::Iterator operator+(typename my::DynamicArray<Type>::Iterator& a, int n)
 {
     /*
      * Увеличиваем значение указателя a.mb_ptr на n - в результате, в зависимости от типа mb_ptr,
@@ -1287,6 +1287,7 @@ my::DynamicArray<Type>::Iterator operator+(const typename my::DynamicArray<Type>
 
 }
 
+
 //==================================================================================================
 //          TYPE:   Friend function
 //   DESCRIPTION:   ........
@@ -1294,11 +1295,11 @@ my::DynamicArray<Type>::Iterator operator+(const typename my::DynamicArray<Type>
 //  RETURN VALUE:   ........
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
-template <typename Type>
-my::DynamicArray<Type>::Iterator operator+(int n, const typename my::DynamicArray<Type>::Iterator& a)
-{
-    return (a + n);
-}
+//template <typename Type>
+//my::DynamicArray<Type>::Iterator operator+(int n, const typename my::DynamicArray<Type>::Iterator& a)
+//{
+//    return (a + n);
+//}
 
 
 //==================================================================================================
@@ -1336,7 +1337,7 @@ my::DynamicArray<Type>::Iterator::difference_type   operator-(const typename my:
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
 template <typename Type>
-bool my::DynamicArray<Type>::Iterator::operator<(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
+bool operator<(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
 {
     return (a.mb_ptr < b.mb_ptr);
 }
@@ -1351,7 +1352,7 @@ bool my::DynamicArray<Type>::Iterator::operator<(const typename my::DynamicArray
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
 template <typename Type>
-bool my::DynamicArray<Type>::Iterator::operator>(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
+bool operator>(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
 {
     return !(a < b) && !(a == b);
 }
@@ -1367,7 +1368,7 @@ bool my::DynamicArray<Type>::Iterator::operator>(const typename my::DynamicArray
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
 template <typename Type>
-bool my::DynamicArray<Type>::Iterator::operator>=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
+bool operator>=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
 {
     return !(a < b);
 }
@@ -1381,12 +1382,56 @@ bool my::DynamicArray<Type>::Iterator::operator>=(const typename my::DynamicArra
 //      COMMENTS:   RANDOM ACCESS
 //==================================================================================================
 template <typename Type>
-bool my::DynamicArray<Type>::Iterator::operator<=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
+bool operator<=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
 {
     return (a < b) || (a == b);
 }
 
 
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator+=(int n)
+{
+    mb_ptr += n;
+    return (*this);
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator-=(int n)
+{
+    mb_ptr -= n;
+    return (*this);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Subscript operator
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+Type& my::DynamicArray<Type>::Iterator::operator[](int index)
+{
+    return *(mb_ptr + index);
+}
 
 
 #endif

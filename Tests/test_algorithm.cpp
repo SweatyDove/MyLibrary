@@ -187,19 +187,19 @@ public:
             // Create and run an exchange menu, that is responsible for the... exchange...
             case '1':
                 std::sort(mb_table.begin(), mb_table.end(), [](const Line& a, const Line& b) {return (a.randTime < b.randTime);});
-                std::cout << "\n\n    Sorting by column:    RANDOM." << std::endl;
+                std::cout << "\n\n    Sorting by column:    RANDOM" << std::endl;
                 break;
             case '2':
                 std::sort(mb_table.begin(), mb_table.end(), [](const Line& a, const Line& b) {return (a.sortedTime < b.sortedTime);});
-                std::cout << "\n\n    Sorting by column:    SORTED." << std::endl;
+                std::cout << "\n\n    Sorting by column:    SORTED" << std::endl;
                 break;
             case '3':
                 std::sort(mb_table.begin(), mb_table.end(), [](const Line& a, const Line& b) {return (a.almostTime < b.almostTime);});
-                std::cout << "\n\n    Sorting by column:    ALMOST." << std::endl;
+                std::cout << "\n\n    Sorting by column:    ALMOST" << std::endl;
                 break;
             case '4':
                 std::sort(mb_table.begin(), mb_table.end(), [](const Line& a, const Line& b) {return (a.reversTime < b.reversTime);});
-                std::cout << "\n\n    Sorting by column:    REVERS." << std::endl;
+                std::cout << "\n\n    Sorting by column:    REVERS" << std::endl;
                 break;
             case 'Q': case 'q':
                 choiceLoop = false;
@@ -290,6 +290,25 @@ public:
 int main()
 {
 
+
+    //##############################################################################################
+    //##################################       Debug section       #################################
+    //##############################################################################################
+//    my::DynamicArray<int> smallArr {1, 2, 3, 4, 5};
+//    my::DynamicArray<int>::Iterator beg = smallArr.itbegin();               // Лучше использовать auto, но для отладки пока в явном виде
+//    std::cout << *(beg + 2) << std::endl;
+
+//    return 0;
+
+
+
+
+
+
+    //##############################################################################################
+    //##############################################################################################
+    //##############################################################################################
+
     my::DynamicArray<int> randomArray(ARRAY_SIZE);
 
     auto compLambda {
@@ -304,7 +323,8 @@ int main()
 
     for (int ii {0}; ii < ARRAY_SIZE - 1; ++ii) {
         randomArray[ii] = my::getRandomNumber(-ARRAY_SIZE, ARRAY_SIZE);
-    }
+    } 
+
 
     Test test {randomArray, compLambda};
 

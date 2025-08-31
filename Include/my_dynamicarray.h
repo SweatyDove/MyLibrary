@@ -207,8 +207,8 @@ public:
 
         // # The tags below are needed for the functions from <algorithms> and allow to provide
         // # optimal choices when choosing specific function (for sorting and etc)
-        using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
-        using difference_type = std::ptrdiff_t;                      // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
+        using iterator_category = std::random_access_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
+        using difference_type = std::ptrdiff_t;                         // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
         using value_type = Type;
         using pointer = Type*;
         using reference = Type&;
@@ -240,8 +240,30 @@ public:
         // ###################################  INPUT   ############################################
         // #########################################################################################
 
+
+        /*******************************************************************************************
+         * warning: friend declaration 'bool operator==(...)' declares a non-template function...
+         * note: (if this is NOT what you intended, make sure the function template has already been
+         * declared and add ‘<>’ after the function name here).
+         *
+         * Суть предупреждения вот в чём. Я объявляю шаблонный класс "my::DynamicArray<Type>".
+         * Вместе с этим объявлением идёт объявление friend-функции (оператора==):
+         * my::DynamicArray<Type>::Iterator::operator==()
+         *
+         * То есть для каждого типа <Type> у нас объявляется отдельная, НЕШАБЛОННАЯ friend-функция.
+         * Но вот незадача, потом, в hpp файле я определяю эту же функцию, как ШАБЛОННУЮ.
+         *
+         * То есть со стороны класса my::DynamicArray<> функция, которую он объявляет, является
+         * обычной функцией.
+         * А со стороны пользователя - это шаблонная функция, т.к. работает с шаблонными типами
+         * аргументов, т.е. для каждого типа my::DynamicArray она своя.
+         *
+         * Решение: либо объявить функцию шаблонной и здесь, но с другим типом, чтобы не было
+         * 'shadowing'. Либо поставить <Type> после имени функции (оператора). Оба подхода
+         * использованы ниже в качестве практики.
+         ******************************************************************************************/
         friend bool operator==(const Iterator& a, const Iterator& b);
-        friend bool operator!=(const Iterator& a, const Iterator& b);
+        friend bool operator!= (const Iterator& a, const Iterator& b);
 
         Type& operator*() const;
         Type* operator->();
@@ -278,26 +300,46 @@ public:
         // ###################################  RANDOM ACCESS  #####################################
         // #########################################################################################
 
-        friend Iterator operator+(const Iterator& a, int n);
-        friend Iterator operator+(int n, const Iterator& a);
-        friend Iterator operator-(const Iterator& a, int n);
 
-        friend bool operator<(const Iterator& a, const Iterator& b);
-        friend bool operator>(const Iterator& a, const Iterator& b);
-        friend bool operator>=(const Iterator& a, const Iterator& b);
-        friend bool operator<=(const Iterator& a, const Iterator& b);
+//        friend Iterator operator+(Iterator& a, int n)
+//        {
+//            return (a.mb_ptr + n);
+//        }
 
 
 
-        friend difference_type operator-(const Iterator& a, const Iterator& b);
+        friend my::DynamicArray<Type>::Iterator operator+(my::DynamicArray<Type>::Iterator& a, int n);
+//        {
+//            return (a.mb_ptr + n);
+//        }
+
+//        friend Iterator operator+<Type>(Iterator& a, int n)
+//        {
+//            return (a.mb_ptr + n);
+//        }
 
 
 
-        Type& operator[](int index) const
-        {
-            return mb_ptr[index];
 
-        }
+//        template <typename SameType>
+//        friend my::DynamicArray<SameType>::Iterator operator+(int n, const my::DynamicArray<SameType>::Iterator& a);
+
+        template <typename SameType>
+        friend my::DynamicArray<SameType>::Iterator operator-(const my::DynamicArray<SameType>::Iterator& a, int n);
+
+        template <typename SameType>
+        friend my::DynamicArray<SameType>::Iterator::difference_type operator-(const my::DynamicArray<SameType>::Iterator& a, const my::DynamicArray<SameType>::Iterator& b);
+
+        friend bool operator< <Type>(const Iterator& a, const Iterator& b);
+        friend bool operator> <Type>(const Iterator& a, const Iterator& b);
+        friend bool operator>= <Type>(const Iterator& a, const Iterator& b);
+        friend bool operator<= <Type>(const Iterator& a, const Iterator& b);
+
+        Iterator& operator+=(int n);
+        Iterator& operator-=(int n);
+
+        Type& operator[](int index);
+
 
 
 
