@@ -75,3 +75,6 @@ CMakeLists.txt.user*
 
 # Other
 build*
+.vscode/
+CMakePresets.json
+Tests/out/

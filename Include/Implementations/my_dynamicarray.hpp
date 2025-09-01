@@ -1200,33 +1200,11 @@ my::DynamicArray<Type>::Iterator   my::DynamicArray<Type>::Iterator::operator--(
 
 
 
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   Supports equality comparisons
-//==================================================================================================
-template <typename Type>
-bool operator==(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return a.mb_ptr == b.mb_ptr;
-}
 
 
 
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   Supports inequality comparisons
-//==================================================================================================
-template <typename Type>
-bool operator!=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return !(a == b);
-}
+
+
 
 
 
@@ -1263,129 +1241,8 @@ Type* my::DynamicArray<Type>::Iterator::operator->()
 }
 
 
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-typename my::DynamicArray<Type>::Iterator operator+(typename my::DynamicArray<Type>::Iterator& a, int n)
-{
-    /*
-     * Увеличиваем значение указателя a.mb_ptr на n - в результате, в зависимости от типа mb_ptr,
-     * новый адрес будет корректен (так как под капотом там такой же перегруженный оператор и, если
-     * mb_ptr имеет тип <int*>, то сдвиг будет, условно, на sizeof(int) * n, а если <float*>, то,
-     * соответственно, на sizeof(float) * n). И здесь нужно реализовать такую же логику, но не для
-     * <int> или <float>, а для <Iterator>.
-     *
-     * Затем создаём временный объект и возвращаем его - вернее, возвращаем просто указатель, над
-     * которым будет неявно создан объект на выходе.
-     */
-    return (a.mb_ptr + n);
-
-}
 
 
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-//template <typename Type>
-//my::DynamicArray<Type>::Iterator operator+(int n, const typename my::DynamicArray<Type>::Iterator& a)
-//{
-//    return (a + n);
-//}
-
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-my::DynamicArray<Type>::Iterator operator-(const typename my::DynamicArray<Type>::Iterator& a, int n)
-{
-    return (a.mb_ptr - n);
-}
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-my::DynamicArray<Type>::Iterator::difference_type   operator-(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return (a.mb_ptr - b.mb_ptr);
-}
-
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-bool operator<(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return (a.mb_ptr < b.mb_ptr);
-}
-
-
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-bool operator>(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return !(a < b) && !(a == b);
-}
-
-
-
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-bool operator>=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return !(a < b);
-}
-
-
-//==================================================================================================
-//          TYPE:   Friend function
-//   DESCRIPTION:   ........
-//    PARAMETERS:   ........
-//  RETURN VALUE:   ........
-//      COMMENTS:   RANDOM ACCESS
-//==================================================================================================
-template <typename Type>
-bool operator<=(const typename my::DynamicArray<Type>::Iterator& a, const typename my::DynamicArray<Type>::Iterator& b)
-{
-    return (a < b) || (a == b);
-}
 
 
 //==================================================================================================
@@ -1432,6 +1289,181 @@ Type& my::DynamicArray<Type>::Iterator::operator[](int index)
 {
     return *(mb_ptr + index);
 }
+
+
+
+//==================================================================================================
+//          TYPE:   Namespace
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Данное пространство имён является костылём для возможности определения
+//                  friend-функций подкласса <my::DynamicArray<Type>::Iterator> ВНЕ заголовочного
+//                  файла, т.е. в *.hpp файле, а НЕ в *.h.
+//
+//                  Однако, имеется возможность возникновения коллизий, если я аналогично объявлю
+//                  friend-функции в другом классе (например, в <my::String>). Тогда, как дойду
+//                  до этого момента, попробую снова пофиксить это дело.
+//==================================================================================================
+namespace my {
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Supports equality comparisons
+//==================================================================================================
+template <typename IteratorType>
+bool operator==(const IteratorType& a, const IteratorType& b)
+{
+    return a.mb_ptr == b.mb_ptr;
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Supports inequality comparisons
+//==================================================================================================
+template <typename IteratorType>
+bool operator!= (const IteratorType& a, const IteratorType& b)
+{
+    return !(a == b);
+}
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator+(IteratorType& a, int n)
+{
+    /*
+     * Увеличиваем значение указателя a.mb_ptr на n - в результате, в зависимости от типа mb_ptr,
+     * новый адрес будет корректен (так как под капотом там такой же перегруженный оператор и, если
+     * mb_ptr имеет тип <int*>, то сдвиг будет, условно, на sizeof(int) * n, а если <float*>, то,
+     * соответственно, на sizeof(float) * n). И здесь нужно реализовать такую же логику, но не для
+     * <int> или <float>, а для <Iterator>.
+     *
+     * Затем создаём временный объект и возвращаем его - вернее, возвращаем просто указатель, над
+     * которым будет неявно создан объект на выходе.
+     */
+    return (a.mb_ptr + n);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator+(int n, const IteratorType& a)
+{
+    return (a + n);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator-(const IteratorType& a, int n)
+{
+    return (a.mb_ptr - n);
+}
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType::difference_type   operator-(const IteratorType& a, const IteratorType& b)
+{
+    return (a.mb_ptr - b.mb_ptr);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator<(const IteratorType& a, const IteratorType& b)
+{
+    return (a.mb_ptr < b.mb_ptr);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator>(const IteratorType& a, const IteratorType& b)
+{
+    return !(a < b) && !(a == b);
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator>=(const IteratorType& a, const IteratorType& b)
+{
+    return !(a < b);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator<=(const IteratorType& a, const IteratorType& b)
+{
+    return (a < b) || (a == b);
+}
+
+
+
+} // namespace my
 
 
 #endif

@@ -294,11 +294,11 @@ int main()
     //##############################################################################################
     //##################################       Debug section       #################################
     //##############################################################################################
-//    my::DynamicArray<int> smallArr {1, 2, 3, 4, 5};
-//    my::DynamicArray<int>::Iterator beg = smallArr.itbegin();               // Лучше использовать auto, но для отладки пока в явном виде
-//    std::cout << *(beg + 2) << std::endl;
+    my::DynamicArray<int> smallArr {1, 2, 3, 4, 5};
+    my::DynamicArray<int>::Iterator beg = smallArr.itbegin();               // Лучше использовать auto, но для отладки пока в явном виде
+    std::cout << *(beg + 2) << std::endl;
 
-//    return 0;
+    return 0;
 
 
 

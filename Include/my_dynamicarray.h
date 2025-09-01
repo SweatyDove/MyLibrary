@@ -258,12 +258,15 @@ public:
          * А со стороны пользователя - это шаблонная функция, т.к. работает с шаблонными типами
          * аргументов, т.е. для каждого типа my::DynamicArray она своя.
          *
-         * Решение: либо объявить функцию шаблонной и здесь, но с другим типом, чтобы не было
-         * 'shadowing'. Либо поставить <Type> после имени функции (оператора). Оба подхода
-         * использованы ниже в качестве практики.
+         * Решение:
+         * 1) Сделать функцию шаблонной и здесь - пока так поступлю. Потом, как появится время,
+         * попробую как-нибудь убрать шаблон из объявления.
          ******************************************************************************************/
-        friend bool operator==(const Iterator& a, const Iterator& b);
-        friend bool operator!= (const Iterator& a, const Iterator& b);
+        template <typename IteratorType>
+        friend bool operator==(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator!= (const IteratorType& a, const IteratorType& b);
 
         Type& operator*() const;
         Type* operator->();
@@ -301,39 +304,31 @@ public:
         // #########################################################################################
 
 
-//        friend Iterator operator+(Iterator& a, int n)
-//        {
-//            return (a.mb_ptr + n);
-//        }
+        template <typename IteratorType>
+        friend IteratorType operator+(IteratorType& a, int n);
+
+        template <typename IteratorType>
+        friend IteratorType operator+(int n, IteratorType& a);
+
+        template <typename IteratorType>
+        friend IteratorType operator-(const IteratorType& a, int n);
+
+        template <typename IteratorType>
+        friend IteratorType::difference_type operator-(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator<(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator>(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator>=(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator<=(const IteratorType& a, const IteratorType& b);
 
 
-
-        friend my::DynamicArray<Type>::Iterator operator+(my::DynamicArray<Type>::Iterator& a, int n);
-//        {
-//            return (a.mb_ptr + n);
-//        }
-
-//        friend Iterator operator+<Type>(Iterator& a, int n)
-//        {
-//            return (a.mb_ptr + n);
-//        }
-
-
-
-
-//        template <typename SameType>
-//        friend my::DynamicArray<SameType>::Iterator operator+(int n, const my::DynamicArray<SameType>::Iterator& a);
-
-        template <typename SameType>
-        friend my::DynamicArray<SameType>::Iterator operator-(const my::DynamicArray<SameType>::Iterator& a, int n);
-
-        template <typename SameType>
-        friend my::DynamicArray<SameType>::Iterator::difference_type operator-(const my::DynamicArray<SameType>::Iterator& a, const my::DynamicArray<SameType>::Iterator& b);
-
-        friend bool operator< <Type>(const Iterator& a, const Iterator& b);
-        friend bool operator> <Type>(const Iterator& a, const Iterator& b);
-        friend bool operator>= <Type>(const Iterator& a, const Iterator& b);
-        friend bool operator<= <Type>(const Iterator& a, const Iterator& b);
 
         Iterator& operator+=(int n);
         Iterator& operator-=(int n);
