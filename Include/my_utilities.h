@@ -33,24 +33,38 @@ enum class RetCode {
 //     COMMENTS:    Source: https://www.learncpp.com/cpp-tutorial/timing-your-code/
 //==================================================================================================
 class Timer {
-private:
+public:
+    // # Aliases for the measurement units
+    using Second = std::chrono::duration<double, std::ratio<1>>;
+    using Sec = std::chrono::duration<double,   std::ratio<1>>;
+
+    using Nano = std::chrono::duration<double,  std::ratio<1, 1000000000>>;
+    using Micro = std::chrono::duration<double, std::ratio<1, 1000000>>;
+    using Milli = std::chrono::duration<double, std::ratio<1, 1000>>;
+
+    enum class MeasureUnit {
+        SECOND,
+        MILLI,
+        MICRO,
+        NANO,
+
+        TOTAL
+    };
+
     // # steady_clock - это аналог секундомера, нужен для измерения промежутков
     // # system_clock - это уже часы, которые показывают время (здесь не указаны).
     using Clock = std::chrono::steady_clock;
 
-    // # Aliases for the measurement units
-    using Second = std::chrono::duration<double, std::ratio<1>>;
-    using Nano = std::chrono::duration<double,  std::ratio<1, 1000000000>>;
-    using Micro = std::chrono::duration<double, std::ratio<1, 1000000>>;
-    using Milli = std::chrono::duration<double, std::ratio<1, 1000>>;
-    using Sec = std::chrono::duration<double,   std::ratio<1>>;
-
-
+private:
+    MeasureUnit mb_unit {MeasureUnit::MILLI};
     std::chrono::time_point<Clock> mb_begin {};
+
 public:
     Timer();
     void reset();
     double elapsed() const;
+    void setMeasureUnit(MeasureUnit mu);
+
 };
 
 
@@ -74,7 +88,10 @@ Type&& forward(typename std::remove_reference<Type>::type&& value);
 
 
 template <typename Type>
-void swap(Type&& a, Type&& b);
+void swap(Type& a, Type& b);
+
+//template <typename Type>
+//void swap(Type&& a, Type&& b);
 
 
 

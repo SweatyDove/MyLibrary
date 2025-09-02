@@ -7,73 +7,78 @@
 #include <functional>               // Fot std::function
 
 #include "my_utilities.h"
+#include "my_iterator.h"
 #include "my_dynamicarray.h"
 
 
 namespace my {
 
 
+
 //==================================================================================================
-//          TYPE:   Class
-//   DESCRIPTION:   Custom realization of different sorting algorithms
+//          TYPE:   Namespace
+//   DESCRIPTION:   Presents different sorting algorithms
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-// COMMENTS/BUGS:   ........
+//      COMMENTS:   1) Add requirements for <CompareType> and <IteratorType> (different sort functions
+//                      may need different iterator's functionality)
 //==================================================================================================
-class Sort {
-public:
+namespace sort {
 
-//    const my::DynamicArray<int>& mb_randomArray;
-//    const my::DynamicArray<int>& mb_sortedArray;
-//    const my::DynamicArray<int>& mb_reversedArray;
+template <typename IteratorType, typename CompareType>
+void stupid(IteratorType beginIt, IteratorType endIt, CompareType comp);
 
-    my::Timer   mb_stopwatch;
-    double      mb_timeInterval {};
+template <typename IteratorType, typename CompareType>
+void bubble(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    Sort();
+template <typename IteratorType, typename CompareType>
+void cocktail(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
+template <typename IteratorType, typename CompareType>
+void oddEven(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    inline void swap(int& a, int& b);
+template <typename IteratorType, typename CompareType>
+void oddEvenV2(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    void test(const my::DynamicArray<int>& randomArray,
-              const my::DynamicArray<int>& sortedArray,
-              const my::DynamicArray<int>& almostSortedArray,
-              const my::DynamicArray<int>& reversedArray,
-              double (my::Sort::*fn)(my::DynamicArray<int>& nums),
-              const char* algoName);
+template <typename IteratorType, typename CompareType>
+void oddEvenV3(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    // # Сортировки обменом
-    double stupid(my::DynamicArray<int>& nums);
-    double bubble(my::DynamicArray<int>& nums);
-    double cocktail(my::DynamicArray<int>& nums);
-    double oddEven(my::DynamicArray<int>& nums);
-    double oddEvenVer1(my::DynamicArray<int>& nums);
-    double oddEvenVer2(my::DynamicArray<int>& nums);
-    double comb(my::DynamicArray<int>& nums);
-    void quick(my::DynamicArray<int>& a, int start, int end);
-    void quickClassic(my::DynamicArray<int>& a, int start, int end);
+template <typename IteratorType, typename CompareType>
+void comb(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    // # Сортировки выбором
-    double selection(my::DynamicArray<int>& a);
-    double heap(my::DynamicArray<int>& a);
+//template <typename IteratorType, typename CompareType>
+//void quick(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
-    // # Сортировки вставками
-    double insertion(my::DynamicArray<int>& a);
-    double shell(my::DynamicArray<int>& a);
-    double shellClassic(my::DynamicArray<int>& a);
-
-    // # Сортировки слиянием
-    double mergeUpDown(my::DynamicArray<int>& a);
+//template <typename IteratorType, typename CompareType>
+//void quickClassic(IteratorType beginIt, IteratorType endIt, CompareType compare)
 
 
+template <typename IteratorType, typename CompareType>
+void selection(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
+template <typename IteratorType, typename CompareType>
+void heap(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+
+template <typename IteratorType, typename CompareType>
+void insertion(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void shell(IteratorType beginIt, IteratorType endIt, CompareType compare);
+
+template <typename IteratorType, typename CompareType>
+void shellClassic(IteratorType beginIt, IteratorType endIt, CompareType compare);
 
 
 
-};
+} // End of 'sort' namespace
+
 
 
 
 } // End of 'my' namespace
+
+
+#include "Implementations/my_algorithm.hpp"
 
 #endif // MY_ALGORITHM_H

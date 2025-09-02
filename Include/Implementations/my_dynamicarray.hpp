@@ -4,7 +4,7 @@
 #ifndef MY_DYNAMIC_ARRAY_HPP
 #define MY_DYNAMIC_ARRAY_HPP
 
-#include "my_dynamicarray.h"            // For IDE visibility
+#include "../my_dynamicarray.h"            // For IDE visibility
 
 
 
@@ -1041,6 +1041,429 @@ void my::DynamicArray<Type>::clear()
 
 
 
+
+//==================================================================================================
+//          TYPE:   Default Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   FORWARD: 	default-constructible
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator::Iterator() :
+    mb_ptr {nullptr}
+{
+    // Nothing to do
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator::Iterator(Type* ptr) :
+    mb_ptr {ptr}
+{
+    // Nothing to do
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Copy Constructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator::Iterator(const Iterator& that)
+{
+    this->mb_ptr = that.mb_ptr;
+}
+
+
+//==================================================================================================
+//          TYPE:   Destructor
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   ........
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator::~Iterator()
+{
+    // Nothing to do
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Copy assignment
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   INPUT
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator=(const Iterator& that)
+{
+    if (this != &that) {
+        this->mb_ptr = that.mb_ptr;
+    }
+    else {} // Nothing to do
+
+
+    return *this;
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Prefix increment
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Can be incremented
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator++()
+{
+    ++mb_ptr;
+    return *this;
+}
+
+
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Postfix increment
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Can be incremented
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator   my::DynamicArray<Type>::Iterator::operator++(Type)
+{
+    my::DynamicArray<Type>::Iterator temp {*this};
+
+    // # Calls prefix version
+    ++(*this);
+
+    return temp;
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Prefix decrement
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   BIDIRECTIONAL
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator--()
+{
+    --mb_ptr;
+    return *this;
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Postfix decrement
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   BIDIRECTIONAL
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator   my::DynamicArray<Type>::Iterator::operator--(Type)
+{
+    my::DynamicArray<Type>::Iterator temp {*this};
+
+    // # Calls prefix version
+    --(*this);
+
+    return temp;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Dereference operator
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Здесь в зависимости от того, что можно делать с итератором. Только читать (INPUT)
+//                  или же читать и писать (OUTPUT).
+//                  INPUT:  Can be dereferenced as an rvalue - то есть только чтение
+//                  OUTPUT: Can be dereferenced as an lvalue (only for mutable iterator types)
+//                  Реализация ниже поддерживает обе операции, т.к. можно как читать из массива, так
+//                  и писать в него (если там mutable-data, то есть без модификатора const или т.п.)
+//==================================================================================================
+template <typename Type>
+Type& my::DynamicArray<Type>::Iterator::operator*() const
+{
+    return *mb_ptr;
+}
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   INPUT:  Can be dereferenced as an rvalue
+//==================================================================================================
+template <typename Type>
+Type* my::DynamicArray<Type>::Iterator::operator->()
+{
+    return mb_ptr;
+}
+
+
+
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator+=(int n)
+{
+    mb_ptr += n;
+    return (*this);
+
+}
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+my::DynamicArray<Type>::Iterator&   my::DynamicArray<Type>::Iterator::operator-=(int n)
+{
+    mb_ptr -= n;
+    return (*this);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Overloaded operator
+//   DESCRIPTION:   Subscript operator
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename Type>
+Type& my::DynamicArray<Type>::Iterator::operator[](int index)
+{
+    return *(mb_ptr + index);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Namespace
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Данное пространство имён является костылём для возможности определения
+//                  friend-функций подкласса <my::DynamicArray<Type>::Iterator> ВНЕ заголовочного
+//                  файла, т.е. в *.hpp файле, а НЕ в *.h.
+//
+//                  Однако, имеется возможность возникновения коллизий, если я аналогично объявлю
+//                  friend-функции в другом классе (например, в <my::String>). Тогда, как дойду
+//                  до этого момента, попробую снова пофиксить это дело.
+//==================================================================================================
+namespace my {
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Supports equality comparisons
+//==================================================================================================
+template <typename IteratorType>
+bool operator==(const IteratorType& a, const IteratorType& b)
+{
+    return a.mb_ptr == b.mb_ptr;
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   Supports inequality comparisons
+//==================================================================================================
+template <typename IteratorType>
+bool operator!= (const IteratorType& a, const IteratorType& b)
+{
+    return !(a == b);
+}
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator+(IteratorType& a, int n)
+{
+    /*
+     * Увеличиваем значение указателя a.mb_ptr на n - в результате, в зависимости от типа mb_ptr,
+     * новый адрес будет корректен (так как под капотом там такой же перегруженный оператор и, если
+     * mb_ptr имеет тип <int*>, то сдвиг будет, условно, на sizeof(int) * n, а если <float*>, то,
+     * соответственно, на sizeof(float) * n). И здесь нужно реализовать такую же логику, но не для
+     * <int> или <float>, а для <Iterator>.
+     *
+     * Затем создаём временный объект и возвращаем его - вернее, возвращаем просто указатель, над
+     * которым будет неявно создан объект на выходе.
+     */
+    return (a.mb_ptr + n);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator+(int n, const IteratorType& a)
+{
+    return (a + n);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType operator-(const IteratorType& a, int n)
+{
+    return (a.mb_ptr - n);
+}
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+IteratorType::difference_type   operator-(const IteratorType& a, const IteratorType& b)
+{
+    return (a.mb_ptr - b.mb_ptr);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator<(const IteratorType& a, const IteratorType& b)
+{
+    return (a.mb_ptr < b.mb_ptr);
+}
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator>(const IteratorType& a, const IteratorType& b)
+{
+    return !(a < b) && !(a == b);
+}
+
+
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator>=(const IteratorType& a, const IteratorType& b)
+{
+    return !(a < b);
+}
+
+
+//==================================================================================================
+//          TYPE:   Friend function
+//   DESCRIPTION:   ........
+//    PARAMETERS:   ........
+//  RETURN VALUE:   ........
+//      COMMENTS:   RANDOM ACCESS
+//==================================================================================================
+template <typename IteratorType>
+bool operator<=(const IteratorType& a, const IteratorType& b)
+{
+    return (a < b) || (a == b);
+}
+
+
+
+} // namespace my
 
 
 #endif

@@ -7,20 +7,21 @@
 
 
 
-
-
 int main()
 {
-    char buffer[256] {0};
+    int a {125};
+    int b {999};
 
-    my::readLineToBuffer(buffer, 256);
-    int a {5};
-    auto b = my::move(a);
-    std::cout << my::getRandomNumber(1, 100) << std::endl;
+    int c {23};
+    int d {17};
 
-//    int     intToChar(int intNumber, char* buffer, int sizeOfBuffer);
-//    void    invertBuffer(char* buffer, int fromElement, int toElement);
-//    int     copyString(const char *sourceAdress, char *destinationAdress, const int numberOfSymbols);
+    my::swap(a, b);
+    std::cout << "a = " << a << std::endl;
+    std::cout << "b = " << b << std::endl;
+
+    my::swap(my::move(c), my::move(d));
+    std::cout << "c = " << c << std::endl;
+    std::cout << "d = " << d << std::endl;
 
 
     return 0;

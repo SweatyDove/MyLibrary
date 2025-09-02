@@ -14,9 +14,8 @@
 //   DESCRIPTION:   Cast l-value reference into the r-value reference
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
-//      COMMENTS:   Couldn't place definition in cpp file because, in such case need to create new
-//                  file (my_utilities.hpp) and place h/cpp-defines in it. But it causes errors with
-//                  multiple definitions.
+//      COMMENTS:   Запомни! my::move() - это просто штука, помогающая компилятору разрешить
+//                  overload resolution. Она как бы ничего не возвращает (хоть и имеется return).
 //==================================================================================================
 template <typename Type>
 Type&& my::move(Type& value)
@@ -62,18 +61,47 @@ Type&& my::forward(typename std::remove_reference<Type>::type&& value)
 
 //==================================================================================================
 //          TYPE:   ........
-//   DESCRIPTION:   Realization of universal swap() function
+//   DESCRIPTION:   Realization of universal swap() function,
+//    PARAMETERS:   @a, @b - forwarding references
+//  RETURN VALUE:   ........
+//      COMMENTS:   Возможно, я вообще перемудрил с использованием forwarding reference в данном
+//                  случае.
+//==================================================================================================
+//template <typename Type>
+//void my::swap(Type&& a, Type&& b)
+//{
+//    /*
+//     * Variable @temp should be a REAL variable (not reference!). If I make it a reference - it
+//     * will specify on the same memory, that @a does - and in second line I got "temp = a = b"
+//     */
+//    typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
+//    a = my::forward<Type>(b);
+//    b = my::forward<Type>(temp);
+//}
+
+
+
+//==================================================================================================
+//          TYPE:   ........
+//   DESCRIPTION:   ........
 //    PARAMETERS:   ........
 //  RETURN VALUE:   ........
 //      COMMENTS:   ........
 //==================================================================================================
 template <typename Type>
-void my::swap(Type&& a, Type&& b)
+void my::swap(Type& a, Type& b)
 {
-    typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
-    a = my::forward<Type>(b);
-    b = my::forward<Type>(temp);
+    Type temp {my::move(a)};
+    a = my::move(b);
+    b = my::move(temp);
+
+// void my::swap(Type&& a, Type&& b)
+// {
+//     typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
+//     a = my::forward<Type>(b);
+//     b = my::forward<Type>(temp);
 }
+
 
 
 

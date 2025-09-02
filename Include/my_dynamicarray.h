@@ -4,6 +4,7 @@
 #include "my_array.h"                   // Circular dependencies? Should I exclude it?
 #include "my_utilities.h"
 #include "my_exception.h"
+#include "my_iterator.h"
 
 #include <initializer_list>
 #include <iostream>
@@ -94,12 +95,15 @@ private:
 
 public:
 
+    using valueType = Type;
+//    using iteratorType = Iterator;
+
     // #############################################################################################
     // ################################### Constructors and Destructors  ###########################
     // #############################################################################################
 
     DynamicArray();
-    explicit DynamicArray(std::initializer_list<Type> list);
+    DynamicArray(std::initializer_list<Type> list);         // Do not need to mark as 'explicit', because if I pass initializer list as an argument, I WANT to invoke this constructor
     explicit DynamicArray(const char* string);
     explicit DynamicArray(int size);
 
@@ -157,6 +161,11 @@ public:
     void    insert(Type* pos, Type* copyFrom, Type* copyTo);
 
 
+    template <int length>
+    void extend(const my::Array<Type, length>& staticArr);
+
+
+
 
     // ######## For using in iteration algorithms
     const Type*     cbegin() const;
@@ -164,54 +173,196 @@ public:
     Type*           begin();
     Type*           end();
 
+
+
+
+
+
+
 //    template <int size>
 //    void extend(const my::Array<Type, size>& staticArr);
 
 
-    template <int length>
-    void extend(const my::Array<Type, length>& staticArr);
 
 
 
     //==================================================================================================
     //          TYPE:   Class
-    //   DESCRIPTION:   Represents iterator objects for the <my::DynamicArray>
+    //   DESCRIPTION:   Representing <my::DynamicArray> iterator objects
     //    PARAMETERS:   ........
     //  RETURN VALUE:   ........
-    //      COMMENTS:   ........
+    //      COMMENTS:   References:
+    //                  https://cplusplus.com/reference/iterator/
+    //                  https://www.internalpointers.com/post/writing-custom-iterators-modern-cpp
+    //
+    //                  "Input Iterator"            Can scan the container forward only once, can't change the value it points to (read-only);
+    //                  "Output Iterator"           Can scan the container forward only once, can't read the value it points to (write-only);
+    //                  "Forward Iterator"          Can scan the container forward multiple times, can read and write the value it points to;
+    //                  "Bidirectional Iterator"	Same as previous one but can scan the container back and forth;
+    //                  "Random Access Iterator"	Same as previous one but can access the container also non-sequentially (i.e. by jumping around);
+    //                  "Contiguous Iterator"       Same as previous one, with the addition that logically adjacent elements are also physically adjacent in memory.
     //==================================================================================================
     class Iterator {
     public:
+
         // # The tags below are needed for the functions from <algorithms> and allow to provide
         // # optimal choices when choosing specific function (for sorting and etc)
-        using iterator_category = std::forward_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
-        using difference_type = std::ptrdiff_t;                      // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
+        using iterator_category = std::random_access_iterator_tag;        // Can scan the container mutiple times and read/write data it points to
+        using difference_type = std::ptrdiff_t;                         // Difference between two pointers (on current machine). Not sure that should use <std::ptrdiff_t>.
         using value_type = Type;
         using pointer = Type*;
         using reference = Type&;
 
-        // Contructor
-        Iterator(pointer ptr) : mb_ptr {ptr} {}
-
-        reference operator*() const { return *mb_ptr; }
-        pointer operator->() { return mb_ptr; }
-
-        Iterator& operator++() { mb_ptr++; return *this; }
-        Iterator operator++(Type) {auto temp {*this}; ++(*this); return temp; }
-
-        friend bool operator==(const Iterator& a, const Iterator& b) {return a.mb_ptr == b.mb_ptr;}
-        friend bool operator!=(const Iterator& a, const Iterator& b) {return a.mb_ptr != b.mb_ptr;}
-
-
-        Iterator begin()    {return Iterator(&mb_dataPtr[0]);}
-        Iterator end()      {return Iterator(&mb_dataPtr[mb_size]);}
 
 
 
     private:
         pointer mb_ptr;
 
-    }; // End of <DynamicArray::Iterator> class
+
+    public:
+
+        // #########################################################################################
+        // ###################################  ALL CATEGORIES  ####################################
+        // #########################################################################################
+        // # Do not mark as explicit because often use my::DynamicArray<Type>::begin() (or end()),
+        // # that returns pointer, that implicitly converts into Iterator
+        Iterator(Type* ptr);
+        Iterator(const Iterator& that);
+        ~Iterator();
+
+        Iterator& operator=(const Iterator& that);
+
+        Iterator& operator++();
+        Iterator operator++(Type);
+
+        // #########################################################################################
+        // ###################################  INPUT   ############################################
+        // #########################################################################################
+
+
+        /*******************************************************************************************
+         * warning: friend declaration 'bool operator==(...)' declares a non-template function...
+         * note: (if this is NOT what you intended, make sure the function template has already been
+         * declared and add ‘<>’ after the function name here).
+         *
+         * Суть предупреждения вот в чём. Я объявляю шаблонный класс "my::DynamicArray<Type>".
+         * Вместе с этим объявлением идёт объявление friend-функции (оператора==):
+         * my::DynamicArray<Type>::Iterator::operator==()
+         *
+         * То есть для каждого типа <Type> у нас объявляется отдельная, НЕШАБЛОННАЯ friend-функция.
+         * Но вот незадача, потом, в hpp файле я определяю эту же функцию, как ШАБЛОННУЮ.
+         *
+         * То есть со стороны класса my::DynamicArray<> функция, которую он объявляет, является
+         * обычной функцией.
+         * А со стороны пользователя - это шаблонная функция, т.к. работает с шаблонными типами
+         * аргументов, т.е. для каждого типа my::DynamicArray она своя.
+         *
+         * Решение:
+         * 1) Сделать функцию шаблонной и здесь - пока так поступлю. Потом, как появится время,
+         * попробую как-нибудь убрать шаблон из объявления.
+         ******************************************************************************************/
+        template <typename IteratorType>
+        friend bool operator==(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator!= (const IteratorType& a, const IteratorType& b);
+
+        Type& operator*() const;
+        Type* operator->();
+
+        // #########################################################################################
+        // ###################################  OUTPUT   ###########################################
+        // #########################################################################################
+
+        /* Just add more properties to the dereference operator */
+
+
+        // #########################################################################################
+        // ###################################  FORWARD   ##########################################
+        // #########################################################################################
+
+        Iterator();             // Default constructible
+
+        /*
+         * Multi-pass: neither dereferencing nor incrementing affects dereferenceability: { b=a; *a++; *b; }
+         * То есть, как я понимаю, после выполнения операции инкрементирования и/или дереференса,
+         * сам итератор остаётся валиден и его можно повторно использовать
+         */
+
+
+        // #########################################################################################
+        // ###################################  BIDIRECTIONAL   ####################################
+        // #########################################################################################
+
+        Iterator& operator--();
+        Iterator operator--(Type);
+
+
+        // #########################################################################################
+        // ###################################  RANDOM ACCESS  #####################################
+        // #########################################################################################
+
+
+        template <typename IteratorType>
+        friend IteratorType operator+(IteratorType& a, int n);
+
+        template <typename IteratorType>
+        friend IteratorType operator+(int n, IteratorType& a);
+
+        template <typename IteratorType>
+        friend IteratorType operator-(const IteratorType& a, int n);
+
+        template <typename IteratorType>
+        friend IteratorType::difference_type operator-(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator<(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator>(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator>=(const IteratorType& a, const IteratorType& b);
+
+        template <typename IteratorType>
+        friend bool operator<=(const IteratorType& a, const IteratorType& b);
+
+
+
+        Iterator& operator+=(int n);
+        Iterator& operator-=(int n);
+
+        Type& operator[](int index);
+
+
+
+
+        /*
+         * А должны ли у итератора быть begin() и end()?
+         */
+//        Type* begin()    {return mb_dataPtr;}
+//        Type* end()
+//        {
+//            return (mb_dataPtr + mb_length);
+//        }
+
+
+    }; // End of <my::DynamicArray::Iterator> class
+
+
+
+
+    Iterator itbegin()    {return Iterator(mb_dataPtr);}
+    Iterator itend()      {return Iterator(mb_dataPtr + mb_size);}
+
+
+
+
+
+
+
+
 
 
 }; // End of <DynamicArray> class
