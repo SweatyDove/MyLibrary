@@ -4,7 +4,7 @@
 #include "my_array.h"                   // Circular dependencies? Should I exclude it?
 #include "my_utilities.h"
 #include "my_exception.h"
-#include "my_iterator.h"
+//#include "my_iterator.h"
 
 #include <initializer_list>
 #include <iostream>
