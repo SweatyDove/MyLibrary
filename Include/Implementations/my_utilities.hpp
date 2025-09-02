@@ -94,6 +94,12 @@ void my::swap(Type& a, Type& b)
     Type temp {my::move(a)};
     a = my::move(b);
     b = my::move(temp);
+
+// void my::swap(Type&& a, Type&& b)
+// {
+//     typename std::remove_reference<Type>::type temp {my::forward<Type>(a)};
+//     a = my::forward<Type>(b);
+//     b = my::forward<Type>(temp);
 }
 
 
