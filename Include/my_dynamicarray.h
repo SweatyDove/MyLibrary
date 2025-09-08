@@ -156,9 +156,10 @@ public:
     void    push_back(const Type& value);
     void    push_back(Type&& value);
     Type    popBack();
-    void    extend(const my::DynamicArray<Type>& dynArr);
     void    nullify(int start, int end);
     void    insert(Type* pos, Type* copyFrom, Type* copyTo);
+    void    extend(const my::DynamicArray<Type>& dynArr);
+
 
 
     template <int length>
